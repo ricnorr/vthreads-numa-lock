@@ -35,8 +35,6 @@ jmh {
     if (profilerP != null) {
         profilers.set(listOf(profilerP))
     }
-
-    fork.set(1)
 }
 
 
