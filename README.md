@@ -1,6 +1,18 @@
 # NUMA-aware-locks
 Repository for my bachelor's diploma, implementing and benchmarking NUMA aware locks.
-
+# Install instruments
+* download openjdk 17 (```sudo apt-get install openjdk-17-jdk```)
+* set JAVA_HOME
+* download gradle 7.3 
+```
+  VERSION=7.3  
+  wget https://services.gradle.org/distributions/gradle-${VERSION}-bin.zip -P /tmp
+  sudo unzip -d /opt/gradle /tmp/gradle-${VERSION}-bin.zip
+  ```
+* ```gradle wrapper``` in project dir
+# How to run benchmarks
+* ```./run_benches.sh```, you can edit number of threads in script cycle. It runs benchmarks on fixed number of threads.
+* Results are saved in ***build/results/jmh/threads/{threads_cnt}/results.csv***
 ## Useful links
 https://github.com/Valloric/jmh-playground
 https://github.com/openjdk/jmh
