@@ -2,7 +2,6 @@ package ru.ricnorr.locks.numa.jmh.latency;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -23,7 +22,7 @@ public class LatencyBenchmark {
     @State(Scope.Benchmark) // All threads share this state
     public static class LatencyState {
 
-        @Param
+        @Param({"REENTRANT_LOCK"})
         public LockType lockType;
 
         public Lock lock;

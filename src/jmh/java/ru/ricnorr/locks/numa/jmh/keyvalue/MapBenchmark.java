@@ -18,7 +18,6 @@ import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.infra.Blackhole;
 import ru.ricnorr.locks.numa.jmh.BenchmarkUtil;
 import ru.ricnorr.locks.numa.jmh.LockType;
@@ -35,8 +34,8 @@ public class MapBenchmark {
 
     public static void fillMap(Map<Integer, Integer> keyValueStorage) {
         Random randomGenerator = new Random();
-        for (int i = 0; i < Integer.MAX_VALUE / 2; i++) {
-            keyValueStorage.put(randomGenerator.nextInt(), randomGenerator.nextInt());
+        for (int i = 0; i < 50_000; i++) {
+            keyValueStorage.put(randomGenerator.nextInt(0, 1_000_00), randomGenerator.nextInt(0, 1_000_00));
         }
     }
 
@@ -57,10 +56,10 @@ public class MapBenchmark {
     }
 
     public Integer executeAction(Action action, Map<Integer, Integer> keyValueStorage) {
-        int key = ThreadLocalRandom.current().nextInt();
+        int key = ThreadLocalRandom.current().nextInt(0, 100_000);
         switch (action) {
             case PUT -> {
-                int value = ThreadLocalRandom.current().nextInt();
+                int value = ThreadLocalRandom.current().nextInt(0, 100_000);
                 return keyValueStorage.put(key, value);
             }
             case GET -> {
@@ -76,9 +75,8 @@ public class MapBenchmark {
     @State(Scope.Benchmark) // All threads share this state
     public static class OrderedKeyValueState {
 
-        @Param
+        @Param({"REENTRANT_LOCK"})
         public LockType lockType;
-
         public Map<Integer, Integer> keyValueStorage = new TreeMap<>();
 
         public Lock lock;

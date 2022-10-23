@@ -25,16 +25,18 @@ dependencies {
     jmhAnnotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:1.35")
 }
 
-val threadP: String? by project
-val includeP: String? by project
-val profilerP: String? by project
+val lockTypesP: String? by project
 
 jmh {
-    includes.set(listOf(includeP ?: ".*Benchmark"))
-    threads.set(Integer.parseInt(threadP ?: "16") )
-    if (profilerP != null) {
-        profilers.set(listOf(profilerP))
+    includes.set(listOf(project.properties["include"]?.toString() ?: ".*Benchmark"))
+    val threadsCnt = Integer.parseInt(project.properties["thread"]?.toString() ?: "16")
+    threads.set(threadsCnt)
+    fork.set(Integer.parseInt(project.properties["fork"]?.toString() ?: "5"))
+    project.properties["profiler"]?.toString()?.let {
+        profilers.set(it.split(","))
     }
+    resultsFile.set(project.file("${project.buildDir}/results/jmh/threads/${threadsCnt}/results.txt"))
+    resultFormat.set("CSV")
 }
 
 

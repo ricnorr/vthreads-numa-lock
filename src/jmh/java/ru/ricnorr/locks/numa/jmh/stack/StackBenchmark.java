@@ -48,9 +48,9 @@ public class StackBenchmark {
     }
 
     @State(Scope.Benchmark) // All threads share this state
-    public static class DequeState {
+    public static class StackState {
 
-        @Param
+        @Param({"REENTRANT_LOCK"})
         public LockType lockType;
 
         public Deque<Integer> deque = new ArrayDeque<>();
@@ -70,7 +70,7 @@ public class StackBenchmark {
      */
     @Benchmark
     public void stack(
-        DequeState state
+            StackState state
     ) {
         Action action = chooseAction();
         state.lock.lock();
