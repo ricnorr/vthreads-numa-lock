@@ -16,6 +16,8 @@ Repository for my bachelor's diploma, implementing and benchmarking NUMA aware l
 # How to run jcstress
 * ```gradle jcstress``` to run all tests
 * ```gradle jcstress --tests JcStressMCS|SomeAnotherStress``` to run specific tests
+# How to enable perfnorm
+* ```sudo sysctl -w kernel.perf_event_paranoid=1```
 ## Useful links
 https://github.com/Valloric/jmh-playground
 https://github.com/openjdk/jmh
