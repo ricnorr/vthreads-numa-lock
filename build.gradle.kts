@@ -35,7 +35,7 @@ jmh {
     project.properties["profiler"]?.toString()?.let {
         profilers.set(it.split(","))
     }
-    resultsFile.set(project.file("${project.buildDir}/results/jmh/threads/${threadsCnt}/results.txt"))
+    resultsFile.set(project.file("${project.buildDir}/results/jmh/threads/${threadsCnt}/results.csv"))
     resultFormat.set("CSV")
 }
 
