@@ -4,6 +4,7 @@ plugins {
     `java-library`
     kotlin("jvm") version "1.7.20"
     id("me.champeau.jmh") version "0.6.7"
+    id("io.github.reyerizo.gradle.jcstress") version "0.8.13"
 }
 
 java {
