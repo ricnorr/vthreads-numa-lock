@@ -28,11 +28,10 @@ public class FaddBenchmark {
     @State(Scope.Benchmark) // All threads share this state
     public static class MultiFaddState {
 
-        @Param({"REENTRANT_LOCK"})
+        @Param({"REENTRANT", "MCS"})
         public LockType lockType;
 
-        @Param({"4", "8"})
-        public int multiVariableCount;
+        public int multiVariableCount = 4;
 
         public AtomicIntegerArray multiVariableArray;
 
@@ -56,7 +55,7 @@ public class FaddBenchmark {
     @State(Scope.Benchmark) // All threads share this state
     public static class SingleVariableBenchmarkState {
 
-        @Param({"REENTRANT_LOCK"})
+        @Param({"REENTRANT", "MCS"})
         public LockType lockType;
 
         public AtomicInteger variable;

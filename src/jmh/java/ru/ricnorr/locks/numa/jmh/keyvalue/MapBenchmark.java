@@ -75,7 +75,7 @@ public class MapBenchmark {
     @State(Scope.Benchmark) // All threads share this state
     public static class OrderedKeyValueState {
 
-        @Param({"REENTRANT_LOCK"})
+        @Param({"REENTRANT", "MCS"})
         public LockType lockType;
         public Map<Integer, Integer> keyValueStorage = new TreeMap<>();
 
@@ -83,7 +83,7 @@ public class MapBenchmark {
 
         @Setup(Level.Trial)
         public void setUp() {
-            if (lockType == LockType.REENTRANT_LOCK) {
+            if (lockType == LockType.REENTRANT) {
                 lock = new ReentrantLock();
             }
             keyValueStorage.clear();

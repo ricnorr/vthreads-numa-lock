@@ -50,7 +50,7 @@ public class StackBenchmark {
     @State(Scope.Benchmark) // All threads share this state
     public static class StackState {
 
-        @Param({"REENTRANT_LOCK"})
+        @Param({"REENTRANT", "MCS"})
         public LockType lockType;
 
         public Deque<Integer> deque = new ArrayDeque<>();

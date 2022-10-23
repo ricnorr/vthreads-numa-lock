@@ -23,11 +23,10 @@ public class ReadModifyCacheLinesBenchmark {
     @State(Scope.Benchmark) // All threads share this state
     public static class CacheLineState {
 
-        @Param({"REENTRANT_LOCK"})
+        @Param({"REENTRANT", "MCS"})
         public LockType lockType;
 
-        @Param({"32", "64"})
-        public int cacheLineSize;
+        public int cacheLineSize = 32;
 
         public byte[] cacheLine1 = new byte[cacheLineSize];
         public byte[] cacheLine2 = new byte[cacheLineSize];

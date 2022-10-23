@@ -22,7 +22,7 @@ public class LatencyBenchmark {
     @State(Scope.Benchmark) // All threads share this state
     public static class LatencyState {
 
-        @Param({"REENTRANT_LOCK"})
+        @Param({"REENTRANT", "MCS"})
         public LockType lockType;
 
         public Lock lock;
