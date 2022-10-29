@@ -12,7 +12,7 @@ Repository for my bachelor's diploma, implementing and benchmarking NUMA aware l
 * ```gradle wrapper``` in project dir
 # How to run benchmarks
 * ```./run_benches.sh```, you can edit number of threads in script cycle. It runs benchmarks on fixed number of threads.
-* Results are saved in ***build/results/jmh/threads/{threads_cnt}/results.csv***
+* Results are saved in ***build/results/jmh/threads/results_{threads_cnt}/results.csv***
 # How to run jcstress
 * ```gradle jcstress``` to run all tests
 * ```gradle jcstress --tests JcStressMCS|SomeAnotherStress``` to run specific tests
