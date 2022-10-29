@@ -6,6 +6,6 @@ import org.openjdk.jmh.annotations.State;
 
 @State(Scope.Benchmark)
 public class BenchmarkState {
-    @Param
+    @Param({"REENTRANT","MCS"})
     public LockType lockType;
 }
