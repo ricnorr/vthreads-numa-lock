@@ -1,5 +1,9 @@
 package ru.ricnorr.locks.numa.jmh.keyvalue;
 
+import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.infra.Blackhole;
+import ru.ricnorr.locks.numa.jmh.BenchmarkState;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -7,20 +11,8 @@ import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Param;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.infra.Blackhole;
-import ru.ricnorr.locks.numa.jmh.BenchmarkUtil;
-import ru.ricnorr.locks.numa.jmh.LockType;
+import static ru.ricnorr.locks.numa.jmh.BenchmarkUtil.initLock;
 
 @BenchmarkMode({Mode.Throughput, Mode.AverageTime})
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -73,29 +65,22 @@ public class MapBenchmark {
     }
 
     @State(Scope.Benchmark) // All threads share this state
-    public static class OrderedKeyValueState {
+    public static class OrderedKeyValueState extends BenchmarkState {
 
-        @Param({"REENTRANT", "MCS"})
-        public LockType lockType;
         public Map<Integer, Integer> keyValueStorage = new TreeMap<>();
 
         public Lock lock;
 
         @Setup(Level.Trial)
         public void setUp() {
-            if (lockType == LockType.REENTRANT) {
-                lock = new ReentrantLock();
-            }
+            lock = initLock(lockType);
             keyValueStorage.clear();
             fillMap(keyValueStorage);
         }
     }
 
     @State(Scope.Benchmark) // All threads share this state
-    public static class HashKeyValueState {
-
-        @Param
-        public LockType lockType;
+    public static class HashKeyValueState extends BenchmarkState {
 
         public Map<Integer, Integer> keyValueStorage = new HashMap<>();
 
@@ -103,7 +88,7 @@ public class MapBenchmark {
 
         @Setup(Level.Trial)
         public void setUp() {
-            lock = BenchmarkUtil.initLock(lockType);
+            lock = initLock(lockType);
             keyValueStorage.clear();
             fillMap(keyValueStorage);
         }

@@ -1,23 +1,15 @@
 package ru.ricnorr.locks.numa.jmh.stack;
 
+import org.openjdk.jmh.annotations.*;
+import ru.ricnorr.locks.numa.jmh.BenchmarkState;
+import ru.ricnorr.locks.numa.jmh.BenchmarkUtil;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
-
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Param;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
-import ru.ricnorr.locks.numa.jmh.BenchmarkUtil;
-import ru.ricnorr.locks.numa.jmh.LockType;
 
 @BenchmarkMode({Mode.Throughput, Mode.AverageTime})
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -48,10 +40,7 @@ public class StackBenchmark {
     }
 
     @State(Scope.Benchmark) // All threads share this state
-    public static class StackState {
-
-        @Param({"REENTRANT", "MCS"})
-        public LockType lockType;
+    public static class StackState extends BenchmarkState {
 
         public Deque<Integer> deque = new ArrayDeque<>();
 
