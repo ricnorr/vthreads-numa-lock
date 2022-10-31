@@ -38,6 +38,19 @@ jmh {
     }
     resultsFile.set(project.file("${project.buildDir}/results/jmh/threads/results_${threadsCnt}.csv"))
     resultFormat.set("CSV")
+
+    val parametersMap = mutableMapOf<String, ListProperty<String>>()
+    (project.properties["inSectionMatrixSize"]?.toString() ?: "1000").let {
+        val inSectionMatrixSizeProperties = project.objects.listProperty(String::class.java)
+        inSectionMatrixSizeProperties.addAll(it.split(","))
+        parametersMap["inSectionMatrixSize"] = inSectionMatrixSizeProperties
+    }
+    (project.properties["afterSectionMatrixSize"]?.toString() ?: "1000").let {
+        val afterSectionMatrixSizeProperties = project.objects.listProperty(String::class.java)
+        afterSectionMatrixSizeProperties.addAll(it.split(","))
+        parametersMap["afterSectionMatrixSize"] = afterSectionMatrixSizeProperties
+    }
+    benchmarkParameters.set(parametersMap)
 }
 
 
