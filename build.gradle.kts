@@ -50,6 +50,11 @@ jmh {
         afterSectionMatrixSizeProperties.addAll(it.split(","))
         parametersMap["afterSectionMatrixSize"] = afterSectionMatrixSizeProperties
     }
+    project.properties["lockType"]?.toString()?.let {
+        val lockTypeProperties = project.objects.listProperty(String::class.java)
+        lockTypeProperties.addAll(it.split(","))
+        parametersMap["lockType"] = lockTypeProperties
+    }
     benchmarkParameters.set(parametersMap)
 }
 
