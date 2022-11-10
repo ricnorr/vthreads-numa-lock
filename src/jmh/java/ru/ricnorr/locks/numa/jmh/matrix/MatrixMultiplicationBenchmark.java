@@ -54,6 +54,8 @@ public class MatrixMultiplicationBenchmark {
     }
 
     @Benchmark
+    @Warmup(iterations = 3, time = 2, timeUnit = TimeUnit.SECONDS)
+    @Measurement(iterations = 5, time = 5, timeUnit = TimeUnit.SECONDS)
     public int[][] matrixMultiplication(Blackhole bh, MatrixState state) {
         state.lock.lock();
         bh.consume(multiplyMatrixes(state.inSectionMatrix1, state.inSectionMatrix2));
@@ -62,14 +64,13 @@ public class MatrixMultiplicationBenchmark {
     }
 
     private int[][] multiplyMatrixes(int[][] matrix1, int[][] matrix2) {
-        int[][] result = new int[matrix1.length][matrix2[0].length];
         for (int i = 0; i < matrix1.length; i++) {
             for (int j = 0; j < matrix2[0].length; j++) {
                 for (int k = 0; k < matrix1[0].length; k++) {
-                    result[i][j] += matrix1[i][k] * matrix2[k][j];
+                    matrix1[i][k] += matrix1[i][k] * matrix2[k][j];
                 }
             }
         }
-        return result;
+        return matrix1;
     }
 }
