@@ -36,7 +36,9 @@ jmh {
     project.properties["profiler"]?.toString()?.let {
         profilers.set(it.split(","))
     }
-    resultsFile.set(project.file("${project.buildDir}/results/jmh/threads/results_${threadsCnt}.csv"))
+    (project.properties["fileName"]?.toString() ?: "").let {
+        resultsFile.set(project.file("${project.buildDir}/results/jmh/threads/${it}results_${threadsCnt}.csv"))
+    }
     resultFormat.set("CSV")
 
     val parametersMap = mutableMapOf<String, ListProperty<String>>()
