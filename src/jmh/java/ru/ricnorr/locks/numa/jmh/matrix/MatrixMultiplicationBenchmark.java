@@ -64,13 +64,14 @@ public class MatrixMultiplicationBenchmark {
     }
 
     private int[][] multiplyMatrixes(int[][] matrix1, int[][] matrix2) {
+        int[][] result = new int[matrix1.length][matrix2.length];
         for (int i = 0; i < matrix1.length; i++) {
             for (int j = 0; j < matrix2[0].length; j++) {
                 for (int k = 0; k < matrix1[0].length; k++) {
-                    matrix1[i][k] += matrix1[i][k] * matrix2[k][j];
+                    result[i][j] += matrix1[i][k] * matrix2[k][j];
                 }
             }
         }
-        return matrix1;
+        return result;
     }
 }
