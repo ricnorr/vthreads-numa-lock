@@ -24,6 +24,8 @@ public class LatencyBenchmark {
     }
 
     @Benchmark
+    @Warmup(iterations = 3, time = 2, timeUnit = TimeUnit.SECONDS)
+    @Measurement(iterations = 5, time = 5, timeUnit = TimeUnit.SECONDS)
     public void bench(Blackhole bh, LatencyState state) {
         state.lock.lock();
         bh.consume(null);
