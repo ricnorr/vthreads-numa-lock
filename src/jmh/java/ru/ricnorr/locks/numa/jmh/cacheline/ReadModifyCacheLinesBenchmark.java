@@ -31,6 +31,8 @@ public class ReadModifyCacheLinesBenchmark {
     }
 
     @Benchmark
+    @Warmup(iterations = 3, time = 2, timeUnit = TimeUnit.SECONDS)
+    @Measurement(iterations = 5, time = 5, timeUnit = TimeUnit.SECONDS)
     public void cacheLine(CacheLineState state) {
         state.lock.lock();
         modifyWriteCacheline(state.cacheLine1);
