@@ -20,7 +20,7 @@ public class FaddBenchmark {
     @State(Scope.Benchmark) // All threads share this state
     public static class MultiFaddState extends BenchmarkState {
 
-        public int multiVariableCount = 4;
+        public int multiVariableCount = 32;
 
         public AtomicIntegerArray multiVariableArray;
 
@@ -34,6 +34,8 @@ public class FaddBenchmark {
     }
 
     @Benchmark
+    @Warmup(iterations = 3, time = 2, timeUnit = TimeUnit.SECONDS)
+    @Measurement(iterations = 5, time = 5, timeUnit = TimeUnit.SECONDS)
     public void multiVar(Blackhole bh, MultiFaddState state) {
         state.lock.lock();
         int index = ThreadLocalRandom.current().nextInt(0, state.multiVariableCount);
@@ -56,6 +58,8 @@ public class FaddBenchmark {
     }
 
     @Benchmark
+    @Warmup(iterations = 3, time = 2, timeUnit = TimeUnit.SECONDS)
+    @Measurement(iterations = 5, time = 5, timeUnit = TimeUnit.SECONDS)
     public void singleVar(Blackhole bh, SingleVariableBenchmarkState state) {
         state.lock.lock();
         bh.consume(state.variable.getAndAdd(1));
