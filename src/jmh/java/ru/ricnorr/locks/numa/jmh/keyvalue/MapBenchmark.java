@@ -98,6 +98,8 @@ public class MapBenchmark {
      * Benchmark idea from the paper https://arxiv.org/pdf/1810.05600.pdf
      */
     @Benchmark
+    @Warmup(iterations = 3, time = 2, timeUnit = TimeUnit.SECONDS)
+    @Measurement(iterations = 5, time = 5, timeUnit = TimeUnit.SECONDS)
     public void ordered(Blackhole bh, OrderedKeyValueState state) {
         Action action = chooseAction();
         state.lock.lock();
@@ -109,6 +111,8 @@ public class MapBenchmark {
      * Benchmark idea from the paper https://dl.acm.org/doi/10.5555/3154690.3154748
      */
     @Benchmark
+    @Warmup(iterations = 3, time = 2, timeUnit = TimeUnit.SECONDS)
+    @Measurement(iterations = 5, time = 5, timeUnit = TimeUnit.SECONDS)
     public void hash(Blackhole bh, HashKeyValueState state) {
         Action action = chooseAction();
         state.lock.lock();
