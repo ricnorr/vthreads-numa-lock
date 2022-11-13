@@ -1,0 +1,11 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: lockType"
+"ru.ricnorr.locks.numa.jmh.latency.LatencyBenchmark.bench","thrpt",32,5,21759.740068,504.726225,"ops/ms",REENTRANT
+"ru.ricnorr.locks.numa.jmh.latency.LatencyBenchmark.bench","thrpt",32,5,8.382503,71.992838,"ops/ms",MCS
+"ru.ricnorr.locks.numa.jmh.latency.LatencyBenchmark.bench","thrpt",32,5,63640.840043,89946.144225,"ops/ms",TEST_SET
+"ru.ricnorr.locks.numa.jmh.latency.LatencyBenchmark.bench","thrpt",32,5,76662.023844,82264.015347,"ops/ms",TEST_TEST_SET
+"ru.ricnorr.locks.numa.jmh.latency.LatencyBenchmark.bench","thrpt",32,5,0.021031,0.007827,"ops/ms",TICKET
+"ru.ricnorr.locks.numa.jmh.latency.LatencyBenchmark.bench","avgt",32,5,0.001449,0.000038,"ms/op",REENTRANT
+"ru.ricnorr.locks.numa.jmh.latency.LatencyBenchmark.bench","avgt",32,5,1612.524344,610.060136,"ms/op",MCS
+"ru.ricnorr.locks.numa.jmh.latency.LatencyBenchmark.bench","avgt",32,5,0.028579,0.015211,"ms/op",TEST_SET
+"ru.ricnorr.locks.numa.jmh.latency.LatencyBenchmark.bench","avgt",32,5,0.033904,0.092013,"ms/op",TEST_TEST_SET
+"ru.ricnorr.locks.numa.jmh.latency.LatencyBenchmark.bench","avgt",32,5,1498.531562,383.992268,"ms/op",TICKET

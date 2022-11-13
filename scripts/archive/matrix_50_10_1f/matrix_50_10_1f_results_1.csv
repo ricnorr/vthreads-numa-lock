@@ -1,0 +1,11 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: afterSectionMatrixSize","Param: inSectionMatrixSize","Param: lockType"
+"ru.ricnorr.locks.numa.jmh.matrix.MatrixMultiplicationBenchmark.matrixMultiplication","thrpt",1,5,4.354833,0.055015,"ops/ms",10,50,REENTRANT
+"ru.ricnorr.locks.numa.jmh.matrix.MatrixMultiplicationBenchmark.matrixMultiplication","thrpt",1,5,4.722360,0.058376,"ops/ms",10,50,MCS
+"ru.ricnorr.locks.numa.jmh.matrix.MatrixMultiplicationBenchmark.matrixMultiplication","thrpt",1,5,4.025114,0.059227,"ops/ms",10,50,TEST_SET
+"ru.ricnorr.locks.numa.jmh.matrix.MatrixMultiplicationBenchmark.matrixMultiplication","thrpt",1,5,4.012354,0.039536,"ops/ms",10,50,TEST_TEST_SET
+"ru.ricnorr.locks.numa.jmh.matrix.MatrixMultiplicationBenchmark.matrixMultiplication","thrpt",1,5,4.400219,0.033264,"ops/ms",10,50,TICKET
+"ru.ricnorr.locks.numa.jmh.matrix.MatrixMultiplicationBenchmark.matrixMultiplication","avgt",1,5,0.247941,0.004464,"ms/op",10,50,REENTRANT
+"ru.ricnorr.locks.numa.jmh.matrix.MatrixMultiplicationBenchmark.matrixMultiplication","avgt",1,5,0.218895,0.003137,"ms/op",10,50,MCS
+"ru.ricnorr.locks.numa.jmh.matrix.MatrixMultiplicationBenchmark.matrixMultiplication","avgt",1,5,0.249717,0.007460,"ms/op",10,50,TEST_SET
+"ru.ricnorr.locks.numa.jmh.matrix.MatrixMultiplicationBenchmark.matrixMultiplication","avgt",1,5,0.228569,0.000644,"ms/op",10,50,TEST_TEST_SET
+"ru.ricnorr.locks.numa.jmh.matrix.MatrixMultiplicationBenchmark.matrixMultiplication","avgt",1,5,0.248327,0.004506,"ms/op",10,50,TICKET

@@ -1,0 +1,21 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: lockType"
+"ru.ricnorr.locks.numa.jmh.fadd.FaddBenchmark.multiVar","thrpt",2,5,14897.365220,365.787043,"ops/ms",REENTRANT
+"ru.ricnorr.locks.numa.jmh.fadd.FaddBenchmark.multiVar","thrpt",2,5,6.976497,35.291539,"ops/ms",MCS
+"ru.ricnorr.locks.numa.jmh.fadd.FaddBenchmark.multiVar","thrpt",2,5,9050.216667,600.350834,"ops/ms",TEST_SET
+"ru.ricnorr.locks.numa.jmh.fadd.FaddBenchmark.multiVar","thrpt",2,5,10622.859057,735.059754,"ops/ms",TEST_TEST_SET
+"ru.ricnorr.locks.numa.jmh.fadd.FaddBenchmark.multiVar","thrpt",2,5,23.454755,98.798299,"ops/ms",TICKET
+"ru.ricnorr.locks.numa.jmh.fadd.FaddBenchmark.singleVar","thrpt",2,5,21052.465194,567.519841,"ops/ms",REENTRANT
+"ru.ricnorr.locks.numa.jmh.fadd.FaddBenchmark.singleVar","thrpt",2,5,1.273892,5.732896,"ops/ms",MCS
+"ru.ricnorr.locks.numa.jmh.fadd.FaddBenchmark.singleVar","thrpt",2,5,16672.827341,483.933566,"ops/ms",TEST_SET
+"ru.ricnorr.locks.numa.jmh.fadd.FaddBenchmark.singleVar","thrpt",2,5,12634.288824,346.074229,"ops/ms",TEST_TEST_SET
+"ru.ricnorr.locks.numa.jmh.fadd.FaddBenchmark.singleVar","thrpt",2,5,2.997029,23.725751,"ops/ms",TICKET
+"ru.ricnorr.locks.numa.jmh.fadd.FaddBenchmark.multiVar","avgt",2,5,0.000133,0.000012,"ms/op",REENTRANT
+"ru.ricnorr.locks.numa.jmh.fadd.FaddBenchmark.multiVar","avgt",2,5,6.828053,11.724433,"ms/op",MCS
+"ru.ricnorr.locks.numa.jmh.fadd.FaddBenchmark.multiVar","avgt",2,5,0.000219,0.000007,"ms/op",TEST_SET
+"ru.ricnorr.locks.numa.jmh.fadd.FaddBenchmark.multiVar","avgt",2,5,0.000200,0.000015,"ms/op",TEST_TEST_SET
+"ru.ricnorr.locks.numa.jmh.fadd.FaddBenchmark.multiVar","avgt",2,5,7.037824,11.461426,"ms/op",TICKET
+"ru.ricnorr.locks.numa.jmh.fadd.FaddBenchmark.singleVar","avgt",2,5,0.000110,0.000006,"ms/op",REENTRANT
+"ru.ricnorr.locks.numa.jmh.fadd.FaddBenchmark.singleVar","avgt",2,5,4.399696,15.262210,"ms/op",MCS
+"ru.ricnorr.locks.numa.jmh.fadd.FaddBenchmark.singleVar","avgt",2,5,0.000121,0.000009,"ms/op",TEST_SET
+"ru.ricnorr.locks.numa.jmh.fadd.FaddBenchmark.singleVar","avgt",2,5,0.000157,0.000012,"ms/op",TEST_TEST_SET
+"ru.ricnorr.locks.numa.jmh.fadd.FaddBenchmark.singleVar","avgt",2,5,3.098065,11.395385,"ms/op",TICKET

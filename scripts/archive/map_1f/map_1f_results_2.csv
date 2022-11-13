@@ -1,0 +1,21 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: lockType"
+"ru.ricnorr.locks.numa.jmh.keyvalue.MapBenchmark.hash","thrpt",2,5,6032.006634,27.096351,"ops/ms",REENTRANT
+"ru.ricnorr.locks.numa.jmh.keyvalue.MapBenchmark.hash","thrpt",2,5,1.283167,8.896699,"ops/ms",MCS
+"ru.ricnorr.locks.numa.jmh.keyvalue.MapBenchmark.hash","thrpt",2,5,3646.236986,199.890387,"ops/ms",TEST_SET
+"ru.ricnorr.locks.numa.jmh.keyvalue.MapBenchmark.hash","thrpt",2,5,3699.654673,121.000996,"ops/ms",TEST_TEST_SET
+"ru.ricnorr.locks.numa.jmh.keyvalue.MapBenchmark.hash","thrpt",2,5,0.610767,2.074499,"ops/ms",TICKET
+"ru.ricnorr.locks.numa.jmh.keyvalue.MapBenchmark.ordered","thrpt",2,5,1394.279045,36.408383,"ops/ms",REENTRANT
+"ru.ricnorr.locks.numa.jmh.keyvalue.MapBenchmark.ordered","thrpt",2,5,0.250310,0.030063,"ops/ms",MCS
+"ru.ricnorr.locks.numa.jmh.keyvalue.MapBenchmark.ordered","thrpt",2,5,715.209296,111.738621,"ops/ms",TEST_SET
+"ru.ricnorr.locks.numa.jmh.keyvalue.MapBenchmark.ordered","thrpt",2,5,732.172022,96.901606,"ops/ms",TEST_TEST_SET
+"ru.ricnorr.locks.numa.jmh.keyvalue.MapBenchmark.ordered","thrpt",2,5,0.301230,0.519353,"ops/ms",TICKET
+"ru.ricnorr.locks.numa.jmh.keyvalue.MapBenchmark.hash","avgt",2,5,0.000318,0.000004,"ms/op",REENTRANT
+"ru.ricnorr.locks.numa.jmh.keyvalue.MapBenchmark.hash","avgt",2,5,6.580343,13.915676,"ms/op",MCS
+"ru.ricnorr.locks.numa.jmh.keyvalue.MapBenchmark.hash","avgt",2,5,0.000561,0.000100,"ms/op",TEST_SET
+"ru.ricnorr.locks.numa.jmh.keyvalue.MapBenchmark.hash","avgt",2,5,0.000523,0.000038,"ms/op",TEST_TEST_SET
+"ru.ricnorr.locks.numa.jmh.keyvalue.MapBenchmark.hash","avgt",2,5,4.898694,14.883686,"ms/op",TICKET
+"ru.ricnorr.locks.numa.jmh.keyvalue.MapBenchmark.ordered","avgt",2,5,0.001422,0.000035,"ms/op",REENTRANT
+"ru.ricnorr.locks.numa.jmh.keyvalue.MapBenchmark.ordered","avgt",2,5,7.550078,6.451617,"ms/op",MCS
+"ru.ricnorr.locks.numa.jmh.keyvalue.MapBenchmark.ordered","avgt",2,5,0.003093,0.000987,"ms/op",TEST_SET
+"ru.ricnorr.locks.numa.jmh.keyvalue.MapBenchmark.ordered","avgt",2,5,0.002918,0.000695,"ms/op",TEST_TEST_SET
+"ru.ricnorr.locks.numa.jmh.keyvalue.MapBenchmark.ordered","avgt",2,5,7.987304,0.483709,"ms/op",TICKET
