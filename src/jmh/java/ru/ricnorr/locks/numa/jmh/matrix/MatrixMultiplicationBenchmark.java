@@ -13,6 +13,7 @@ import java.util.concurrent.locks.Lock;
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class MatrixMultiplicationBenchmark {
 
+
     @State(Scope.Benchmark)
     public static class MatrixState extends BenchmarkState {
 
