@@ -10,14 +10,14 @@ public class Main {
         final Lock lock = new ReentrantLock();
 
         Random random = new Random();
-        int[][] matrixA = new int[50][50];
+        int[][] matrixA = new int[300][300];
         for (int i = 0; i < matrixA.length; i++) {
             for (int j = 0; j < matrixA[0].length; j++) {
                 matrixA[i][j] = random.nextInt();
             }
         }
 
-        int[][] matrixB = new int[50][50];
+        int[][] matrixB = new int[300][300];
         for (int i = 0; i < matrixB.length; i++) {
             for (int j = 0; j < matrixB[0].length; j++) {
                 matrixB[i][j] = random.nextInt();
@@ -40,7 +40,7 @@ public class Main {
                 lock.unlock();
             }
         }
-        var bechmarkResult = new Benchmark().benchmark(4, new MyRunnable(), 10000, 5, 5);
+        var bechmarkResult = new Benchmark().benchmark(4, new MyRunnable(), 10000, 2, 0, 99);
         System.out.println("Throughput: " + bechmarkResult.throughput());
         System.out.println("Latency: " + bechmarkResult.latency());
     }

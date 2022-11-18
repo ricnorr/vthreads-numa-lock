@@ -6,15 +6,17 @@ import java.util.Queue;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.CyclicBarrier;
+import java.util.stream.Collectors;
 
 public class Benchmark {
 
-    private record IterationResult(int threads, long actionsCount, long latencySum) {
+    private record IterationResult(int threads, long actionsCount, List<Long> latencies) {
     }
 
-    private BenchmarkResult runIteration(int threads, Runnable action, long timeoutInMillis) {
+    private IterationResult runIteration(int threads, Runnable action, long timeoutInMillis) {
         final CyclicBarrier ready = new CyclicBarrier(threads);
-        Queue<IterationResult> results = new ConcurrentLinkedDeque<>();
+        Queue<Long> latencies = new ConcurrentLinkedDeque<>();
+        Queue<Long> actions = new ConcurrentLinkedDeque<>();
         List<Thread> threadList = new ArrayList<>();
         System.out.println("Run iteration");
         for (int i = 0; i < threads; i++) {
@@ -24,17 +26,18 @@ public class Benchmark {
                 } catch (BrokenBarrierException | InterruptedException e) {
                     throw new BechmarkException("Failing to await threads", e);
                 }
-                long latencySum = 0;
                 long countActions = 0;
                 long start = System.currentTimeMillis();
+                List<Long> localLatencies = new ArrayList<>();
                 while (System.currentTimeMillis() - start < timeoutInMillis) {
                     long latencyStart = System.currentTimeMillis();
                     action.run();
                     long latencyStop = System.currentTimeMillis();
                     countActions++;
-                    latencySum += latencyStop - latencyStart;
+                    localLatencies.add(latencyStop - latencyStart);
                 }
-                results.add(new IterationResult(threads, countActions, latencySum));
+                latencies.addAll(localLatencies);
+                actions.add(countActions);
             }));
         }
         for (Thread thread : threadList) {
@@ -47,22 +50,16 @@ public class Benchmark {
                 throw new BechmarkException("Can't join threads", e);
             }
         }
-        if (results.size() != threads) {
+        if (actions.size() != threads) {
             throw new BechmarkException("opsCount size != threads");
         }
         System.out.println("Iteration ended");
-        long totalActionsCount = results.stream().mapToLong(it -> it.actionsCount).sum();
-        long totalLatency = results.stream().mapToLong(it -> it.latencySum).sum();
-        double throughput = totalActionsCount / (timeoutInMillis * 1.0);
-        double latency = totalLatency / (totalActionsCount * 1.0);
-        return new BenchmarkResult(throughput, latency);
+        return new IterationResult(threads, actions.stream().mapToLong(it -> it).sum(), new ArrayList<>(latencies));
     }
 
-    private BenchmarkResult avgBenchmarkResult(List<BenchmarkResult> iterationsResult) {
-        return new BenchmarkResult(
-            iterationsResult.stream().mapToDouble(BenchmarkResult::throughput).sum() / iterationsResult.size(),
-            iterationsResult.stream().mapToDouble(BenchmarkResult::latency).sum() / iterationsResult.size()
-        );
+    private long percentile(List<Long> latencies, double percentile) {
+        int index = (int) Math.ceil(percentile / 100.0 * latencies.size());
+        return latencies.get(index-1);
     }
 
     public BenchmarkResult benchmark(
@@ -70,7 +67,8 @@ public class Benchmark {
         Runnable action,
         long durationInMillis,
         int iterations,
-        int warmupIterations
+        int warmupIterations,
+        double latencyPercentile
     ) {
         System.out.println("Run warmup");
         for (int i = 0; i < warmupIterations; i++) {
@@ -78,14 +76,20 @@ public class Benchmark {
         }
         System.out.println("Warmup ended");
 
-        List<BenchmarkResult> iterationsResults = new ArrayList<>();
+        List<IterationResult> iterationsResults = new ArrayList<>();
         System.out.println("Run trial");
         for (int i = 0; i < iterations; i++) {
             iterationsResults.add(runIteration(threads, action, durationInMillis));
         }
         System.out.println("Benchmark completed");
+        System.out.println("Aggregating results");
+        List<Long> allSortedLatencies =
+            iterationsResults.stream().flatMap(it -> it.latencies.stream()).sorted().collect(Collectors.toList());
+        long latencyPercentileElement = percentile(allSortedLatencies, latencyPercentile);
+        long totalActionsCount = iterationsResults.stream().mapToLong(it -> it.actionsCount).sum();
+        long totalLatencySum = allSortedLatencies.stream().mapToLong(it -> it).sum();
 
-        return avgBenchmarkResult(iterationsResults);
+        return new BenchmarkResult(totalActionsCount / (totalLatencySum * 1.0), latencyPercentileElement);
     }
 
 }
