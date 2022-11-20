@@ -8,7 +8,19 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.CyclicBarrier;
 import java.util.stream.Collectors;
 
-public class Benchmark {
+public class BenchmarkRunner {
+
+    int durationInMillis;
+    int warmupIterations;
+    int iterations;
+    double latencyPercentile;
+
+    public BenchmarkRunner(int durationInMillis, int warmupIterations, int iterations, double latencyPercentile) {
+        this.durationInMillis = durationInMillis;
+        this.warmupIterations = warmupIterations;
+        this.iterations = iterations;
+        this.latencyPercentile = latencyPercentile;
+    }
 
     private record IterationResult(int threads, long actionsCount, List<Long> latencies) {
     }
@@ -18,13 +30,12 @@ public class Benchmark {
         Queue<Long> latencies = new ConcurrentLinkedDeque<>();
         Queue<Long> actions = new ConcurrentLinkedDeque<>();
         List<Thread> threadList = new ArrayList<>();
-        System.out.println("Run iteration");
         for (int i = 0; i < threads; i++) {
             threadList.add(new Thread(() -> {
                 try {
                     ready.await();
                 } catch (BrokenBarrierException | InterruptedException e) {
-                    throw new BechmarkException("Failing to await threads", e);
+                    throw new BenchmarkException("Failing to await threads", e);
                 }
                 long countActions = 0;
                 long start = System.currentTimeMillis();
@@ -47,13 +58,12 @@ public class Benchmark {
             try {
                 thread.join();
             } catch (InterruptedException e) {
-                throw new BechmarkException("Can't join threads", e);
+                throw new BenchmarkException("Can't join threads", e);
             }
         }
         if (actions.size() != threads) {
-            throw new BechmarkException("opsCount size != threads");
+            throw new BenchmarkException("opsCount size != threads");
         }
-        System.out.println("Iteration ended");
         return new IterationResult(threads, actions.stream().mapToLong(it -> it).sum(), new ArrayList<>(latencies));
     }
 
@@ -64,22 +74,22 @@ public class Benchmark {
 
     public BenchmarkResult benchmark(
         int threads,
-        Runnable action,
-        long durationInMillis,
-        int iterations,
-        int warmupIterations,
-        double latencyPercentile
+        Runnable action
     ) {
         System.out.println("Run warmup");
         for (int i = 0; i < warmupIterations; i++) {
+            System.out.println("Run warmup iteration " + i);
             runIteration(threads, action, durationInMillis);
+            System.out.println("End warmup iteration " + i);
         }
         System.out.println("Warmup ended");
 
         List<IterationResult> iterationsResults = new ArrayList<>();
-        System.out.println("Run trial");
+        System.out.println("Run real iterations");
         for (int i = 0; i < iterations; i++) {
+            System.out.println("Run real iteration " + i);
             iterationsResults.add(runIteration(threads, action, durationInMillis));
+            System.out.println("End real iteration " + i);
         }
         System.out.println("Benchmark completed");
         System.out.println("Aggregating results");

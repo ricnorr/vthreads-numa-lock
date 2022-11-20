@@ -1,0 +1,86 @@
+{
+  "threads": [
+    10
+  ],
+  "locks": [
+    "REENTRANT"
+  ],
+  "warmupIterations" : 1,
+  "iterations" : 2,
+  "durationInMillis": 5000,
+  "latencyPercentile" : 99,
+  "benches": [
+    {
+      "name": "matrix",
+      "before": 0,
+      "in": 0,
+      "after": 0
+    },
+    {
+      "name": "matrix",
+      "before": 0,
+      "in": 0,
+      "after": 100
+    },
+    {
+      "name": "matrix",
+      "before": 0,
+      "in": 0,
+      "after": 100
+    },
+    {
+      "name": "matrix",
+      "before": 0,
+      "in": 0,
+      "after": 200
+    },
+    {
+      "name": "matrix",
+      "before": 0,
+      "in": 0,
+      "after": 300
+    },
+    {
+      "name": "matrix",
+      "before": 0,
+      "in": 100,
+      "after": 0
+    },
+    {
+      "name": "matrix",
+      "before": 0,
+      "in": 200,
+      "after": 0
+    },
+    {
+      "name": "matrix",
+      "before": 0,
+      "in": 300,
+      "after": 0
+    },
+    {
+      "name": "matrix",
+      "before": 0,
+      "in": 300,
+      "after": 100
+    },
+    {
+      "name": "matrix",
+      "before": 0,
+      "in": 300,
+      "after": 200
+    },
+    {
+      "name": "matrix",
+      "before": 0,
+      "in": 300,
+      "after": 300
+    },
+    {
+      "name": "matrix",
+      "before": 100,
+      "in": 0,
+      "after": 0
+    }
+  ]
+}
