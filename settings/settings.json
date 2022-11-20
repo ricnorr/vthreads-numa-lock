@@ -1,86 +1,58 @@
 {
   "threads": [
-    10
+    1,2,4,8,16,32
   ],
   "locks": [
-    "REENTRANT"
+    "REENTRANT",
+    "MCS",
+    "MCS_YIELD",
+    "TEST_SET",
+    "TEST_SET_YIELD",
+    "TEST_TEST_SET",
+    "TEST_TEST_SET_YIELD",
+    "TICKET",
+    "TICKET_YIELD"
   ],
-  "warmupIterations" : 1,
-  "iterations" : 2,
-  "durationInMillis": 5000,
+  "warmupIterations" : 3,
+  "iterations" : 5,
+  "durationInMillis": 10000,
   "latencyPercentile" : 99,
   "benches": [
     {
       "name": "matrix",
-      "before": 0,
-      "in": 0,
-      "after": 0
-    },
-    {
-      "name": "matrix",
-      "before": 0,
-      "in": 0,
-      "after": 100
-    },
-    {
-      "name": "matrix",
-      "before": 0,
-      "in": 0,
-      "after": 100
-    },
-    {
-      "name": "matrix",
-      "before": 0,
-      "in": 0,
-      "after": 200
-    },
-    {
-      "name": "matrix",
-      "before": 0,
-      "in": 0,
-      "after": 300
-    },
-    {
-      "name": "matrix",
-      "before": 0,
+      "before": 100,
       "in": 100,
-      "after": 0
-    },
-    {
-      "name": "matrix",
-      "before": 0,
-      "in": 200,
-      "after": 0
-    },
-    {
-      "name": "matrix",
-      "before": 0,
-      "in": 300,
-      "after": 0
-    },
-    {
-      "name": "matrix",
-      "before": 0,
-      "in": 300,
       "after": 100
-    },
-    {
-      "name": "matrix",
-      "before": 0,
-      "in": 300,
-      "after": 200
-    },
-    {
-      "name": "matrix",
-      "before": 0,
-      "in": 300,
-      "after": 300
     },
     {
       "name": "matrix",
       "before": 100,
-      "in": 0,
-      "after": 0
+      "in": 100,
+      "after": 500
+    },
+    {
+      "name": "matrix",
+      "before": 500,
+      "in": 100,
+      "after": 100
+    },
+    {
+      "name": "matrix",
+      "before": 500,
+      "in": 100,
+      "after": 500
+    },
+    {
+      "name": "matrix",
+      "before": 500,
+      "in": 500,
+      "after": 100
+    },
+    {
+      "name": "matrix",
+      "before": 500,
+      "in": 300,
+      "after": 500
     }
   ]
 }

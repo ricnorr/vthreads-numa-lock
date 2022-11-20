@@ -210,7 +210,7 @@ public class Main {
                 throw new BenchmarkException("Cannot init runnable for parameter");
             }
             System.out
-                .printf("Run bench, name=%s, threads=%d%n", param.getBenchmarkName(), param.threads);
+                .printf("Run bench,name=%s,threads=%d,lock=%s", param.getBenchmarkName(), param.threads, param.lockType.name());
             BenchmarkResult result = benchmarkRunner.benchmark(param.threads, benchRunnable);
             System.out.println("Bench ended");
             resultCsv.add(new BenchmarkResultsCsv(
