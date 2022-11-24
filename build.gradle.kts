@@ -32,6 +32,7 @@ dependencies {
     implementation("com.googlecode.json-simple:json-simple:1.1.1")
     implementation("commons-io:commons-io:2.11.0")
     implementation("org.apache.commons:commons-csv:1.9.0")
+    implementation("org.ejml:ejml-all:0.41")
 }
 
 tasks.withType<KotlinCompile> {

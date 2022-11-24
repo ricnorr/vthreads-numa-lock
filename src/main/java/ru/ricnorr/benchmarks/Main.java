@@ -13,6 +13,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.FileUtils;
+import org.ejml.simple.SimpleMatrix;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -61,60 +62,27 @@ public class Main {
         }
     }
 
+    private static SimpleMatrix initMatrix(Random rand, int size) {
+        return SimpleMatrix.random_DDRM(size, size, 0, Float.MAX_VALUE, rand);
+    }
+
     private static Runnable createMatrixRunnable(Lock lock, MatrixBenchmarkParameters matrixParam) {
         Random random = new Random();
-        int[][] beforeMatrixA = new int[matrixParam.beforeSize][matrixParam.beforeSize];
-        int[][] beforeMatrixB = new int[matrixParam.beforeSize][matrixParam.beforeSize];
-        for (int i = 0; i < matrixParam.beforeSize; i++) {
-            for (int j = 0; j < matrixParam.beforeSize; j++) {
-                beforeMatrixA[i][j] = random.nextInt();
-                beforeMatrixB[i][j] = random.nextInt();
-            }
-        }
+        SimpleMatrix beforeMatrixA = initMatrix(random, matrixParam.beforeSize);
+        SimpleMatrix beforeMatrixB = initMatrix(random, matrixParam.beforeSize);
 
-        int[][] inMatrixA = new int[matrixParam.inSize][matrixParam.inSize];
-        int[][] inMatrixB = new int[matrixParam.inSize][matrixParam.inSize];
+        SimpleMatrix inMatrixA = initMatrix(random, matrixParam.inSize);
+        SimpleMatrix inMatrixB = initMatrix(random, matrixParam.inSize);
 
-        for (int i = 0; i < matrixParam.inSize; i++) {
-            for (int j = 0; j < matrixParam.inSize; j++) {
-                inMatrixA[i][j] = random.nextInt();
-                inMatrixB[i][j] = random.nextInt();
-            }
-        }
+        SimpleMatrix afterMatrixA = initMatrix(random, matrixParam.afterSize);
+        SimpleMatrix afterMatrixB = initMatrix(random, matrixParam.afterSize);
 
-        int[][] afterMatrixA = new int[matrixParam.afterSize][matrixParam.afterSize];
-        int[][] afterMatrixB = new int[matrixParam.afterSize][matrixParam.afterSize];
-
-        for (int i = 0; i < matrixParam.afterSize; i++) {
-            for (int j = 0; j < matrixParam.afterSize; j++) {
-                afterMatrixA[i][j] = random.nextInt();
-                afterMatrixB[i][j] = random.nextInt();
-            }
-        }
-
-        return new Runnable() {
-
-            public void multMatrix(int[][] res, int[][] matrixA, int[][] matrixB) {
-                for (int i = 0; i < matrixA.length; i++) {
-                    for (int j = 0; j < matrixB[0].length; j++) {
-                        for (int k = 0; k < matrixA[0].length; k++) {
-                            res[i][j] = matrixA[i][k] * matrixB[k][j];
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void run() {
-                int[][] resBefore = new int[matrixParam.beforeSize][matrixParam.beforeSize];
-                int[][] resIn = new int[matrixParam.inSize][matrixParam.inSize];
-                int[][] resAfter = new int[matrixParam.afterSize][matrixParam.afterSize];
-                multMatrix(resBefore, beforeMatrixA, beforeMatrixB);
-                lock.lock();
-                multMatrix(resIn, inMatrixA, inMatrixB);
-                lock.unlock();
-                multMatrix(resAfter, afterMatrixA, afterMatrixB);
-            }
+        return () -> {
+            beforeMatrixA.mult(beforeMatrixB);
+            lock.lock();
+            inMatrixA.mult(inMatrixB);
+            lock.unlock();
+            afterMatrixA.mult(afterMatrixB);
         };
     }
 
