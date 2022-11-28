@@ -5,10 +5,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -129,6 +132,24 @@ public class Main {
         return paramList;
     }
 
+    private static List<Integer> autoThreadsInit() {
+        int cpuCount = Runtime.getRuntime().availableProcessors();
+        List<Integer> threads = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            int left = 1 << i;
+            int right = 1 << (i + 1);
+            int dist = (right - left) / 2;
+            threads.add(left);
+            if (dist != 0) {
+                threads.add(left + dist);
+            }
+        }
+        List<Integer> result = threads.stream().filter(it -> it < cpuCount).collect(Collectors.toList());
+        result.add(cpuCount);
+        result.add(cpuCount * 2);
+        return result;
+    }
+
     public static void main(String[] args) {
 
          // Read benchmark parameters
@@ -155,9 +176,14 @@ public class Main {
 
         JSONArray array = (JSONArray) obj.get("threads");
         List<Integer> threadsList = new ArrayList<>();
-        for (Object value : array) {
-            threadsList.add((int) ((long) value));
+        if (array != null) {
+            for (Object value : array) {
+                threadsList.add((int) ((long) value));
+            }
+        } else {
+            threadsList = autoThreadsInit();
         }
+
         array = (JSONArray) obj.get("locks");
         List<LockType> locksType = new ArrayList<>();
         for (Object value : array) {
