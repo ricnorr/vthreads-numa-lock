@@ -76,20 +76,12 @@ public class BenchmarkRunner {
         int threads,
         Runnable action
     ) {
-        System.out.println("Run warmup");
-        for (int i = 0; i < warmupIterations; i++) {
-            System.out.println("Run warmup iteration " + i);
-            runIteration(threads, action, durationInMillis);
-            System.out.println("End warmup iteration " + i);
-        }
-        System.out.println("Warmup ended");
-
         List<IterationResult> iterationsResults = new ArrayList<>();
-        System.out.println("Run real iterations");
+        System.out.println("Run iterations");
         for (int i = 0; i < iterations; i++) {
-            System.out.println("Run real iteration " + i);
+            System.out.println("Run iteration " + i);
             iterationsResults.add(runIteration(threads, action, durationInMillis));
-            System.out.println("End real iteration " + i);
+            System.out.println("End iteration " + i);
         }
         System.out.println("Benchmark completed");
         System.out.println("Aggregating results");

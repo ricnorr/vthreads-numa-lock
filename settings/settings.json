@@ -1,58 +1,35 @@
 {
-  "threads": [
-    1,2,4,8,16,32
-  ],
   "locks": [
     "REENTRANT",
     "MCS",
-    "MCS_YIELD",
     "TEST_SET",
-    "TEST_SET_YIELD",
     "TEST_TEST_SET",
-    "TEST_TEST_SET_YIELD",
-    "TICKET",
-    "TICKET_YIELD"
+    "TICKET"
   ],
-  "warmupIterations" : 3,
-  "iterations" : 5,
-  "durationInMillis": 10000,
-  "latencyPercentile" : 99,
+  "warmupIterations": 3,
+  "iterations": 1,
+  "durationInMillis": 2000,
+  "latencyPercentile": 99,
   "benches": [
     {
       "name": "matrix",
       "before": 100,
-      "in": 100,
-      "after": 100
+      "in": 10
     },
     {
       "name": "matrix",
       "before": 100,
-      "in": 100,
-      "after": 500
+      "in": 50
     },
     {
       "name": "matrix",
-      "before": 500,
-      "in": 100,
-      "after": 100
+      "before": 100,
+      "in": 100
     },
     {
       "name": "matrix",
-      "before": 500,
-      "in": 100,
-      "after": 500
-    },
-    {
-      "name": "matrix",
-      "before": 500,
-      "in": 500,
-      "after": 100
-    },
-    {
-      "name": "matrix",
-      "before": 500,
-      "in": 300,
-      "after": 500
+      "before": 100,
+      "in": 200
     }
   ]
 }

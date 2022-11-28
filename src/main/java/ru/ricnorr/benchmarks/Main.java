@@ -5,10 +5,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -71,21 +69,18 @@ public class Main {
 
     private static Runnable createMatrixRunnable(Lock lock, MatrixBenchmarkParameters matrixParam) {
         Random random = new Random();
+
         SimpleMatrix beforeMatrixA = initMatrix(random, matrixParam.beforeSize);
         SimpleMatrix beforeMatrixB = initMatrix(random, matrixParam.beforeSize);
 
         SimpleMatrix inMatrixA = initMatrix(random, matrixParam.inSize);
         SimpleMatrix inMatrixB = initMatrix(random, matrixParam.inSize);
 
-        SimpleMatrix afterMatrixA = initMatrix(random, matrixParam.afterSize);
-        SimpleMatrix afterMatrixB = initMatrix(random, matrixParam.afterSize);
-
         return () -> {
             beforeMatrixA.mult(beforeMatrixB);
             lock.lock();
             inMatrixA.mult(inMatrixB);
             lock.unlock();
-            afterMatrixA.mult(afterMatrixB);
         };
     }
 
@@ -121,8 +116,7 @@ public class Main {
                         case "matrix" -> {
                             int before = (int) ((long) obj.get("before"));
                             int in = (int) ((long) obj.get("in"));
-                            int after = (int) ((long) obj.get("after"));
-                            paramList.add(new MatrixBenchmarkParameters(thread, lockType, before, in, after));
+                            paramList.add(new MatrixBenchmarkParameters(thread, lockType, before, in));
                         }
                         default -> throw new BenchmarkException("Unsupported benchmark name");
                     }
@@ -150,9 +144,35 @@ public class Main {
         return result;
     }
 
+    private static BenchmarkResultsCsv runBenchmark(BenchmarkRunner runner, BenchmarkParameters param) {
+        Lock lock = initLock(param.lockType);
+        Runnable benchRunnable;
+        if (param instanceof MatrixBenchmarkParameters matrixParam) {
+            benchRunnable = createMatrixRunnable(lock, matrixParam);
+        } else {
+            throw new BenchmarkException("Cannot init runnable for parameter");
+        }
+        System.out
+            .printf(
+                "Run bench,name=%s,threads=%d,lock=%s%n",
+                param.getBenchmarkName(),
+                param.threads,
+                param.lockType.name()
+            );
+        BenchmarkResult result = runner.benchmark(param.threads, benchRunnable);
+        System.out.println("Bench ended");
+        return new BenchmarkResultsCsv(
+            param.getBenchmarkName(),
+            param.lockType.name(),
+            param.threads,
+            result.throughput(),
+            result.latency()
+        );
+    }
+
     public static void main(String[] args) {
 
-         // Read benchmark parameters
+        // Read benchmark parameters
         String s;
         try {
             s = FileUtils.readFileToString(new File("settings/settings.json"), StandardCharsets.UTF_8);
@@ -164,13 +184,13 @@ public class Main {
         int iterations = (int) ((long) obj.get("iterations"));
         int durationInMillis = (int) (long) obj.get("durationInMillis");
         long latencyPercentile = ((long) obj.get("latencyPercentile"));
-        System.out.println(String.format(
-            "Init benchmark params: warmupIterations=%d, iterations=%d,durationInMillis=%d,latencyPercentile=%d",
+        System.out.printf(
+            "Init benchmark params: warmupIterations=%d, iterations=%d,durationInMillis=%d,latencyPercentile=%d%n",
             warmupIterations,
             iterations,
             durationInMillis,
             latencyPercentile
-        ));
+        );
         BenchmarkRunner benchmarkRunner =
             new BenchmarkRunner(durationInMillis, warmupIterations, iterations, latencyPercentile);
 
@@ -195,25 +215,15 @@ public class Main {
 
         // Run benches and collect results
         List<BenchmarkResultsCsv> resultCsv = new ArrayList<>();
+
+        System.out.println("Run warmup");
+        for (int i = 0; i < warmupIterations; i++) {
+            runBenchmark(benchmarkRunner, benchmarkParametersList.get(0));
+        }
+        System.out.println("Warmup ended");
+
         for (BenchmarkParameters param : benchmarkParametersList) {
-            Lock lock = initLock(param.lockType);
-            Runnable benchRunnable;
-            if (param instanceof MatrixBenchmarkParameters matrixParam) {
-                benchRunnable = createMatrixRunnable(lock, matrixParam);
-            } else {
-                throw new BenchmarkException("Cannot init runnable for parameter");
-            }
-            System.out
-                .printf("Run bench,name=%s,threads=%d,lock=%s%n", param.getBenchmarkName(), param.threads, param.lockType.name());
-            BenchmarkResult result = benchmarkRunner.benchmark(param.threads, benchRunnable);
-            System.out.println("Bench ended");
-            resultCsv.add(new BenchmarkResultsCsv(
-                param.getBenchmarkName(),
-                param.lockType.name(),
-                param.threads,
-                result.throughput(),
-                result.latency()
-            ));
+            resultCsv.add(runBenchmark(benchmarkRunner, param));
         }
 
         // Print results to file
