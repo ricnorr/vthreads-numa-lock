@@ -1,0 +1,35 @@
+{
+  "locks": [
+    "REENTRANT",
+    "MCS",
+    "TEST_SET",
+    "TEST_TEST_SET",
+    "TICKET"
+  ],
+  "warmupIterations": 3,
+  "iterations": 1,
+  "durationInMillis": 2000,
+  "latencyPercentile": 99,
+  "benches": [
+    {
+      "name": "matrix",
+      "before": 100,
+      "in": 10
+    },
+    {
+      "name": "matrix",
+      "before": 100,
+      "in": 50
+    },
+    {
+      "name": "matrix",
+      "before": 100,
+      "in": 100
+    },
+    {
+      "name": "matrix",
+      "before": 100,
+      "in": 200
+    }
+  ]
+}
