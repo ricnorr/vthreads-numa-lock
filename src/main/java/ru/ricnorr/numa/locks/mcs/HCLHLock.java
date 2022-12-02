@@ -2,6 +2,7 @@ package ru.ricnorr.numa.locks.mcs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -11,14 +12,29 @@ import java.util.concurrent.locks.Lock;
 public class HCLHLock implements Lock {
 
     //private static ThreadLocal<Integer> threadID = new ThreadLocal<>();
-    static final int MAX_CLUSTERS = 3;
+    static final int MAX_CLUSTERS = 2;
     List<AtomicReference<QNodeHCLH>> localQueues;
     AtomicReference<QNodeHCLH> globalQueue;
-    ThreadLocal<QNodeHCLH> currNode = ThreadLocal.withInitial(QNodeHCLH::new);
+    ThreadLocal<QNodeHCLH> currNode = new ThreadLocal<QNodeHCLH>() {
+        protected QNodeHCLH initialValue() {
+            var node = new QNodeHCLH();
+            node.setSuccessorMustWait(true);
+            return node;
+        }
+    };
+
     ThreadLocal<QNodeHCLH> predNode = ThreadLocal.withInitial(() -> null);
 
+
+    static ThreadLocal<Integer> threadID = new ThreadLocal<>() {
+        protected Integer initialValue() {
+            return Math.abs(new Random().nextInt()) % 2;
+        }
+    };
+
+
     private static int getClusterId() {
-        return 0;//(int)Thread.currentThread().getId() % 3;
+        return threadID.get();
     }
 
     public HCLHLock() {
@@ -57,6 +73,8 @@ public class HCLHLock implements Lock {
         while (myPred.isSuccessorMustWait()) { // ждем на предыдущем из глобальной очереди
         }
         predNode.set(myPred);
+//        assert(cnt.get() == 0);
+//        assert(cnt.addAndGet(1) == 1);
     }
 
     @Override
@@ -66,6 +84,8 @@ public class HCLHLock implements Lock {
         QNodeHCLH node = predNode.get();
         node.unlock();
         currNode.set(node);
+//        assert(cnt.get()==1);
+//        assert(cnt.addAndGet(-1) == 0);
     }
 
     @Override
@@ -89,16 +109,23 @@ public class HCLHLock implements Lock {
     }
 
     class QNodeHCLH {
-        // private boolean tailWhenSpliced;
+        //private boolean tailWhenSpliced;
         private static final int TWS_MASK = 0x80000000;
+        //10000000000000000000000000000000
+
         // private boolean successorMustWait= false;
         private static final int SMW_MASK = 0x40000000;
+        //01000000000000000000000000000000
+
         // private int clusterID;
         private static final int CLUSTER_MASK = 0x3FFFFFFF;
+        //00111111111111111111111111111111
         AtomicInteger state;
 
         public QNodeHCLH() {
             state = new AtomicInteger(0);
+
+            setClusterID(getClusterId());
         }
 
         boolean waitForGrantOrClusterMaster() {
@@ -115,7 +142,7 @@ public class HCLHLock implements Lock {
 
         public void unlock() {
             int oldState = 0;
-            int newState = getClusterID();
+            int newState = getClusterId();
             // successorMustWait = true;
             newState |= SMW_MASK;
             // tailWhenSpliced = false;
