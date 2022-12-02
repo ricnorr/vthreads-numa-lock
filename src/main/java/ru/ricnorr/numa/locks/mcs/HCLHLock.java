@@ -1,8 +1,11 @@
 package ru.ricnorr.numa.locks.mcs;
 
+
+import com.sun.jna.ptr.IntByReference;
+import ru.ricnorr.numa.locks.mcs.util.CLibrary;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -11,7 +14,7 @@ import java.util.concurrent.locks.Lock;
 
 public class HCLHLock implements Lock {
 
-    static final int MAX_CLUSTERS = 3;
+    static final int MAX_CLUSTERS = 25;
     List<AtomicReference<QNodeHCLH>> localQueues;
     AtomicReference<QNodeHCLH> globalQueue;
     ThreadLocal<QNodeHCLH> currNode = new ThreadLocal<QNodeHCLH>() {
@@ -24,7 +27,12 @@ public class HCLHLock implements Lock {
 
     ThreadLocal<Integer> threadID = new ThreadLocal<>() {
         protected Integer initialValue() {
-            return Math.abs(new Random().nextInt()) % MAX_CLUSTERS;
+            final IntByReference numaNode = new IntByReference();
+            int res = CLibrary.INSTANCE.getcpu(null, numaNode, null);
+            if (res != 0) {
+                throw new IllegalStateException("Cannot make syscall getcpu");
+            }
+            return numaNode.getValue();
         }
     };
 

@@ -31,6 +31,7 @@ dependencies {
     implementation("commons-io:commons-io:2.11.0")
     implementation("org.apache.commons:commons-csv:1.9.0")
     implementation("org.ejml:ejml-all:0.41")
+    implementation("net.java.dev.jna:jna:5.12.1")
 }
 
 tasks.withType<KotlinCompile> {
