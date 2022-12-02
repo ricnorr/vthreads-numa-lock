@@ -11,29 +11,25 @@ import java.util.concurrent.locks.Lock;
 
 public class HCLHLock implements Lock {
 
-    //private static ThreadLocal<Integer> threadID = new ThreadLocal<>();
-    static final int MAX_CLUSTERS = 2;
+    static final int MAX_CLUSTERS = 3;
     List<AtomicReference<QNodeHCLH>> localQueues;
     AtomicReference<QNodeHCLH> globalQueue;
     ThreadLocal<QNodeHCLH> currNode = new ThreadLocal<QNodeHCLH>() {
         protected QNodeHCLH initialValue() {
-            var node = new QNodeHCLH();
-            node.setSuccessorMustWait(true);
-            return node;
+            return new QNodeHCLH();
         }
     };
 
     ThreadLocal<QNodeHCLH> predNode = ThreadLocal.withInitial(() -> null);
 
-
-    static ThreadLocal<Integer> threadID = new ThreadLocal<>() {
+    ThreadLocal<Integer> threadID = new ThreadLocal<>() {
         protected Integer initialValue() {
-            return Math.abs(new Random().nextInt()) % 2;
+            return Math.abs(new Random().nextInt()) % MAX_CLUSTERS;
         }
     };
 
 
-    private static int getClusterId() {
+    private int getClusterId() {
         return threadID.get();
     }
 
@@ -49,15 +45,16 @@ public class HCLHLock implements Lock {
     @Override
     public void lock() {
         QNodeHCLH myNode = currNode.get();
+        myNode.setSuccessorMustWait(true);
         AtomicReference<QNodeHCLH> localQueue = localQueues.get(getClusterId());
         // splice my QNode into local queue
         QNodeHCLH myPred = null;
         do {
-            myPred = localQueue.get(); // myPred - захватили локальный хвостик
+            myPred = localQueue.get();
         } while (!localQueue.compareAndSet(myPred, myNode));
-        if (myPred != null) { // мы первые в локальной очереди
-            boolean iOwnLock = myPred.waitForGrantOrClusterMaster(); // grant - это значит нам передали лок локально
-            if (iOwnLock) {                                          // cluster master - значит что мы первые в локальной очереди, но не факт что владеем локом
+        if (myPred != null) {
+            boolean iOwnLock = myPred.waitForGrantOrClusterMaster();
+            if (iOwnLock) {
                 predNode.set(myPred);
                 return;
             }
@@ -70,11 +67,9 @@ public class HCLHLock implements Lock {
         } while (!globalQueue.compareAndSet(myPred, localTail));
         // inform successor it is the new master
         localTail.setTailWhenSpliced(true);
-        while (myPred.isSuccessorMustWait()) { // ждем на предыдущем из глобальной очереди
+        while (myPred.isSuccessorMustWait()) {
         }
         predNode.set(myPred);
-//        assert(cnt.get() == 0);
-//        assert(cnt.addAndGet(1) == 1);
     }
 
     @Override
@@ -84,8 +79,6 @@ public class HCLHLock implements Lock {
         QNodeHCLH node = predNode.get();
         node.unlock();
         currNode.set(node);
-//        assert(cnt.get()==1);
-//        assert(cnt.addAndGet(-1) == 0);
     }
 
     @Override
@@ -124,17 +117,14 @@ public class HCLHLock implements Lock {
 
         public QNodeHCLH() {
             state = new AtomicInteger(0);
-
-            setClusterID(getClusterId());
         }
 
         boolean waitForGrantOrClusterMaster() {
-            int myCluster = HCLHLock.getClusterId();
+            int myCluster = getClusterId();
             while (true) {
                 if (getClusterID() == myCluster && !isTailWhenSpliced() && !isSuccessorMustWait()) {
                     return true;
-                } else if (getClusterID() != myCluster || isTailWhenSpliced()) { // если getClusterId() != myCluster это значит, что узел уже перенесли в глобальную очередь и переработали
-                    // если isTailWhenSpliced() == true, значит нашего предка уже перенесли
+                } else if (getClusterID() != myCluster || isTailWhenSpliced()) {
                     return false;
                 }
             }
@@ -154,14 +144,6 @@ public class HCLHLock implements Lock {
 
         public int getClusterID() {
             return state.get() & CLUSTER_MASK;
-        }
-
-        public void setClusterID(int clusterID) {
-            int oldState, newState;
-            do {
-                oldState = state.get();
-                newState = (oldState & ~CLUSTER_MASK) | clusterID;
-            } while (!state.compareAndSet(oldState, newState));
         }
 
         public boolean isSuccessorMustWait() {
@@ -191,7 +173,7 @@ public class HCLHLock implements Lock {
                 if (tailWhenSpliced) {
                     newState = oldState | TWS_MASK;
                 } else {
-                    newState = oldState & TWS_MASK;
+                    newState = oldState & ~TWS_MASK;
                 }
             } while (!state.compareAndSet(oldState, newState));
         }
