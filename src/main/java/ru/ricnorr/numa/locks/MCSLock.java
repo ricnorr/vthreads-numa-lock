@@ -1,4 +1,4 @@
-package ru.ricnorr.numa.locks.mcs;
+package ru.ricnorr.numa.locks;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -11,7 +11,7 @@ import java.util.concurrent.locks.Lock;
 /**
  * MCS lock with active spin
  */
-public class MCSYieldLock implements Lock {
+public class MCSLock implements Lock {
 
     public static class QNode {
         public AtomicReference<QNode> next = new AtomicReference<>(null);
@@ -28,7 +28,7 @@ public class MCSYieldLock implements Lock {
         if (pred != null) {
             pred.next.set(qnode);
             while (qnode.spin.get()) {
-                Thread.yield();
+                // WAIT
             }
         }
         head.set(qnode);

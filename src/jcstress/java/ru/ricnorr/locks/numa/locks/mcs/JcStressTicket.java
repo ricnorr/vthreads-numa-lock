@@ -2,7 +2,7 @@ package ru.ricnorr.locks.numa.locks.mcs;
 
 import org.openjdk.jcstress.annotations.Actor;
 import org.openjdk.jcstress.infra.results.III_Result;
-import ru.ricnorr.numa.locks.mcs.TicketLock;
+import ru.ricnorr.numa.locks.TicketLock;
 
 import java.util.concurrent.locks.Lock;
 

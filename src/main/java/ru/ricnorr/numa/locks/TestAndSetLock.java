@@ -1,4 +1,4 @@
-package ru.ricnorr.numa.locks.mcs;
+package ru.ricnorr.numa.locks;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-public class TestAndSetLock implements Lock {
+public class TestAndSetLock extends AbstractLock {
 
     private AtomicBoolean flag;
 
@@ -27,26 +27,5 @@ public class TestAndSetLock implements Lock {
     @Override
     public void unlock() {
         flag.set(false);
-    }
-
-    @Override
-    public void lockInterruptibly() {
-        throw new RuntimeException("Not implemented");
-    }
-
-    @Override
-    public boolean tryLock() {
-        throw new RuntimeException("Not implemented");
-    }
-
-    @Override
-    public boolean tryLock(long l, @NotNull TimeUnit timeUnit) {
-        throw new RuntimeException("Not implemented");
-    }
-
-    @NotNull
-    @Override
-    public Condition newCondition() {
-        throw new RuntimeException("Not implemented");
     }
 }

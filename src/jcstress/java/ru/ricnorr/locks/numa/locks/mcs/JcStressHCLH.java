@@ -7,7 +7,8 @@ import org.openjdk.jcstress.annotations.JCStressTest;
 import org.openjdk.jcstress.annotations.Outcome;
 import org.openjdk.jcstress.annotations.State;
 import org.openjdk.jcstress.infra.results.II_Result;
-import ru.ricnorr.numa.locks.mcs.HCLHLock;
+import ru.ricnorr.numa.locks.HCLHLock;
+
 
 import static org.openjdk.jcstress.annotations.Expect.ACCEPTABLE;
 

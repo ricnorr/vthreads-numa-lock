@@ -7,10 +7,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
+import net.openhft.affinity.AffinityThreadFactory;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.FileUtils;
@@ -18,7 +21,7 @@ import org.ejml.simple.SimpleMatrix;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import ru.ricnorr.numa.locks.mcs.*;
+import ru.ricnorr.numa.locks.*;
 
 public class Main {
     private static final List<String> RESULTS_HEADERS = List.of("name", "lock", "threads", "latency", "throughput");
@@ -40,20 +43,11 @@ public class Main {
             case TICKET -> {
                 return new TicketLock();
             }
-            case MCS_YIELD -> {
-                return new MCSYieldLock();
-            }
-            case TEST_SET_YIELD -> {
-                return new TestAndSetYieldLock();
-            }
-            case TEST_TEST_SET_YIELD -> {
-                return new TestTestAndSetYieldLock();
-            }
-            case TICKET_YIELD -> {
-                return new TicketYieldLock();
-            }
             case HCLH -> {
                 return new HCLHLock();
+            }
+            case CLH -> {
+                return new CLHLock();
             }
             default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
         }
@@ -170,6 +164,7 @@ public class Main {
 
         // Read benchmark parameters
         String s;
+
         try {
             s = FileUtils.readFileToString(new File("settings/settings.json"), StandardCharsets.UTF_8);
         } catch (IOException e) {
