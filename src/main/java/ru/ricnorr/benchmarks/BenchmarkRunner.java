@@ -1,12 +1,14 @@
 package ru.ricnorr.benchmarks;
 
+import net.openhft.affinity.AffinityThreadFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
+
+import static net.openhft.affinity.AffinityStrategies.*;
 
 public class BenchmarkRunner {
 
@@ -25,42 +27,62 @@ public class BenchmarkRunner {
     private record IterationResult(int threads, long actionsCount, List<Long> latencies) {
     }
 
+    static class MyCallable implements Callable<Object> {
+
+        List<Long> localLatencies = new ArrayList<>();
+        long countActions = 0;
+
+        Runnable runnable;
+
+        CyclicBarrier ready;
+        public MyCallable(CyclicBarrier ready, Runnable runnable) {
+            this.ready = ready;
+            this.runnable = runnable;
+        }
+
+        @Override
+        public Object call() {
+            try {
+                ready.await();
+            } catch (BrokenBarrierException | InterruptedException e) {
+                throw new BenchmarkException("Failing to await threads", e);
+            }
+            while (!Thread.interrupted()) {
+                long latencyStart = System.currentTimeMillis();
+                runnable.run();
+                long latencyStop = System.currentTimeMillis();
+                countActions++;
+                localLatencies.add(latencyStop - latencyStart);
+            }
+            return null;
+        }
+    }
+
     private IterationResult runIteration(int threads, Runnable action, long timeoutInMillis) {
         final CyclicBarrier ready = new CyclicBarrier(threads);
-        Queue<Long> latencies = new ConcurrentLinkedDeque<>();
-        Queue<Long> actions = new ConcurrentLinkedDeque<>();
-        List<Thread> threadList = new ArrayList<>();
+        List<Long> latencies = new ArrayList<>();
+        List<Long> actions = new ArrayList<>();
+
+        ExecutorService executorService = Executors.newFixedThreadPool(threads, new AffinityThreadFactory("bg", DIFFERENT_CORE));
+        List<Future<Object>> res;
+        List<MyCallable> tasks = new ArrayList<>();
         for (int i = 0; i < threads; i++) {
-            threadList.add(new Thread(() -> {
-                try {
-                    ready.await();
-                } catch (BrokenBarrierException | InterruptedException e) {
-                    throw new BenchmarkException("Failing to await threads", e);
-                }
-                long countActions = 0;
-                long start = System.currentTimeMillis();
-                List<Long> localLatencies = new ArrayList<>();
-                while (System.currentTimeMillis() - start < timeoutInMillis) {
-                    long latencyStart = System.currentTimeMillis();
-                    action.run();
-                    long latencyStop = System.currentTimeMillis();
-                    countActions++;
-                    localLatencies.add(latencyStop - latencyStart);
-                }
-                latencies.addAll(localLatencies);
-                actions.add(countActions);
-            }));
+            tasks.add(new MyCallable(ready, action));
         }
-        for (Thread thread : threadList) {
-            thread.start();
+        try {
+            res = executorService.invokeAll(tasks, timeoutInMillis, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        for (Thread thread : threadList) {
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                throw new BenchmarkException("Can't join threads", e);
+        for (Future<Object> fut : res) {
+            while (!fut.isDone()) {
             }
         }
+        for (MyCallable task : tasks) {
+            latencies.addAll(task.localLatencies);
+            actions.add(task.countActions);
+        }
+
         if (actions.size() != threads) {
             throw new BenchmarkException("opsCount size != threads");
         }
