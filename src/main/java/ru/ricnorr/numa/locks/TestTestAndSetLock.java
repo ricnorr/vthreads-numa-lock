@@ -1,4 +1,4 @@
-package ru.ricnorr.numa.locks.mcs;
+package ru.ricnorr.numa.locks;
 
 import org.jetbrains.annotations.NotNull;
 
