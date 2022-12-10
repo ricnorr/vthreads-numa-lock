@@ -6,15 +6,32 @@ plugins {
     id("io.github.reyerizo.gradle.jcstress") version "0.8.13"
 }
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.18.5")
+    }
+}
+
+apply(plugin = "kotlinx-atomicfu")
+
 application {
     mainClass.set("ru.ricnorr.benchmarks.Main")
 }
 
 java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
+
+
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs = listOf("--add-opens", "java.base/jdk.internal.misc=ALL-UNNAMED", "--add-exports", "java.base/jdk.internal.util=ALL-UNNAMED")
+}
+
 
 
 group = "me.ricnorr"
@@ -32,8 +49,11 @@ dependencies {
     implementation("org.apache.commons:commons-csv:1.9.0")
     implementation("org.ejml:ejml-all:0.41")
     implementation("net.java.dev.jna:jna:5.12.1")
+    testImplementation("org.jetbrains.kotlinx:lincheck:2.16")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "17"
+tasks.test {
+    maxHeapSize = "2g"
+    jvmArgs("--add-opens", "java.base/jdk.internal.misc=ALL-UNNAMED", "--add-exports","java.base/jdk.internal.loader=ALL-UNNAMED", "--add-exports", "java.base/jdk.internal.util=ALL-UNNAMED")
 }

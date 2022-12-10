@@ -1,4 +1,4 @@
-package ru.ricnorr.numa.locks.mcs.util;
+package ru.ricnorr.numa.locks;
 
 import com.sun.jna.LastErrorException;
 import com.sun.jna.Library;
