@@ -18,14 +18,7 @@ import org.ejml.simple.SimpleMatrix;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import ru.ricnorr.numa.locks.mcs.MCSLock;
-import ru.ricnorr.numa.locks.mcs.MCSYieldLock;
-import ru.ricnorr.numa.locks.mcs.TestAndSetLock;
-import ru.ricnorr.numa.locks.mcs.TestAndSetYieldLock;
-import ru.ricnorr.numa.locks.mcs.TestTestAndSetLock;
-import ru.ricnorr.numa.locks.mcs.TestTestAndSetYieldLock;
-import ru.ricnorr.numa.locks.mcs.TicketLock;
-import ru.ricnorr.numa.locks.mcs.TicketYieldLock;
+import ru.ricnorr.numa.locks.mcs.*;
 
 public class Main {
     private static final List<String> RESULTS_HEADERS = List.of("name", "lock", "threads", "latency", "throughput");
@@ -58,6 +51,9 @@ public class Main {
             }
             case TICKET_YIELD -> {
                 return new TicketYieldLock();
+            }
+            case HCLH -> {
+                return new HCLHLock();
             }
             default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
         }

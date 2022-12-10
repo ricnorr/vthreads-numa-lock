@@ -18,4 +18,6 @@ public enum LockType {
     TICKET,
 
     TICKET_YIELD,
+
+    HCLH,
 }
