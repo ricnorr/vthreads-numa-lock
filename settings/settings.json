@@ -4,7 +4,9 @@
     "MCS",
     "TEST_SET",
     "TEST_TEST_SET",
-    "TICKET"
+    "TICKET",
+    "CLH",
+    "HCLH"
   ],
   "warmupIterations": 3,
   "iterations": 1,
