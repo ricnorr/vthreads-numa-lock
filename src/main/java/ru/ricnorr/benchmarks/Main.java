@@ -7,8 +7,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -23,7 +21,7 @@ import org.json.simple.JSONValue;
 import ru.ricnorr.numa.locks.*;
 
 public class Main {
-    private static final List<String> RESULTS_HEADERS = List.of("name", "lock", "threads", "latency", "throughput");
+    private static final List<String> RESULTS_HEADERS = List.of("name", "lock", "threads", "overhead(ms)", "throughput(ops_ms)");
 
     private static Lock initLock(LockType lockType) {
         switch (lockType) {
@@ -56,7 +54,7 @@ public class Main {
         return SimpleMatrix.random_DDRM(size, size, 0, Float.MAX_VALUE, rand);
     }
 
-    private static Runnable createMatrixRunnable(Lock lock, MatrixBenchmarkParameters matrixParam) {
+    private static Runnable createMatrixWithLockRunnable(Lock lock, MatrixBenchmarkParameters matrixParam) {
         Random random = new Random();
 
         SimpleMatrix beforeMatrixA = initMatrix(random, matrixParam.beforeSize);
@@ -73,13 +71,28 @@ public class Main {
         };
     }
 
+    private static Runnable createMatrixWithoutLockRunnable(MatrixBenchmarkParameters matrixParam) {
+        Random random = new Random();
+
+        SimpleMatrix beforeMatrixA = initMatrix(random, matrixParam.beforeSize);
+        SimpleMatrix beforeMatrixB = initMatrix(random, matrixParam.beforeSize);
+
+        SimpleMatrix inMatrixA = initMatrix(random, matrixParam.inSize);
+        SimpleMatrix inMatrixB = initMatrix(random, matrixParam.inSize);
+
+        return () -> {
+            beforeMatrixA.mult(beforeMatrixB);
+            inMatrixA.mult(inMatrixB);
+        };
+    }
+
     private static void writeResultsToCSVfile(String filename, List<BenchmarkResultsCsv> results) {
         try (FileWriter out = new FileWriter(filename)) {
             try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT)) {
                 printer.printRecord(RESULTS_HEADERS);
                 results.forEach(it -> {
                     try {
-                        printer.printRecord(it.name(), it.lock(), it.threads(), it.latency(), it.throughput());
+                        printer.printRecord(it.name(), it.lock(), it.threads(), it.overheadNanos(), it.throughputNanos());
                     } catch (IOException e) {
                         throw new BenchmarkException("Cannot write record to file with benchmarks results", e);
                     }
@@ -93,7 +106,8 @@ public class Main {
     private static List<BenchmarkParameters> fillBenchmarkParameters(
         List<Integer> threads,
         List<LockType> lockTypes,
-        JSONArray array
+        JSONArray array,
+        int actionsCount
     ) {
         List<BenchmarkParameters> paramList = new ArrayList<>();
         for (Object o : array) {
@@ -105,7 +119,7 @@ public class Main {
                         case "matrix" -> {
                             int before = (int) ((long) obj.get("before"));
                             int in = (int) ((long) obj.get("in"));
-                            paramList.add(new MatrixBenchmarkParameters(thread, lockType, before, in));
+                            paramList.add(new MatrixBenchmarkParameters(thread, lockType, before, in, actionsCount));
                         }
                         default -> throw new BenchmarkException("Unsupported benchmark name");
                     }
@@ -135,9 +149,11 @@ public class Main {
 
     private static BenchmarkResultsCsv runBenchmark(BenchmarkRunner runner, BenchmarkParameters param) {
         Lock lock = initLock(param.lockType);
-        Runnable benchRunnable;
+        Runnable withLockRunnable;
+        Runnable withoutLockRunnable;
         if (param instanceof MatrixBenchmarkParameters matrixParam) {
-            benchRunnable = createMatrixRunnable(lock, matrixParam);
+            withLockRunnable = createMatrixWithLockRunnable(lock, matrixParam);
+            withoutLockRunnable = createMatrixWithoutLockRunnable(matrixParam);
         } else {
             throw new BenchmarkException("Cannot init runnable for parameter");
         }
@@ -148,14 +164,14 @@ public class Main {
                 param.threads,
                 param.lockType.name()
             );
-        BenchmarkResult result = runner.benchmark(param.threads, benchRunnable);
+        BenchmarkResult result = runner.benchmark(param.threads, param.actionsCount, withLockRunnable, withoutLockRunnable);
         System.out.println("Bench ended");
         return new BenchmarkResultsCsv(
             param.getBenchmarkName(),
             param.lockType.name(),
             param.threads,
-            result.throughput(),
-            result.latency()
+            result.overhead(),
+            result.throughput()
         );
     }
 
@@ -172,17 +188,14 @@ public class Main {
         JSONObject obj = (JSONObject) JSONValue.parse(s);
         int warmupIterations = (int) ((long) obj.get("warmupIterations"));
         int iterations = (int) ((long) obj.get("iterations"));
-        int durationInMillis = (int) (long) obj.get("durationInMillis");
-        long latencyPercentile = ((long) obj.get("latencyPercentile"));
+        int actionsCount = (int) ((long) obj.get("actionsCount"));
         System.out.printf(
-            "Init benchmark params: warmupIterations=%d, iterations=%d,durationInMillis=%d,latencyPercentile=%d%n",
+            "Init benchmark params: warmupIterations=%d, iterations=%d%n",
             warmupIterations,
-            iterations,
-            durationInMillis,
-            latencyPercentile
+            iterations
         );
         BenchmarkRunner benchmarkRunner =
-            new BenchmarkRunner(durationInMillis, warmupIterations, iterations, latencyPercentile);
+            new BenchmarkRunner(iterations);
 
         JSONArray array = (JSONArray) obj.get("threads");
         List<Integer> threadsList = new ArrayList<>();
@@ -201,7 +214,7 @@ public class Main {
             locksType.add(LockType.valueOf(lockType));
         }
         array = (JSONArray) obj.get("benches");
-        List<BenchmarkParameters> benchmarkParametersList = fillBenchmarkParameters(threadsList, locksType, array);
+        List<BenchmarkParameters> benchmarkParametersList = fillBenchmarkParameters(threadsList, locksType, array, actionsCount);
 
         // Run benches and collect results
         List<BenchmarkResultsCsv> resultCsv = new ArrayList<>();

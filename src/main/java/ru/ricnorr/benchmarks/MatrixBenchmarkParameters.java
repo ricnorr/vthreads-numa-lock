@@ -4,8 +4,8 @@ class MatrixBenchmarkParameters extends BenchmarkParameters {
     int beforeSize;
     int inSize;
 
-    public MatrixBenchmarkParameters(int threads, LockType lockType, int beforeSize, int inSize) {
-        super(threads, lockType);
+    public MatrixBenchmarkParameters(int threads, LockType lockType, int beforeSize, int inSize, int actionsCount) {
+        super(threads, lockType, actionsCount);
         this.beforeSize = beforeSize;
         this.inSize = inSize;
     }
