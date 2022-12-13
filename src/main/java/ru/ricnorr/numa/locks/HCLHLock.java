@@ -1,5 +1,6 @@
 package ru.ricnorr.numa.locks;
 
+import com.sun.jna.Platform;
 import com.sun.jna.ptr.IntByReference;
 
 import java.util.ArrayList;
@@ -16,10 +17,16 @@ public class HCLHLock extends AbstractLock {
 
     ThreadLocal<HCLHLockCore.QNodeHCLH> currNode = ThreadLocal.withInitial(HCLHLockCore.QNodeHCLH::new);
 
-    ThreadLocal<Integer> threadID = ThreadLocal.withInitial(() -> {
+    ThreadLocal<Integer> clusterID = ThreadLocal.withInitial(() -> {
+        int res;
         final IntByReference numaNode = new IntByReference();
-        int res = CLibrary.INSTANCE.getcpu(null, numaNode, null);
-        if (res != 0) {
+
+        if (Platform.isARM()) {
+            res = CLibrary.INSTANCE.syscall(168, null, numaNode, null);
+        } else {
+            res = CLibrary.INSTANCE.syscall(309, null, numaNode,null);
+        }
+        if (res < 0) {
             throw new IllegalStateException("Cannot make syscall getcpu");
         }
         return numaNode.getValue();
@@ -27,7 +34,7 @@ public class HCLHLock extends AbstractLock {
 
     @Override
     public void lock() {
-        var myPred = lockCore.lock(currNode.get(), threadID.get());
+        var myPred = lockCore.lock(currNode.get(), clusterID.get());
         prevNode.set(myPred);
     }
 
