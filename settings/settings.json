@@ -8,10 +8,9 @@
     "CLH",
     "HCLH"
   ],
-  "warmupIterations": 3,
+  "actionsCount" : 10000,
+  "warmupIterations": 0,
   "iterations": 1,
-  "durationInMillis": 2000,
-  "latencyPercentile": 99,
   "benches": [
     {
       "name": "matrix",
