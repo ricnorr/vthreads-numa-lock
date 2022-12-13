@@ -1,4 +1,4 @@
 package ru.ricnorr.benchmarks;
 
-record BenchmarkResult(double throughput, double latency) {
+record BenchmarkResult(double overhead, double throughput) {
 }

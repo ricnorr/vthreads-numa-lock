@@ -18,6 +18,7 @@ buildscript {
 
 apply(plugin = "kotlinx-atomicfu")
 
+
 application {
     mainClass.set("ru.ricnorr.benchmarks.Main")
 }
@@ -31,8 +32,6 @@ java {
 tasks.withType<JavaCompile>().configureEach {
     options.compilerArgs = listOf("--add-opens", "java.base/jdk.internal.misc=ALL-UNNAMED", "--add-exports", "java.base/jdk.internal.util=ALL-UNNAMED")
 }
-
-
 
 group = "me.ricnorr"
 version = "1.0-SNAPSHOT"
@@ -51,7 +50,6 @@ dependencies {
     implementation("net.java.dev.jna:jna:5.12.1")
     testImplementation("org.jetbrains.kotlinx:lincheck:2.16")
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
-    implementation("net.openhft:affinity:3.23.2")
 }
 
 tasks.test {

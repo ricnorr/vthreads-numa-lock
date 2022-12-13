@@ -1,119 +1,74 @@
 package ru.ricnorr.benchmarks;
 
-import net.openhft.affinity.AffinityThreadFactory;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
-
-import static net.openhft.affinity.AffinityStrategies.*;
 
 public class BenchmarkRunner {
-
-    int durationInMillis;
-    int warmupIterations;
     int iterations;
-    double latencyPercentile;
 
-    public BenchmarkRunner(int durationInMillis, int warmupIterations, int iterations, double latencyPercentile) {
-        this.durationInMillis = durationInMillis;
-        this.warmupIterations = warmupIterations;
+    public BenchmarkRunner(int iterations) {
         this.iterations = iterations;
-        this.latencyPercentile = latencyPercentile;
     }
 
-    private record IterationResult(int threads, long actionsCount, List<Long> latencies) {
+    private record IterationResult(int threads, double overhead, double throughput) {
     }
 
-    static class MyCallable implements Callable<Object> {
-
-        List<Long> localLatencies = new ArrayList<>();
-        long countActions = 0;
-
-        Runnable runnable;
-
-        CyclicBarrier ready;
-        public MyCallable(CyclicBarrier ready, Runnable runnable) {
-            this.ready = ready;
-            this.runnable = runnable;
-        }
-
-        @Override
-        public Object call() {
-            try {
-                ready.await();
-            } catch (BrokenBarrierException | InterruptedException e) {
-                throw new BenchmarkException("Failing to await threads", e);
-            }
-            while (!Thread.interrupted()) {
-                long latencyStart = System.currentTimeMillis();
-                runnable.run();
-                long latencyStop = System.currentTimeMillis();
-                countActions++;
-                localLatencies.add(latencyStop - latencyStart);
-            }
-            return null;
-        }
-    }
-
-    private IterationResult runIteration(int threads, Runnable action, long timeoutInMillis) {
+    private long measureOverhead(int threads, int actionsCount, Runnable runnable) {
         final CyclicBarrier ready = new CyclicBarrier(threads);
-        List<Long> latencies = new ArrayList<>();
-        List<Long> actions = new ArrayList<>();
+        List<Thread> threadList = new ArrayList<>();
 
-        ExecutorService executorService = Executors.newFixedThreadPool(threads, new AffinityThreadFactory("bg", DIFFERENT_CORE));
-        List<Future<Object>> res;
-        List<MyCallable> tasks = new ArrayList<>();
+        final int actionsForEachThread = actionsCount / threads;
         for (int i = 0; i < threads; i++) {
-            tasks.add(new MyCallable(ready, action));
+            threadList.add(new Thread(() -> {
+                try {
+                    ready.await();
+                } catch (InterruptedException | BrokenBarrierException e) {
+                    throw new BenchmarkException("Fail waiting barrier", e);
+                }
+                for (int i1 = 0; i1 < actionsForEachThread; i1++) {
+                    runnable.run();
+                }
+            }));
         }
-        try {
-            res = executorService.invokeAll(tasks, timeoutInMillis, TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+
+        long beginNanos = System.nanoTime();
+        for (int i = 0; i < threads; i++) {
+            threadList.get(i).start();
         }
-        for (Future<Object> fut : res) {
-            while (!fut.isDone()) {
+        for (int i = 0; i < threads; i++) {
+            try {
+                threadList.get(i).join();
+            } catch (InterruptedException e) {
+                throw new BenchmarkException("Fail to join thread", e);
             }
         }
-        for (MyCallable task : tasks) {
-            latencies.addAll(task.localLatencies);
-            actions.add(task.countActions);
-        }
-
-        if (actions.size() != threads) {
-            throw new BenchmarkException("opsCount size != threads");
-        }
-        return new IterationResult(threads, actions.stream().mapToLong(it -> it).sum(), new ArrayList<>(latencies));
-    }
-
-    private long percentile(List<Long> latencies, double percentile) {
-        int index = (int) Math.ceil(percentile / 100.0 * latencies.size());
-        return latencies.get(index-1);
+        long endNanos = System.nanoTime();
+        return endNanos - beginNanos;
     }
 
     public BenchmarkResult benchmark(
         int threads,
-        Runnable action
+        int actionsCount,
+        Runnable actionWithLock,
+        Runnable actionWithoutLock
     ) {
         List<IterationResult> iterationsResults = new ArrayList<>();
         System.out.println("Run iterations");
         for (int i = 0; i < iterations; i++) {
             System.out.println("Run iteration " + i);
-            iterationsResults.add(runIteration(threads, action, durationInMillis));
+            long withLockNanos = measureOverhead(threads, actionsCount, actionWithLock);
+            long withoutLockNanos = measureOverhead(threads, actionsCount, actionWithoutLock);
+            double overheadMillis = (withLockNanos - withoutLockNanos) / 1000.0;
+            double throughput = actionsCount / (withLockNanos / 1000.0);
+
+            iterationsResults.add(new IterationResult(threads, overheadMillis, throughput));
             System.out.println("End iteration " + i);
         }
         System.out.println("Benchmark completed");
-        System.out.println("Aggregating results");
-        List<Long> allSortedLatencies =
-            iterationsResults.stream().flatMap(it -> it.latencies.stream()).sorted().collect(Collectors.toList());
-        long latencyPercentileElement = percentile(allSortedLatencies, latencyPercentile);
-        long totalActionsCount = iterationsResults.stream().mapToLong(it -> it.actionsCount).sum();
-        long totalLatencySum = allSortedLatencies.stream().mapToLong(it -> it).sum();
 
-        return new BenchmarkResult(totalActionsCount / (totalLatencySum * 1.0), latencyPercentileElement);
+        return new BenchmarkResult(iterationsResults.stream().mapToDouble(it -> it.overhead).summaryStatistics().getAverage(),
+                iterationsResults.stream().mapToDouble(it -> it.throughput).summaryStatistics().getAverage());
     }
 
 }

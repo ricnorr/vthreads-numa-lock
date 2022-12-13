@@ -10,9 +10,16 @@ Repository for my bachelor's diploma, implementing and benchmarking NUMA aware l
   sudo unzip -d /opt/gradle /tmp/gradle-${VERSION}-bin.zip
   ```
 * ```gradle wrapper``` in project dir
+* install python libraries to draw a report
+  * pip3 install numpy
+  * pip3 install matplotlib
+  * pip3 install pandas
+  * pip3 install pillow
 # How to run benchmarks
-* ```gradle run```
+* ```run_bench.sh``` from the project's root
 * Results are saved in ***results/benchmark_results.csv***
+* Pictures saved in ***results/pictures***
+* Pdf saved in ***results/result.pdf***
 # How to run jcstress
 * ```gradle jcstress``` to run all tests
 * ```gradle jcstress --tests JcStressMCS|SomeAnotherStress``` to run specific tests
