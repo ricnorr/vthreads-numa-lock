@@ -10,11 +10,13 @@ Repository for my bachelor's diploma, implementing and benchmarking NUMA aware l
   sudo unzip -d /opt/gradle /tmp/gradle-${VERSION}-bin.zip
   ```
 * ```gradle wrapper``` in project dir
-* install python libraries to draw a report
-  * pip3 install numpy
-  * pip3 install matplotlib
-  * pip3 install pandas
-  * pip3 install pillow
+* install python libraries
+  * sudo apt-get install python3-pip python3-setuptools python3-dev python3-wheel
+  * pip3 install -vv wheel
+  * pip3 install -vv numpy
+  * pip3 install -vv pandas
+  * pip3 install -vv matplotlib
+  * pip3 install -vv pillow
 # How to run benchmarks
 * ```run_bench.sh``` from the project's root
 * Results are saved in ***results/benchmark_results.csv***
