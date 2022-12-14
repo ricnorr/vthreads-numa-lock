@@ -11,6 +11,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 
 public class HCLHLock extends AbstractLock {
+
+    private final static int GET_CPU_ARM_SYSCALL = 168;
+
+    private final static int GET_CPU_x86_SYSCALL = 309;
     private final HCLHLockCore lockCore = new HCLHLockCore();
 
     ThreadLocal<HCLHLockCore.QNodeHCLH> prevNode = new ThreadLocal<>();
@@ -22,9 +26,9 @@ public class HCLHLock extends AbstractLock {
         final IntByReference numaNode = new IntByReference();
 
         if (Platform.isARM()) {
-            res = CLibrary.INSTANCE.syscall(168, null, numaNode, null);
+            res = CLibrary.INSTANCE.syscall(GET_CPU_ARM_SYSCALL, null, numaNode, null);
         } else {
-            res = CLibrary.INSTANCE.syscall(309, null, numaNode,null);
+            res = CLibrary.INSTANCE.syscall(GET_CPU_x86_SYSCALL, null, numaNode,null);
         }
         if (res < 0) {
             throw new IllegalStateException("Cannot make syscall getcpu");

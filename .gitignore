@@ -24,7 +24,6 @@ hs_err_pid*
 *.png
 NUMA-aware-locks-venv/
 run_jupyter.sh
-scripts/
 .idea/
 .gradle/
 bin/
