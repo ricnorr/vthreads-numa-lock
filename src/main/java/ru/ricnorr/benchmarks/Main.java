@@ -46,6 +46,9 @@ public class Main {
             case CLH -> {
                 return new CLHLock();
             }
+            case CNA -> {
+                return new CNALock();
+            }
             default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
         }
     }

@@ -14,4 +14,6 @@ public enum LockType {
     HCLH,
 
     CLH,
+
+    CNA,
 }
