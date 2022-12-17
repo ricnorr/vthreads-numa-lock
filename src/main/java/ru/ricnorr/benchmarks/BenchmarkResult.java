@@ -1,4 +1,4 @@
 package ru.ricnorr.benchmarks;
 
-record BenchmarkResult(double overhead, double throughput) {
+record BenchmarkResult(double overheadNanos, double throughputNanos) {
 }

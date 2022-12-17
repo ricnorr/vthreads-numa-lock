@@ -1,16 +1,16 @@
 package ru.ricnorr.benchmarks;
 
-abstract class BenchmarkParameters {
-    int threads;
-    LockType lockType;
+public abstract class BenchmarkParameters {
+    public int threads;
+    public LockType lockType;
 
-    int actionsCount;
+    public int actionsPerThread;
 
-    public BenchmarkParameters(int threads, LockType lockType, int actionsCount) {
+    public BenchmarkParameters(int threads, LockType lockType, int actionsPerThread) {
         this.threads = threads;
         this.lockType = lockType;
-        this.actionsCount = actionsCount;
+        this.actionsPerThread = actionsPerThread;
     }
 
-    abstract String getBenchmarkName();
+    public abstract String getBenchmarkName();
 }
