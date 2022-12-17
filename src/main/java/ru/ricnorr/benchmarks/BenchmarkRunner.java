@@ -11,14 +11,13 @@ public class BenchmarkRunner {
         this.iterations = iterations;
     }
 
-    private record IterationResult(int threads, double overhead, double throughput) {
+    private record IterationResult(int threads, double overheadNanos, double throughputNanos) {
     }
 
-    private long measureOverhead(int threads, int actionsCount, Runnable runnable) {
+    private long measureDurationForActionNanos(int threads, int actionsPerThread, Runnable runnable) {
         final CyclicBarrier ready = new CyclicBarrier(threads);
         List<Thread> threadList = new ArrayList<>();
 
-        final int actionsForEachThread = actionsCount / threads;
         for (int i = 0; i < threads; i++) {
             threadList.add(new Thread(() -> {
                 try {
@@ -26,7 +25,7 @@ public class BenchmarkRunner {
                 } catch (InterruptedException | BrokenBarrierException e) {
                     throw new BenchmarkException("Fail waiting barrier", e);
                 }
-                for (int i1 = 0; i1 < actionsForEachThread; i1++) {
+                for (int i1 = 0; i1 < actionsPerThread; i1++) {
                     runnable.run();
                 }
             }));
@@ -49,7 +48,7 @@ public class BenchmarkRunner {
 
     public BenchmarkResult benchmark(
         int threads,
-        int actionsCount,
+        int actionsPerThread,
         Runnable actionWithLock,
         Runnable actionWithoutLock
     ) {
@@ -57,18 +56,18 @@ public class BenchmarkRunner {
         System.out.println("Run iterations");
         for (int i = 0; i < iterations; i++) {
             System.out.println("Run iteration " + i);
-            long withLockNanos = measureOverhead(threads, actionsCount, actionWithLock);
-            long withoutLockNanos = measureOverhead(threads, actionsCount, actionWithoutLock);
-            double overheadMillis = (withLockNanos - withoutLockNanos) / 1000.0;
-            double throughput = actionsCount / (withLockNanos / 1000.0);
+            long withLockNanos = measureDurationForActionNanos(threads, actionsPerThread, actionWithLock);
+            long withoutLockNanos = measureDurationForActionNanos(1, 1, actionWithoutLock);
+            double overheadNanos = withLockNanos - withoutLockNanos;
+            double throughputNanos = actionsPerThread / (withLockNanos * 1.0);
 
-            iterationsResults.add(new IterationResult(threads, overheadMillis, throughput));
+            iterationsResults.add(new IterationResult(threads, overheadNanos, throughputNanos));
             System.out.println("End iteration " + i);
         }
         System.out.println("Benchmark completed");
 
-        return new BenchmarkResult(iterationsResults.stream().mapToDouble(it -> it.overhead).summaryStatistics().getAverage(),
-                iterationsResults.stream().mapToDouble(it -> it.throughput).summaryStatistics().getAverage());
+        return new BenchmarkResult(iterationsResults.stream().mapToDouble(it -> it.overheadNanos).summaryStatistics().getAverage(),
+                iterationsResults.stream().mapToDouble(it -> it.throughputNanos).summaryStatistics().getAverage());
     }
 
 }

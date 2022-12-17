@@ -11,7 +11,7 @@ locks = sorted(set(df['lock']))
 
 paths = []
 for bench in bench_names:
-    for mode in ['overhead(ms)', 'throughput(ops_ms)']:
+    for mode in ['overhead(microsec)','throughput(ops_microsec)']:
         ax = plt.axes(title = bench + '\n mode=' + mode)
         threads = sorted(set(df['threads']))
         ax.set_xticks(threads)

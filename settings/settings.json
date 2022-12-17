@@ -6,7 +6,8 @@
     "TEST_TEST_SET",
     "TICKET",
     "CLH",
-    "HCLH"
+    "HCLH",
+    "CNA"
   ],
   "actionsCount" : 10000,
   "warmupIterations": 0,
