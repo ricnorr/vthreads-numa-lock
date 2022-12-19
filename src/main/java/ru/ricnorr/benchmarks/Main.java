@@ -7,15 +7,16 @@ import org.ejml.concurrency.EjmlConcurrency;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import oshi.SystemInfo;
+import oshi.hardware.CentralProcessor;
 import ru.ricnorr.benchmarks.matrix.MatrixBenchmarkParameters;
 import ru.ricnorr.benchmarks.matrix.MatrixBenchmarkUtils;
 import ru.ricnorr.numa.locks.*;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -52,6 +53,15 @@ public class Main {
             }
             default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
         }
+    }
+
+    static List<Integer> getProcessorsNumbersInNumaNodeOrder() {
+        SystemInfo si = new SystemInfo();
+        var logicalProcessors = si.getHardware().getProcessor().getLogicalProcessors();
+        return logicalProcessors.stream().sorted(
+                Comparator.comparing(CentralProcessor.LogicalProcessor::getNumaNode)
+                        .thenComparing(CentralProcessor.LogicalProcessor::getProcessorNumber)
+        ).map(CentralProcessor.LogicalProcessor::getProcessorNumber).collect(Collectors.toList());
     }
 
     private static void writeResultsToCSVfile(String filename, List<BenchmarkResultsCsv> results) {
@@ -149,6 +159,37 @@ public class Main {
         );
     }
 
+    private static void setAffinity(int threads, long pid, List<Integer> processorsOrderedByNumaOrder) {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        List<Integer> processorsToUse = processorsOrderedByNumaOrder.subList(0, Math.min(processorsOrderedByNumaOrder.size(), threads));
+        String cpuList = processorsToUse.stream().map(Object::toString).collect(Collectors.joining(","));
+        processBuilder.command("taskset", "-cp", cpuList, Long.toString(pid));
+        try {
+
+            Process process = processBuilder.start();
+
+            StringBuilder output = new StringBuilder();
+
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+            }
+
+            int exitVal = process.waitFor();
+            System.out.println();
+            System.out.println(output);
+
+            if (exitVal != 0) {
+                System.out.println(output);
+                throw new BenchmarkException("Set affinity - fail");
+            }
+        } catch (IOException | InterruptedException e) {
+            throw new BenchmarkException("Set affinity - fail", e);
+        }
+    }
     public static void main(String[] args) {
         // Don't use concurrency
         EjmlConcurrency.USE_CONCURRENT = false;
@@ -166,7 +207,7 @@ public class Main {
         int iterations = (int) ((long) obj.get("iterations"));
         int actionsCount = (int) ((long) obj.get("actionsCount"));
         System.out.printf(
-            "Init benchmark params: warmupIterations=%d, iterations=%d%n",
+            "benchmark params: warmupIterations=%d, iterations=%d%n",
             warmupIterations,
             iterations
         );
@@ -195,13 +236,20 @@ public class Main {
         // Run benches and collect results
         List<BenchmarkResultsCsv> resultCsv = new ArrayList<>();
 
-        System.out.println("Run warmup");
+        System.out.println("Warmup begin");
         for (int i = 0; i < warmupIterations; i++) {
             runBenchmark(benchmarkRunner, benchmarkParametersList.get(0));
         }
-        System.out.println("Warmup ended");
+        System.out.println("Warmup end");
 
+        List<Integer> processors = getProcessorsNumbersInNumaNodeOrder();
+        System.out.println(processors.stream().map(Object::toString).collect(
+                Collectors.joining(",", "Processors ordered by NUMA node\n", "\n"))
+        );
+
+        long pid = ProcessHandle.current().pid();
         for (BenchmarkParameters param : benchmarkParametersList) {
+            setAffinity(param.threads, pid, processors);
             resultCsv.add(runBenchmark(benchmarkRunner, param));
         }
 

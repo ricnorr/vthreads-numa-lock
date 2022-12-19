@@ -53,7 +53,6 @@ public class BenchmarkRunner {
         Runnable actionWithoutLock
     ) {
         List<IterationResult> iterationsResults = new ArrayList<>();
-        System.out.println("Run iterations");
         for (int i = 0; i < iterations; i++) {
             System.out.println("Run iteration " + i);
             long withLockNanos = measureDurationForActionNanos(threads, actionsPerThread, actionWithLock);
@@ -64,7 +63,6 @@ public class BenchmarkRunner {
             iterationsResults.add(new IterationResult(threads, overheadNanos, throughputNanos));
             System.out.println("End iteration " + i);
         }
-        System.out.println("Benchmark completed");
 
         return new BenchmarkResult(iterationsResults.stream().mapToDouble(it -> it.overheadNanos).summaryStatistics().getAverage(),
                 iterationsResults.stream().mapToDouble(it -> it.throughputNanos).summaryStatistics().getAverage());
