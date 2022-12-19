@@ -16,22 +16,17 @@
     {
       "name": "matrix",
       "before": 100,
-      "in": 10
-    },
-    {
-      "name": "matrix",
-      "before": 100,
       "in": 50
     },
     {
       "name": "matrix",
-      "before": 100,
+      "before": 50,
       "in": 100
     },
     {
       "name": "matrix",
       "before": 100,
-      "in": 200
+      "in": 100
     }
   ]
 }
