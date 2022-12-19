@@ -50,6 +50,7 @@ dependencies {
     implementation("net.java.dev.jna:jna:5.12.1")
     testImplementation("org.jetbrains.kotlinx:lincheck:2.16")
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
+    implementation("com.github.oshi:oshi-dist:6.4.0")
 }
 
 tasks.test {
