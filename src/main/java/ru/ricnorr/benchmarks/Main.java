@@ -70,7 +70,7 @@ public class Main {
                 printer.printRecord(RESULTS_HEADERS);
                 results.forEach(it -> {
                     try {
-                        printer.printRecord(it.name(), it.lock(), it.threads(), it.overheadNanos() / 1000, it.throughputNanos() / 1000);
+                        printer.printRecord(it.name(), it.lock(), it.threads(), it.overheadNanos() / 1000, it.throughputNanos() * 1000);
                     } catch (IOException e) {
                         throw new BenchmarkException("Cannot write record to file with benchmarks results", e);
                     }
