@@ -59,7 +59,7 @@ public class BenchmarkRunner {
             long withLockNanos = measureDurationForActionNanos(threads, actionsPerThread, actionWithLock);
             long withoutLockNanos = measureDurationForActionNanos(1, 1, actionWithoutLock);
             double overheadNanos = withLockNanos - withoutLockNanos;
-            double throughputNanos = actionsPerThread / (withLockNanos * 1.0);
+            double throughputNanos = (actionsPerThread * threads) / (withLockNanos * 1.0);
 
             iterationsResults.add(new IterationResult(threads, overheadNanos, throughputNanos));
             System.out.println("End iteration " + i);
