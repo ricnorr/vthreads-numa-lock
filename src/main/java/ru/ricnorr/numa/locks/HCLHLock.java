@@ -1,8 +1,5 @@
 package ru.ricnorr.numa.locks;
 
-import com.sun.jna.Platform;
-import com.sun.jna.ptr.IntByReference;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;

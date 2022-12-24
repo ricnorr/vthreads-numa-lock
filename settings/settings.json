@@ -12,6 +12,7 @@
   "actionsCount" : 10000,
   "warmupIterations": 0,
   "iterations": 1,
+  "type": "jmh",
   "benches": [
     {
       "name": "matrix",
