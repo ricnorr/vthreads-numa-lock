@@ -1,12 +1,12 @@
-package ru.ricnorr.benchmarks.matrix;
+package ru.ricnorr.benchmarks.custom.matrix;
 
 import org.ejml.simple.SimpleMatrix;
+import ru.ricnorr.benchmarks.MatrixBenchmarkParameters;
 
 import java.util.Random;
 import java.util.concurrent.locks.Lock;
 
-public class MatrixBenchmarkUtils {
-
+public class CustomMatrixUtil {
     public static Random rand = new Random();
 
     public static SimpleMatrix initMatrix(int size) {
@@ -55,8 +55,6 @@ public class MatrixBenchmarkUtils {
     }
 
     public static Runnable initMatrixWithLockRunnable(Lock lock, MatrixBenchmarkParameters matrixParam) {
-        Random random = new Random();
-
         SimpleMatrix beforeMatrixA = initMatrix(matrixParam.beforeSize);
         SimpleMatrix beforeMatrixB = initMatrix(matrixParam.beforeSize);
 

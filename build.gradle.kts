@@ -1,7 +1,6 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     application
+    `java-library`
     kotlin("jvm") version "1.7.20"
     id("io.github.reyerizo.gradle.jcstress") version "0.8.13"
 }
@@ -30,7 +29,12 @@ java {
 
 
 tasks.withType<JavaCompile>().configureEach {
-    options.compilerArgs = listOf("--add-opens", "java.base/jdk.internal.misc=ALL-UNNAMED", "--add-exports", "java.base/jdk.internal.util=ALL-UNNAMED")
+    options.compilerArgs = listOf(
+        "--add-opens",
+        "java.base/jdk.internal.misc=ALL-UNNAMED",
+        "--add-exports",
+        "java.base/jdk.internal.util=ALL-UNNAMED"
+    )
 }
 
 group = "me.ricnorr"
@@ -51,9 +55,18 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:lincheck:2.16")
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
     implementation("com.github.oshi:oshi-dist:6.4.0")
+    implementation("org.openjdk.jmh:jmh-core:1.21")
+    annotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:1.21")
 }
 
 tasks.test {
     maxHeapSize = "2g"
-    jvmArgs("--add-opens", "java.base/jdk.internal.misc=ALL-UNNAMED", "--add-exports","java.base/jdk.internal.loader=ALL-UNNAMED", "--add-exports", "java.base/jdk.internal.util=ALL-UNNAMED")
+    jvmArgs(
+        "--add-opens",
+        "java.base/jdk.internal.misc=ALL-UNNAMED",
+        "--add-exports",
+        "java.base/jdk.internal.loader=ALL-UNNAMED",
+        "--add-exports",
+        "java.base/jdk.internal.util=ALL-UNNAMED"
+    )
 }

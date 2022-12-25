@@ -1,7 +1,4 @@
-package ru.ricnorr.benchmarks.matrix;
-
-import ru.ricnorr.benchmarks.BenchmarkParameters;
-import ru.ricnorr.benchmarks.LockType;
+package ru.ricnorr.benchmarks;
 
 public class MatrixBenchmarkParameters extends BenchmarkParameters {
     public int beforeSize;
