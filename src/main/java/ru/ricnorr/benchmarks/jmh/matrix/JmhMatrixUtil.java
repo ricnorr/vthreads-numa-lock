@@ -12,7 +12,7 @@ import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
 
 public class JmhMatrixUtil {
     public static double estimateMatrixMultiplicationTimeNanos(int size) throws RunnerException {
-        return runBenchmarkNano(JmhOneMatrixBenchmark.class, 1, 1, Map.of("matrixSize", Integer.toString(size)));
+        return runBenchmarkNano(JmhOneMatrixBenchmark.class, 1, 0, Map.of("matrixSize", Integer.toString(size)));
     }
 
     public static double runBenchmarkNano(Class<?> clazz, int iterations, int warmupIterations, Map<String, String> params) throws RunnerException {
