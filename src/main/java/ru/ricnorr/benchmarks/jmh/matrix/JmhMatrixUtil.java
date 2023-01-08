@@ -9,6 +9,7 @@ import ru.ricnorr.benchmarks.BenchmarkException;
 import java.util.Map;
 
 import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
+import static org.openjdk.jmh.runner.options.VerboseMode.SILENT;
 
 public class JmhMatrixUtil {
     public static double estimateMatrixMultiplicationTimeNanos(int size) throws RunnerException {
@@ -22,7 +23,7 @@ public class JmhMatrixUtil {
                 .warmupIterations(warmupIterations)
                 .forks(1)
                 .measurementIterations(iterations)
-                .verbosity(NORMAL);
+                .verbosity(SILENT);
         for (Map.Entry<String, String> x : params.entrySet()) {
             optionsBuilder = optionsBuilder.param(x.getKey(), x.getValue());
         }

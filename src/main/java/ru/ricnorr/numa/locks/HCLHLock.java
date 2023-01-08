@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import ru.ricnorr.numa.locks.Utils.*;
 
+import static ru.ricnorr.numa.locks.Utils.spinWait;
 
 
 public class HCLHLock extends AbstractLock {
@@ -50,10 +52,12 @@ public class HCLHLock extends AbstractLock {
             int index = clusterID;
             AtomicReference<QNodeHCLH> localQueue = localQueues.get(index);
             // splice my QNode into local queue
-            QNodeHCLH myPred = null;
-            do {
+            QNodeHCLH myPred = localQueue.get();
+            int spinCounter = 1;
+            while (!localQueue.compareAndSet(myPred, myNode)) {
+                spinCounter = spinWait(spinCounter);
                 myPred = localQueue.get();
-            } while (!localQueue.compareAndSet(myPred, myNode));
+            }
             if (myPred != null) {
                 boolean iOwnLock = myPred.waitForGrantOrClusterMaster(clusterID);
                 if (iOwnLock) {
@@ -61,14 +65,19 @@ public class HCLHLock extends AbstractLock {
                 }
             }
             // I am the cluster master: splice local queue into global queue.
-            QNodeHCLH localTail = null;
-            do {
+            QNodeHCLH localTail = localQueue.get();
+            myPred = globalQueue.get();
+            spinCounter = 1;
+            while (!globalQueue.compareAndSet(myPred, localTail)) {
+                spinCounter = spinWait(spinCounter);
                 myPred = globalQueue.get();
                 localTail = localQueue.get();
-            } while (!globalQueue.compareAndSet(myPred, localTail));
+            }
             // inform successor it is the new master
             localTail.setTailWhenSpliced(true);
-            while (myPred.isSuccessorMustWait()) { //isSuccessorMustWait()) {
+            spinCounter = 1;
+            while (myPred.isSuccessorMustWait()) {
+                spinCounter = spinWait(spinCounter);
             }
 
             return myPred;
@@ -97,12 +106,14 @@ public class HCLHLock extends AbstractLock {
             }
 
             boolean waitForGrantOrClusterMaster(Integer myCluster) {
+                int spinCounter = 1;
                 while (true) {
                     if (getClusterID() == myCluster && !isTailWhenSpliced() && !isSuccessorMustWait()) {
                         return true;
                     } else if (getClusterID() != myCluster || isTailWhenSpliced()) {
                         return false;
                     }
+                    spinCounter = spinWait(spinCounter);
                 }
             }
             public void prepareForLock(int clusterId) {
@@ -126,15 +137,23 @@ public class HCLHLock extends AbstractLock {
             }
 
             public void setSuccessorMustWait(boolean successorMustWait) {
-                int oldState, newState;
-                do {
+                int oldState = state.get();
+                int newState;
+                if (successorMustWait) {
+                    newState = oldState | SMW_MASK;
+                } else {
+                    newState = oldState & ~SMW_MASK;
+                }
+                int spinCounter = 1;
+                while (!state.compareAndSet(oldState, newState)) {
                     oldState = state.get();
                     if (successorMustWait) {
                         newState = oldState | SMW_MASK;
                     } else {
                         newState = oldState & ~SMW_MASK;
                     }
-                } while (!state.compareAndSet(oldState, newState));
+                    spinCounter = spinWait(spinCounter);
+                }
             }
 
             public boolean isTailWhenSpliced() {
