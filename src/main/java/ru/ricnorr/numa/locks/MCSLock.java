@@ -7,6 +7,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
+import ru.ricnorr.numa.locks.Utils.*;
+
+import static ru.ricnorr.numa.locks.Utils.spinWait;
 
 /**
  * MCS lock with active spin
@@ -27,8 +30,10 @@ public class MCSLock implements Lock {
         QNode pred = tail.getAndSet(qnode);
         if (pred != null) {
             pred.next.set(qnode);
+            int spinCounter = 1;
             while (qnode.spin.get()) {
                 // WAIT
+                spinCounter = spinWait(spinCounter);
             }
         }
         head.set(qnode);
@@ -56,8 +61,10 @@ public class MCSLock implements Lock {
             if (tail.compareAndSet(headNode, null)) {
                 return;
             }
+            int spinCounter = 1;
             while (headNode.next.get() == null) {
                 // WAIT when next thread set headNode.next
+                spinCounter = spinWait(spinCounter);
             }
         }
         headNode.next.get().spin.set(false);

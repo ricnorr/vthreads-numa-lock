@@ -5,6 +5,8 @@ import com.sun.jna.ptr.IntByReference;
 
 public class Utils {
 
+    public static int WAIT_THRESHOLD = 4096;
+
     private final static int GET_CPU_ARM_SYSCALL = 168;
 
     private final static int GET_CPU_x86_SYSCALL = 309;
@@ -22,5 +24,17 @@ public class Utils {
             throw new IllegalStateException("Cannot make syscall getcpu");
         }
         return numaNode.getValue();
+    }
+
+    public static int spinWait(int spinCounter) {
+        for (int i = 0; i < spinCounter; i++) {
+            Thread.onSpinWait();
+        }
+        if (spinCounter > WAIT_THRESHOLD) {
+            Thread.yield();
+            return 1;
+        }
+        spinCounter *= 2;
+        return spinCounter;
     }
 }

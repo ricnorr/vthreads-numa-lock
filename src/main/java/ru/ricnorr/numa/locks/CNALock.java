@@ -4,6 +4,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static ru.ricnorr.numa.locks.Utils.spinWait;
+
 public class CNALock extends AbstractLock {
 
 
@@ -43,7 +45,9 @@ public class CNALock extends AbstractLock {
 
             me.socket.set(socketID);
             prevTail.next.set(me);
+            int spinCounter = 1;
             while (me.spin.get() == null) {
+                spinCounter = spinWait(spinCounter);
             }
         }
 
@@ -62,7 +66,9 @@ public class CNALock extends AbstractLock {
                 }
 
                 /* Wait for successor to appear */
+                int spinCounter = 1;
                 while (me.next.get() == null) {
+                    spinCounter = spinWait(spinCounter);
                 }
             }
             CNANode succ = null;

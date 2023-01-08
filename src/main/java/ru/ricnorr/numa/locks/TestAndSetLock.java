@@ -2,6 +2,8 @@ package ru.ricnorr.numa.locks;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static ru.ricnorr.numa.locks.Utils.spinWait;
+
 public class TestAndSetLock extends AbstractLock {
 
     private AtomicBoolean flag;
@@ -12,7 +14,9 @@ public class TestAndSetLock extends AbstractLock {
 
     @Override
     public void lock() {
+        int spinCounter = 1;
         while (true) {
+            spinCounter = spinWait(spinCounter);
             if (flag.compareAndSet(false, true)) {
                 return;
             }

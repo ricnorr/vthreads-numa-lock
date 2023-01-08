@@ -7,6 +7,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
 public abstract class AbstractLock implements Lock {
+
     @Override
     public void lockInterruptibly() throws InterruptedException {
         throw new RuntimeException("Not implemented");
