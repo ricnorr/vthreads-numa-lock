@@ -84,14 +84,8 @@ public class Main {
     private static List<Integer> autoThreadsInit() {
         int cpuCount = Runtime.getRuntime().availableProcessors();
         List<Integer> threads = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            int left = 1 << i;
-            int right = 1 << (i + 1);
-            int dist = (right - left) / 2;
-            threads.add(left);
-            if (dist != 0) {
-                threads.add(left + dist);
-            }
+        for (int i = 0; i < 16; i++) {
+            threads.add(1 << i);
         }
         List<Integer> result = threads.stream().filter(it -> it < cpuCount).collect(Collectors.toList());
         result.add(cpuCount);
