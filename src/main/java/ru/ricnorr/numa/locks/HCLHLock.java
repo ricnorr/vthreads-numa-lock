@@ -4,8 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.LockSupport;
+
+import kotlinx.atomicfu.AtomicArray;
+import kotlinx.atomicfu.AtomicInt;
+import kotlinx.atomicfu.AtomicRef;
 import ru.ricnorr.numa.locks.Utils.*;
 
+import static kotlinx.atomicfu.AtomicFU.atomic;
 import static ru.ricnorr.numa.locks.Utils.spinWait;
 
 
@@ -34,29 +40,26 @@ public class HCLHLock extends AbstractLock {
 
     public static class HCLHLockCore {
         static final int MAX_CLUSTERS = 25;
-        final List<AtomicReference<QNodeHCLH>> localQueues;
-        final AtomicReference<QNodeHCLH> globalQueue;
+        final AtomicArray<QNodeHCLH> localQueues;
+        final AtomicRef<QNodeHCLH> globalQueue;
 
         public HCLHLockCore() {
-            localQueues = new ArrayList<>();
-            for (int i = 0; i < MAX_CLUSTERS; i++) {
-                localQueues.add(new AtomicReference<>());
-            }
+            localQueues = new AtomicArray<>(MAX_CLUSTERS);
             QNodeHCLH head = new QNodeHCLH();
-            globalQueue = new AtomicReference<>(head);
+            globalQueue = atomic(head);
         }
 
         public QNodeHCLH lock(QNodeHCLH myNode, Integer clusterID) {
             myNode.prepareForLock(clusterID);
 
             int index = clusterID;
-            AtomicReference<QNodeHCLH> localQueue = localQueues.get(index);
+            AtomicRef<QNodeHCLH> localQueue = localQueues.get(index);
             // splice my QNode into local queue
-            QNodeHCLH myPred = localQueue.get();
+            QNodeHCLH myPred = localQueue.getValue();
             int spinCounter = 1;
             while (!localQueue.compareAndSet(myPred, myNode)) {
                 spinCounter = spinWait(spinCounter);
-                myPred = localQueue.get();
+                myPred = localQueue.getValue();
             }
             if (myPred != null) {
                 boolean iOwnLock = myPred.waitForGrantOrClusterMaster(clusterID);
@@ -65,13 +68,13 @@ public class HCLHLock extends AbstractLock {
                 }
             }
             // I am the cluster master: splice local queue into global queue.
-            QNodeHCLH localTail = localQueue.get();
-            myPred = globalQueue.get();
+            QNodeHCLH localTail = localQueue.getValue();
+            myPred = globalQueue.getValue();
             spinCounter = 1;
             while (!globalQueue.compareAndSet(myPred, localTail)) {
                 spinCounter = spinWait(spinCounter);
-                myPred = globalQueue.get();
-                localTail = localQueue.get();
+                myPred = globalQueue.getValue();
+                localTail = localQueue.getValue();
             }
             // inform successor it is the new master
             localTail.setTailWhenSpliced(true);
@@ -85,6 +88,10 @@ public class HCLHLock extends AbstractLock {
 
         public void unlock(QNodeHCLH myNode) {
             myNode.setSuccessorMustWait(false);
+            Thread thread = myNode.thread.getValue();
+            if (thread != null) {
+                LockSupport.unpark(thread);
+            }
         }
 
         public static class QNodeHCLH {
@@ -99,21 +106,23 @@ public class HCLHLock extends AbstractLock {
             // private int clusterID;
             private static final int CLUSTER_MASK = 0x3FFFFFFF;
             //00111111111111111111111111111111
-            final AtomicInteger state;
+            final AtomicInt state;
+
+            final AtomicRef<Thread> thread = atomic(null);
 
             public QNodeHCLH() {
-                state = new AtomicInteger(0);
+                state = atomic(0);
             }
 
             boolean waitForGrantOrClusterMaster(Integer myCluster) {
-                int spinCounter = 1;
+                thread.setValue(Thread.currentThread());
                 while (true) {
                     if (getClusterID() == myCluster && !isTailWhenSpliced() && !isSuccessorMustWait()) {
                         return true;
                     } else if (getClusterID() != myCluster || isTailWhenSpliced()) {
                         return false;
                     }
-                    spinCounter = spinWait(spinCounter);
+                    LockSupport.park(this);
                 }
             }
             public void prepareForLock(int clusterId) {
@@ -124,20 +133,21 @@ public class HCLHLock extends AbstractLock {
                 // tailWhenSpliced = false;
                 newState &= (~TWS_MASK);
                 do {
-                    oldState = state.get();
+                    oldState = state.getValue();
                 } while (!state.compareAndSet(oldState, newState));
+                thread.setValue(null);
             }
 
             public int getClusterID() {
-                return state.get() & CLUSTER_MASK;
+                return state.getValue() & CLUSTER_MASK;
             }
 
             public boolean isSuccessorMustWait() {
-                return (state.get() & SMW_MASK) != 0;
+                return (state.getValue() & SMW_MASK) != 0;
             }
 
             public void setSuccessorMustWait(boolean successorMustWait) {
-                int oldState = state.get();
+                int oldState = state.getValue();
                 int newState;
                 if (successorMustWait) {
                     newState = oldState | SMW_MASK;
@@ -146,7 +156,7 @@ public class HCLHLock extends AbstractLock {
                 }
                 int spinCounter = 1;
                 while (!state.compareAndSet(oldState, newState)) {
-                    oldState = state.get();
+                    oldState = state.getValue();
                     if (successorMustWait) {
                         newState = oldState | SMW_MASK;
                     } else {
@@ -157,13 +167,13 @@ public class HCLHLock extends AbstractLock {
             }
 
             public boolean isTailWhenSpliced() {
-                return (state.get() & TWS_MASK) != 0;
+                return (state.getValue() & TWS_MASK) != 0;
             }
 
             public void setTailWhenSpliced(boolean tailWhenSpliced) {
                 int oldState, newState;
                 do {
-                    oldState = state.get();
+                    oldState = state.getValue();
                     if (tailWhenSpliced) {
                         newState = oldState | TWS_MASK;
                     } else {

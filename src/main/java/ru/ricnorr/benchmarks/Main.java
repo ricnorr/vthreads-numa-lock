@@ -28,7 +28,7 @@ public class Main {
     public static Lock initLock(LockType lockType) {
         switch (lockType) {
             case REENTRANT -> {
-                return new ReentrantLock();
+                return new ReentrantLock(true);
             }
             case MCS -> {
                 return new MCSLock();
