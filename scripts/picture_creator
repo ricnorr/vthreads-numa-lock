@@ -14,7 +14,9 @@ for bench in bench_names:
     for mode in ['overhead(microsec)','throughput(ops_microsec)']:
         ax = plt.axes(title = bench + '\n mode=' + mode)
         threads = sorted(set(df['threads']))
+        ax.set_xscale("log")
         ax.set_xticks(threads)
+        ax.set_xticklabels(list(map(lambda x : str(x), threads)))
         plt.gcf().set_size_inches(5, 5)
         for lock in locks:
             cur_df = df[(df['name'] == bench) & (df['lock'] == lock)]
