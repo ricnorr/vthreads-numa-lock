@@ -51,10 +51,8 @@ public class CNALock extends AbstractLock {
 
             me.socket.setValue(socketID);
             prevTail.next.setValue(me);
-            int spinCounter = 1;
             while (me.spin.getValue() == null) {
                 LockSupport.park(this);
-                //spinCounter = spinWait(spinCounter);
             }
         }
 
@@ -68,6 +66,7 @@ public class CNALock extends AbstractLock {
                     CNANode secHead = me.spin.getValue();
                     if (tail.compareAndSet(me, secHead.secTail.getValue())) {
                         secHead.spin.setValue(trueValue);
+                        LockSupport.unpark(secHead.thread.getValue());
                         return;
                     }
                 }
