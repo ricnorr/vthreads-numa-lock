@@ -51,6 +51,7 @@ public class JmhBenchmarkRunner {
 
     public static BenchmarkResultsCsv runBenchmark(int iterations, int warmupIterations, BenchmarkParameters parameters) throws RunnerException {
         if (parameters instanceof MatrixBenchmarkParameters matrixParam) {
+            System.out.printf("Start benchmark: threads %d, lockType %s, beforeSize %d, inSize %d%n", parameters.threads, parameters.lockType, matrixParam.beforeSize, matrixParam.inSize);
             double withLocksNanos = runBenchmarkNano(JmhParMatrixBenchmark.class, iterations, warmupIterations, Map.of(
                         "beforeSize", Integer.toString(matrixParam.beforeSize),
                         "inSize", Integer.toString(matrixParam.inSize),
