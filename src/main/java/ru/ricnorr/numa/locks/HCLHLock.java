@@ -1,15 +1,10 @@
 package ru.ricnorr.numa.locks;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.LockSupport;
-
 import kotlinx.atomicfu.AtomicArray;
 import kotlinx.atomicfu.AtomicInt;
 import kotlinx.atomicfu.AtomicRef;
-import ru.ricnorr.numa.locks.Utils.*;
+
+import java.util.concurrent.locks.LockSupport;
 
 import static kotlinx.atomicfu.AtomicFU.atomic;
 import static ru.ricnorr.numa.locks.Utils.spinWait;
@@ -88,10 +83,6 @@ public class HCLHLock extends AbstractLock {
 
         public void unlock(QNodeHCLH myNode) {
             myNode.setSuccessorMustWait(false);
-            Thread thread = myNode.thread.getValue();
-            if (thread != null) {
-                LockSupport.unpark(thread);
-            }
         }
 
         public static class QNodeHCLH {
@@ -108,21 +99,17 @@ public class HCLHLock extends AbstractLock {
             //00111111111111111111111111111111
             final AtomicInt state;
 
-            final AtomicRef<Thread> thread = atomic(null);
-
             public QNodeHCLH() {
                 state = atomic(0);
             }
 
             boolean waitForGrantOrClusterMaster(Integer myCluster) {
-                thread.setValue(Thread.currentThread());
                 while (true) {
                     if (getClusterID() == myCluster && !isTailWhenSpliced() && !isSuccessorMustWait()) {
                         return true;
                     } else if (getClusterID() != myCluster || isTailWhenSpliced()) {
                         return false;
                     }
-                    LockSupport.park(this);
                 }
             }
             public void prepareForLock(int clusterId) {
@@ -135,7 +122,6 @@ public class HCLHLock extends AbstractLock {
                 do {
                     oldState = state.getValue();
                 } while (!state.compareAndSet(oldState, newState));
-                thread.setValue(null);
             }
 
             public int getClusterID() {
