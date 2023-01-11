@@ -134,6 +134,17 @@ public class Main {
     public static void printClusters() {
         List<Thread> threads = new ArrayList<>();
         Deque<Integer> numaNodes = new ConcurrentLinkedDeque<>();
+        SystemInfo si = new SystemInfo();
+        var logicalProcessors = si.getHardware().getProcessor().getLogicalProcessors();
+        for (CentralProcessor.LogicalProcessor logicalProcessor : logicalProcessors) {
+            System.out.printf("Proc number: %d, Proc physical number: %d, Proc numa node: %d, Proc group: %d, Proc phys package: %d%n",
+                    logicalProcessor.getProcessorNumber(),
+                    logicalProcessor.getPhysicalProcessorNumber(),
+                    logicalProcessor.getNumaNode(),
+                    logicalProcessor.getProcessorGroup(),
+                    logicalProcessor.getPhysicalPackageNumber()
+            );
+        }
         for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
             threads.add(new Thread(() -> numaNodes.add(Utils.getClusterID())));
         }
