@@ -17,7 +17,9 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -129,7 +131,30 @@ public class Main {
         }
     }
 
+    public static void printClusters() {
+        List<Thread> threads = new ArrayList<>();
+        Deque<Integer> numaNodes = new ConcurrentLinkedDeque<>();
+        for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
+            threads.add(new Thread(() -> numaNodes.add(Utils.getClusterID())));
+        }
+        for (Thread thread : threads) {
+            thread.start();
+        }
+        for (Thread thread : threads) {
+            try {
+                thread.join();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        System.out.println("Possible numa nodes: " + numaNodes.stream().sorted().distinct().map(Object::toString).collect(Collectors.joining(",")));
+    }
+
     public static void main(String[] args) throws RunnerException {
+        if (args.length != 0 && args[0].equals("print-clusters")) {
+            printClusters();
+            return;
+        }
         // Read benchmark parameters
         String s;
 

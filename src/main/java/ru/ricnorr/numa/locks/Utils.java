@@ -11,7 +11,7 @@ public class Utils {
 
     private final static int GET_CPU_x86_SYSCALL = 309;
 
-    static int getClusterID() {
+    public static int getClusterID() {
         int res;
         final IntByReference numaNode = new IntByReference();
 
