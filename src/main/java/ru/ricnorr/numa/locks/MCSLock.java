@@ -4,17 +4,12 @@ import kotlinx.atomicfu.AtomicRef;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.LockSupport;
 
-import ru.ricnorr.numa.locks.Utils.*;
-
 import static kotlinx.atomicfu.AtomicFU.atomic;
-import static ru.ricnorr.numa.locks.Utils.WAIT_THRESHOLD;
-import static ru.ricnorr.numa.locks.Utils.spinWait;
+import static ru.ricnorr.numa.locks.Utils.spinWaitYield;
 
 /**
  * MCS lock with active spin
@@ -70,7 +65,7 @@ public class MCSLock implements Lock {
             int spinCounter = 1;
             while (headNode.next.getValue() == null) {
                 // WAIT when next thread set headNode.next
-                spinCounter = spinWait(spinCounter);
+                spinCounter = spinWaitYield(spinCounter);
             }
         }
         headNode.next.getValue().spin.setValue(false);

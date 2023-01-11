@@ -134,6 +134,8 @@ public class Main {
     public static void printClusters() {
         List<Thread> threads = new ArrayList<>();
         Deque<Integer> numaNodes = new ConcurrentLinkedDeque<>();
+        Deque<Integer> cpuIds = new ConcurrentLinkedDeque<>();
+
         SystemInfo si = new SystemInfo();
         var logicalProcessors = si.getHardware().getProcessor().getLogicalProcessors();
         for (CentralProcessor.LogicalProcessor logicalProcessor : logicalProcessors) {
@@ -145,8 +147,11 @@ public class Main {
                     logicalProcessor.getPhysicalPackageNumber()
             );
         }
-        for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
-            threads.add(new Thread(() -> numaNodes.add(Utils.getClusterID())));
+        for (int i = 0; i < Runtime.getRuntime().availableProcessors() * 2; i++) {
+            threads.add(new Thread(() -> {
+                        numaNodes.add(Utils.getClusterID());
+                        cpuIds.add(Utils.getCpuID());
+            }));
         }
         for (Thread thread : threads) {
             thread.start();
@@ -159,6 +164,7 @@ public class Main {
             }
         }
         System.out.println("Possible numa nodes: " + numaNodes.stream().sorted().distinct().map(Object::toString).collect(Collectors.joining(",")));
+        System.out.println("Possible cpu ids: " + cpuIds.stream().sorted().distinct().map(Object::toString).collect(Collectors.joining(",")));
     }
 
     public static void main(String[] args) throws RunnerException {

@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-import static ru.ricnorr.numa.locks.Utils.spinWait;
+import static ru.ricnorr.numa.locks.Utils.spinWaitYield;
 
 public class TestTestAndSetLock implements Lock {
 
@@ -20,7 +20,7 @@ public class TestTestAndSetLock implements Lock {
             if (!flag.get() && flag.compareAndSet(false, true)) {
                 return;
             }
-            spinCounter = spinWait(spinCounter);
+            spinCounter = spinWaitYield(spinCounter);
         }
     }
 
