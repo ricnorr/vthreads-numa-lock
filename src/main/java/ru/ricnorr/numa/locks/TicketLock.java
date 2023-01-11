@@ -2,7 +2,7 @@ package ru.ricnorr.numa.locks;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static ru.ricnorr.numa.locks.Utils.spinWait;
+import static ru.ricnorr.numa.locks.Utils.spinWaitYield;
 
 public class TicketLock extends AbstractLock {
 
@@ -14,7 +14,7 @@ public class TicketLock extends AbstractLock {
         int my_ticket = nextTicket.getAndIncrement();
         int spinCounter = 1;
         while (my_ticket != nowServing.get()) {
-            spinCounter = spinWait(spinCounter);
+            spinCounter = spinWaitYield(spinCounter);
         }
     }
 

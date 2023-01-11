@@ -4,10 +4,8 @@ import kotlinx.atomicfu.AtomicArray;
 import kotlinx.atomicfu.AtomicInt;
 import kotlinx.atomicfu.AtomicRef;
 
-import java.util.concurrent.locks.LockSupport;
-
 import static kotlinx.atomicfu.AtomicFU.atomic;
-import static ru.ricnorr.numa.locks.Utils.spinWait;
+import static ru.ricnorr.numa.locks.Utils.spinWaitYield;
 
 
 public class HCLHLock extends AbstractLock {
@@ -53,7 +51,7 @@ public class HCLHLock extends AbstractLock {
             QNodeHCLH myPred = localQueue.getValue();
             int spinCounter = 1;
             while (!localQueue.compareAndSet(myPred, myNode)) {
-                spinCounter = spinWait(spinCounter);
+                spinCounter = spinWaitYield(spinCounter);
                 myPred = localQueue.getValue();
             }
             if (myPred != null) {
@@ -67,7 +65,7 @@ public class HCLHLock extends AbstractLock {
             myPred = globalQueue.getValue();
             spinCounter = 1;
             while (!globalQueue.compareAndSet(myPred, localTail)) {
-                spinCounter = spinWait(spinCounter);
+                spinCounter = spinWaitYield(spinCounter);
                 myPred = globalQueue.getValue();
                 localTail = localQueue.getValue();
             }
@@ -75,7 +73,7 @@ public class HCLHLock extends AbstractLock {
             localTail.setTailWhenSpliced(true);
             spinCounter = 1;
             while (myPred.isSuccessorMustWait()) {
-                spinCounter = spinWait(spinCounter);
+                spinCounter = spinWaitYield(spinCounter);
             }
 
             return myPred;
@@ -148,7 +146,7 @@ public class HCLHLock extends AbstractLock {
                     } else {
                         newState = oldState & ~SMW_MASK;
                     }
-                    spinCounter = spinWait(spinCounter);
+                    spinCounter = spinWaitYield(spinCounter);
                 }
             }
 

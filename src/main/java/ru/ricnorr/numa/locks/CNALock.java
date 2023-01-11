@@ -4,12 +4,11 @@ import kotlinx.atomicfu.AtomicInt;
 import kotlinx.atomicfu.AtomicRef;
 
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.LockSupport;
 
 import static kotlinx.atomicfu.AtomicFU.atomic;
-import static ru.ricnorr.numa.locks.Utils.spinWait;
+import static ru.ricnorr.numa.locks.Utils.spinWaitPark;
+import static ru.ricnorr.numa.locks.Utils.spinWaitYield;
 
 public class CNALock extends AbstractLock {
 
@@ -50,7 +49,7 @@ public class CNALock extends AbstractLock {
 
     public static class CNALockCore {
 
-        private final AtomicReference<CNANode> tail = new AtomicReference<>(null);
+        private final AtomicRef<CNANode> tail = atomic(null);
 
         private final CNANode trueValue = new CNANode();
 
@@ -67,8 +66,9 @@ public class CNALock extends AbstractLock {
             }
 
             prevTail.next.setValue(me);
+            int spinCount = 1;
             while (me.spin.getValue() == null) {
-                LockSupport.park(this);
+                spinCount = spinWaitPark(spinCount);
             }
         }
 
@@ -90,10 +90,16 @@ public class CNALock extends AbstractLock {
                 /* Wait for successor to appear */
                 int spinCounter = 1;
                 while (me.next.getValue() == null) {
-                    spinCounter = spinWait(spinCounter);
+                    spinCounter = spinWaitYield(spinCounter);
                 }
             }
             CNANode succ = null;
+            if (me.spin.getValue() == trueValue && (ThreadLocalRandom.current().nextInt() & 0xff) != 0) { // probability = 1 - (1 / 2**8) == 0.996
+                succ = me.next.getValue();
+                succ.spin.setValue(trueValue);
+                LockSupport.unpark(succ.thread.getValue());
+                return;
+            }
             if (keep_lock_local() && (succ = find_successor(me, clusterID)) != null) {
                 succ.spin.setValue(me.spin.getValue());
             } else if (me.spin.getValue() != trueValue) {
@@ -138,8 +144,8 @@ public class CNALock extends AbstractLock {
             return null;
         }
 
-        private boolean keep_lock_local() {
-            return ThreadLocalRandom.current().nextInt(0, 500) % 499 != 0;
+        private boolean keep_lock_local() { // probability 0.9999
+            return (ThreadLocalRandom.current().nextInt() & 0xffff) != 0;
         }
     }
 
