@@ -1,7 +1,9 @@
 package ru.ricnorr.benchmarks;
 
 public enum LockType {
-    REENTRANT,
+    UNFAIR_REENTRANT,
+
+    FAIR_REENTRANT,
 
     MCS,
 

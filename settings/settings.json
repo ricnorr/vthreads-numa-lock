@@ -1,6 +1,7 @@
 {
   "locks": [
-    "REENTRANT",
+    "FAIR_REENTRANT",
+    "UNFAIR_REENTRANT",
     "MCS",
     "TEST_SET",
     "TEST_TEST_SET",
