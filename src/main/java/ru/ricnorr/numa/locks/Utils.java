@@ -14,11 +14,11 @@ public class Utils {
     public static int getClusterID() {
         int res;
         final IntByReference numaNode = new IntByReference();
-
+        final IntByReference cpu = new IntByReference();
         if (Platform.isARM()) {
-            res = CLibrary.INSTANCE.syscall(GET_CPU_ARM_SYSCALL, null, numaNode, null);
+            res = CLibrary.INSTANCE.syscall(GET_CPU_ARM_SYSCALL, cpu, numaNode, null);
         } else {
-            res = CLibrary.INSTANCE.syscall(GET_CPU_x86_SYSCALL, null, numaNode,null);
+            res = CLibrary.INSTANCE.syscall(GET_CPU_x86_SYSCALL, cpu, numaNode, null);
         }
         if (res < 0) {
             throw new IllegalStateException("Cannot make syscall getcpu");
