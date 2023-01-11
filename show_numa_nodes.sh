@@ -1,0 +1,1 @@
+gradle run --args='print-clusters'

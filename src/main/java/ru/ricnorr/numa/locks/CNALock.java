@@ -16,12 +16,31 @@ public class CNALock extends AbstractLock {
 
     ThreadLocal<Integer> socketID = ThreadLocal.withInitial(Utils::getClusterID);
 
-    ThreadLocal<CNANode> node = ThreadLocal.withInitial(CNANode::new);
+    ThreadLocal<CNANode> node = ThreadLocal.withInitial(() -> {
+        CNANode node = new CNANode();
+        node.thread.setValue(Thread.currentThread());
+        node.socket.setValue(Utils.getClusterID());
+        return node;
+    });
+
+    ThreadLocal<Integer> lockAcquireCount = ThreadLocal.withInitial(() -> 0);
+
+
     CNALockCore cnaLockCore = new CNALockCore();
 
     @Override
     public void lock() {
-        cnaLockCore.lock(node.get(), socketID.get());
+        CNANode cnaNode = node.get();
+        int lockAcquireNextValue = lockAcquireCount.get() + 1;
+        if (lockAcquireNextValue == 1_000_000) {
+            lockAcquireNextValue = 0;
+            socketID.set(Utils.getClusterID());
+            cnaNode.socket.setValue(socketID.get());
+        }
+        lockAcquireCount.set(lockAcquireNextValue);
+
+
+        cnaLockCore.lock(node.get());
     }
 
     @Override
@@ -35,12 +54,10 @@ public class CNALock extends AbstractLock {
 
         private final CNANode trueValue = new CNANode();
 
-        public void lock(CNANode me, int socketID) {
-            me.socket.setValue(-1);
+        public void lock(CNANode me) {
             me.next.setValue(null);
             me.spin.setValue(null);
             me.secTail.setValue(null);
-            me.thread.setValue(Thread.currentThread());
 
             CNANode prevTail = tail.getAndSet(me);
 
@@ -49,7 +66,6 @@ public class CNALock extends AbstractLock {
                 return;
             }
 
-            me.socket.setValue(socketID);
             prevTail.next.setValue(me);
             while (me.spin.getValue() == null) {
                 LockSupport.park(this);
