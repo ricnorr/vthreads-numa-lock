@@ -16,8 +16,7 @@ public class CNALock extends AbstractLock {
     ThreadLocal<Integer> socketID = ThreadLocal.withInitial(Utils::getClusterID);
 
     ThreadLocal<CNANode> node = ThreadLocal.withInitial(() -> {
-        CNANode node = new CNANode();
-        node.thread.setValue(Thread.currentThread());
+        CNANode node = new CNANode(Thread.currentThread());
         node.socket.setValue(Utils.getClusterID());
         return node;
     });
@@ -51,7 +50,7 @@ public class CNALock extends AbstractLock {
 
         private final AtomicRef<CNANode> tail = atomic(null);
 
-        private final CNANode trueValue = new CNANode();
+        private final CNANode trueValue = new CNANode(null);
 
         public void lock(CNANode me) {
             me.next.setValue(null);
@@ -82,7 +81,7 @@ public class CNALock extends AbstractLock {
                     CNANode secHead = me.spin.getValue();
                     if (tail.compareAndSet(me, secHead.secTail.getValue())) {
                         secHead.spin.setValue(trueValue);
-                        LockSupport.unpark(secHead.thread.getValue());
+                        LockSupport.unpark(secHead.thread);
                         return;
                     }
                 }
@@ -97,7 +96,7 @@ public class CNALock extends AbstractLock {
             if (me.spin.getValue() == trueValue && (ThreadLocalRandom.current().nextInt() & 0xff) != 0) { // probability = 1 - (1 / 2**8) == 0.996
                 succ = me.next.getValue();
                 succ.spin.setValue(trueValue);
-                LockSupport.unpark(succ.thread.getValue());
+                LockSupport.unpark(succ.thread);
                 return;
             }
             if (keep_lock_local() && (succ = find_successor(me, clusterID)) != null) {
@@ -111,7 +110,7 @@ public class CNALock extends AbstractLock {
                 succ = me.next.getValue();
                 succ.spin.setValue(trueValue);
             }
-            LockSupport.unpark(succ.thread.getValue());
+            LockSupport.unpark(succ.thread);
         }
 
         private CNANode find_successor(CNANode me, int socketID) {
@@ -156,8 +155,11 @@ public class CNALock extends AbstractLock {
         private final AtomicRef<CNANode> secTail = atomic(null);
         private final AtomicRef<CNANode> next = atomic(null);
 
-        private final AtomicRef<Thread> thread = atomic(null);
+        private final Thread thread;
 
+        public CNANode(Thread thread) {
+            this.thread = thread;
+        }
     }
 
 }
