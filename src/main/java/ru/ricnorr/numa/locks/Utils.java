@@ -45,7 +45,7 @@ public class Utils {
 
     public static int spinWaitYield(int spinCounter) {
         for (int i = 0; i < spinCounter; i++) {
-            Thread.onSpinWait();
+            //Thread.onSpinWait();
         }
         if (spinCounter > WAIT_THRESHOLD) {
             Thread.yield();
