@@ -54,8 +54,8 @@ public class JmhParMatrixBenchmark {
         // Don't use concurrency
         EjmlConcurrency.USE_CONCURRENT = false;
 
-        List<Integer> processors = getProcessorsNumbersInNumaNodeOrder();
-        setAffinity(threads, ProcessHandle.current().pid(), processors);
+//        List<Integer> processors = getProcessorsNumbersInNumaNodeOrder();
+//        setAffinity(threads, ProcessHandle.current().pid(), processors);
 
         Random rand = new Random();
         beforeMatrixA = SimpleMatrix.random_DDRM(beforeSize, beforeSize, 0, Float.MAX_VALUE, rand);
