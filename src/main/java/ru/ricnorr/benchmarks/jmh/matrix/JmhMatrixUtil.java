@@ -25,6 +25,7 @@ public class JmhMatrixUtil {
                 .addProfiler("async")
                 .output(clazz.getName() + "_" + iterations + params.toString())
                 .measurementIterations(iterations)
+                .jvmArgs("-Djava.library.path=\"/nfs/home/nkorobeinikov/async-profiler-2.9-linux-x64/build/libasyncProfiler.so\"")
                 .verbosity(NORMAL);
         for (Map.Entry<String, String> x : params.entrySet()) {
             optionsBuilder = optionsBuilder.param(x.getKey(), x.getValue());
