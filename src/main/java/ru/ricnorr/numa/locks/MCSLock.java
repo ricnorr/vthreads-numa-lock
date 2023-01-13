@@ -4,6 +4,8 @@ import kotlinx.atomicfu.AtomicRef;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.LockSupport;
@@ -17,27 +19,27 @@ import static ru.ricnorr.numa.locks.Utils.spinWaitYield;
 public class MCSLock implements Lock {
 
     public static class QNode {
-        private final AtomicRef<QNode> next = atomic(null);
-        private final kotlinx.atomicfu.AtomicBoolean spin = atomic(true);
+        private final AtomicReference<QNode> next = new AtomicReference<>(null);
+        private final AtomicBoolean spin = new AtomicBoolean(true);
 
-        private final AtomicRef<Thread> thread = atomic(null);
+        private final AtomicReference<Thread> thread = new AtomicReference<>(null);
     }
 
-    private final AtomicRef<QNode> tail = atomic(null);
-    private final AtomicRef<QNode> head = atomic(null);
+    private final AtomicReference<QNode> tail = new AtomicReference<>(null);
+    private final AtomicReference<QNode> head = new AtomicReference<>(null);
 
     @Override
     public void lock() {
         QNode qnode = new QNode();
         QNode pred = tail.getAndSet(qnode);
-        qnode.thread.setValue(Thread.currentThread());
+        qnode.thread.set(Thread.currentThread());
         if (pred != null) {
-            pred.next.setValue(qnode);
-            while (qnode.spin.getValue()) {
+            pred.next.set(qnode);
+            while (qnode.spin.get()) {
                 LockSupport.park(this);
             }
         }
-        head.setValue(qnode);
+        head.set(qnode);
     }
 
     @Override
@@ -57,19 +59,19 @@ public class MCSLock implements Lock {
 
     @Override
     public void unlock() {
-        QNode headNode = head.getValue();
-        if (headNode.next.getValue() == null) {
+        QNode headNode = head.get();
+        if (headNode.next.get() == null) {
             if (tail.compareAndSet(headNode, null)) {
                 return;
             }
             int spinCounter = 1;
-            while (headNode.next.getValue() == null) {
+            while (headNode.next.get() == null) {
                 // WAIT when next thread set headNode.next
                 spinCounter = spinWaitYield(spinCounter);
             }
         }
-        headNode.next.getValue().spin.setValue(false);
-        LockSupport.unpark(headNode.next.getValue().thread.getValue());
+        headNode.next.get().spin.set(false);
+        LockSupport.unpark(headNode.next.get().thread.get());
     }
 
     @NotNull
