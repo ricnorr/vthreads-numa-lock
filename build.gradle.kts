@@ -55,8 +55,8 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:lincheck:2.16")
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
     implementation("com.github.oshi:oshi-dist:6.4.0")
-    implementation("org.openjdk.jmh:jmh-core:1.21")
-    annotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:1.21")
+    implementation("org.openjdk.jmh:jmh-core:1.24")
+    annotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:1.24")
 }
 
 tasks.test {
