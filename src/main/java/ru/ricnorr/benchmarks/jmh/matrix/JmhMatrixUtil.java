@@ -22,6 +22,7 @@ public class JmhMatrixUtil {
                 .operationsPerInvocation(1)
                 .warmupIterations(warmupIterations)
                 .forks(1)
+                .output(clazz.getName() + "_" + iterations + params.toString())
                 .measurementIterations(iterations)
                 .addProfiler("async")
                 .jvmArgs("-Djava.library.path=\"/nfs/home/nkorobeinikov/async-profiler-2.9-linux-x64/build/libasyncProfiler.so\"")
