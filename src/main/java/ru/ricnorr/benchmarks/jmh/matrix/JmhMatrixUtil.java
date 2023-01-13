@@ -1,5 +1,6 @@
 package ru.ricnorr.benchmarks.jmh.matrix;
 
+import org.openjdk.jmh.profile.AsyncProfiler;
 import org.openjdk.jmh.results.BenchmarkResult;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
@@ -22,6 +23,7 @@ public class JmhMatrixUtil {
                 .operationsPerInvocation(1)
                 .warmupIterations(warmupIterations)
                 .forks(1)
+                .addProfiler(AsyncProfiler.class)
                 .measurementIterations(iterations)
                 .verbosity(SILENT);
         for (Map.Entry<String, String> x : params.entrySet()) {
