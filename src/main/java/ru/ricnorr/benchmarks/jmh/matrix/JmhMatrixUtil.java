@@ -23,7 +23,7 @@ public class JmhMatrixUtil {
                 .operationsPerInvocation(1)
                 .warmupIterations(warmupIterations)
                 .forks(1)
-                .addProfiler(AsyncProfiler.class)
+                .addProfiler("async")
                 .measurementIterations(iterations)
                 .verbosity(SILENT);
         for (Map.Entry<String, String> x : params.entrySet()) {
