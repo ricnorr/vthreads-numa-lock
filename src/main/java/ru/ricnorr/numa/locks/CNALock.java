@@ -67,7 +67,8 @@ public class CNALock extends AbstractLock {
             prevTail.next.setValue(me);
             int spinCount = 1;
             while (me.spin.getValue() == null) {
-                spinCount = spinWaitPark(spinCount);
+                Thread.onSpinWait();
+                //spinCount = spinWaitPark(spinCount);
             }
         }
 
@@ -81,7 +82,7 @@ public class CNALock extends AbstractLock {
                     CNANode secHead = me.spin.getValue();
                     if (tail.compareAndSet(me, secHead.secTail.getValue())) {
                         secHead.spin.setValue(trueValue);
-                        LockSupport.unpark(secHead.thread);
+                        //LockSupport.unpark(secHead.thread);
                         return;
                     }
                 }
@@ -89,14 +90,15 @@ public class CNALock extends AbstractLock {
                 /* Wait for successor to appear */
                 int spinCounter = 1;
                 while (me.next.getValue() == null) {
-                    spinCounter = spinWaitYield(spinCounter);
+                    Thread.onSpinWait();
+                    //spinCounter = spinWaitYield(spinCounter);
                 }
             }
             CNANode succ = null;
             if (me.spin.getValue() == trueValue && (ThreadLocalRandom.current().nextInt() & 0xff) != 0) { // probability = 1 - (1 / 2**8) == 0.996
                 succ = me.next.getValue();
                 succ.spin.setValue(trueValue);
-                LockSupport.unpark(succ.thread);
+                //LockSupport.unpark(succ.thread);
                 return;
             }
             if (keep_lock_local() && (succ = find_successor(me, clusterID)) != null) {
@@ -110,7 +112,7 @@ public class CNALock extends AbstractLock {
                 succ = me.next.getValue();
                 succ.spin.setValue(trueValue);
             }
-            LockSupport.unpark(succ.thread);
+            //LockSupport.unpark(succ.thread);
         }
 
         private CNANode find_successor(CNANode me, int socketID) {
