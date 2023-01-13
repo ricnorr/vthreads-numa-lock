@@ -1,6 +1,5 @@
 package ru.ricnorr.benchmarks.jmh.matrix;
 
-import org.openjdk.jmh.profile.AsyncProfiler;
 import org.openjdk.jmh.results.BenchmarkResult;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
