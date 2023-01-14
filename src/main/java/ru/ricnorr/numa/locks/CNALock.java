@@ -63,7 +63,8 @@ public class CNALock extends AbstractLock {
             prevTail.next.set(me);
             int spinCount = 1;
             while (me.spin.get() == null) {
-                Thread.onSpinWait();
+                spinCount = Utils.spinWaitYield(spinCount);
+                //Thread.onSpinWait();
                 //spinCount = spinWaitPark(spinCount);
             }
         }
@@ -86,7 +87,8 @@ public class CNALock extends AbstractLock {
                 /* Wait for successor to appear */
                 int spinCounter = 1;
                 while (me.next.get() == null) {
-                    Thread.onSpinWait();
+                    spinCounter = Utils.spinWaitPark(spinCounter);
+                    //Thread.onSpinWait();
                     //spinCounter = spinWaitYield(spinCounter);
                 }
             }
