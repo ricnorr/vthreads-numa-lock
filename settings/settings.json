@@ -1,17 +1,119 @@
 {
   "locks": [
-    "FAIR_REENTRANT",
-    "UNFAIR_REENTRANT",
-    "MCS",
-    "TEST_SET",
-    "TEST_TEST_SET",
-    "TICKET",
-    "CLH",
-    "HCLH",
-    "CNA"
+    {
+      "name": "FAIR_REENTRANT"
+    },
+    {
+      "name": "UNFAIR_REENTRANT"
+    },
+    {
+      "name": "MCS"
+    },
+    {
+      "name": "TEST_TEST_SET"
+    },
+    {
+      "name": "TEST_SET"
+    },
+    {
+      "name": "CNA",
+      "spec": {
+        "useJavaAtomics": true,
+        "useParkingOnSpin": true,
+        "spinThreshold": 1024
+      }
+    },
+    {
+      "name": "CNA",
+      "spec": {
+        "useJavaAtomics": true,
+        "useParkingOnSpin": false,
+        "spinThreshold": 1024
+      }
+    },
+    {
+      "name": "CNA",
+      "spec": {
+        "useJavaAtomics": false,
+        "useParkingOnSpin": true,
+        "spinThreshold": 1024
+      }
+    },
+    {
+      "name": "CNA",
+      "spec": {
+        "useJavaAtomics": false,
+        "useParkingOnSpin": false,
+        "spinThreshold": 1024
+      }
+    },
+    {
+      "name": "CNA",
+      "spec": {
+        "useJavaAtomics": true,
+        "useParkingOnSpin": true,
+        "spinThreshold": 512
+      }
+    },
+    {
+      "name": "CNA",
+      "spec": {
+        "useJavaAtomics": true,
+        "useParkingOnSpin": false,
+        "spinThreshold": 512
+      }
+    },
+    {
+      "name": "CNA",
+      "spec": {
+        "useJavaAtomics": false,
+        "useParkingOnSpin": true,
+        "spinThreshold": 512
+      }
+    },
+    {
+      "name": "CNA",
+      "spec": {
+        "useJavaAtomics": false,
+        "useParkingOnSpin": false,
+        "spinThreshold": 512
+      }
+    },
+    {
+      "name": "CNA",
+      "spec": {
+        "useJavaAtomics": true,
+        "useParkingOnSpin": true,
+        "spinThreshold": 2048
+      }
+    },
+    {
+      "name": "CNA",
+      "spec": {
+        "useJavaAtomics": true,
+        "useParkingOnSpin": false,
+        "spinThreshold": 2048
+      }
+    },
+    {
+      "name": "CNA",
+      "spec": {
+        "useJavaAtomics": false,
+        "useParkingOnSpin": true,
+        "spinThreshold": 2048
+      }
+    },
+    {
+      "name": "CNA",
+      "spec": {
+        "useJavaAtomics": false,
+        "useParkingOnSpin": false,
+        "spinThreshold": 2048
+      }
+    }
   ],
   "actionsCount" : 10000,
-  "warmupIterations": 0,
+  "warmupIterations": 1,
   "iterations": 1,
   "type": "jmh",
   "benches": [
@@ -23,11 +125,6 @@
     {
       "name": "matrix",
       "before": 50,
-      "in": 100
-    },
-    {
-      "name": "matrix",
-      "before": 100,
       "in": 100
     }
   ]

@@ -19,7 +19,7 @@ public class JmhBenchmarkRunner {
 
     public static List<BenchmarkParameters> fillBenchmarkParameters(
             List<Integer> threads,
-            List<LockType> lockTypes,
+            JSONArray locks,
             JSONArray array,
             int actionsCount
     ) throws RunnerException {
@@ -34,8 +34,16 @@ public class JmhBenchmarkRunner {
                     double beforeMatrixMultTimeNanos = JmhMatrixUtil.estimateMatrixMultiplicationTimeNanos(before);
                     double inMatrixMultTimeNanos = JmhMatrixUtil.estimateMatrixMultiplicationTimeNanos(in);
                     for (int thread : threads) {
-                        for (LockType lockType : lockTypes) {
-                            paramList.add(new MatrixBenchmarkParameters(thread, lockType, before, in, actionsCount / thread, beforeMatrixMultTimeNanos, inMatrixMultTimeNanos));
+                        for (Object lockDescription : locks) {
+                            var lockName = (String)((JSONObject)lockDescription).get("name");
+                            var lockSpec = (JSONObject)((JSONObject)lockDescription).get("spec");
+                            var lockSpecString = "";
+                            if (lockSpec == null) {
+                                lockSpecString = "{}";
+                            } else {
+                                lockSpecString = lockSpec.toJSONString();
+                            }
+                            paramList.add(new MatrixBenchmarkParameters(thread, LockType.valueOf(lockName), lockSpecString, before, in, actionsCount / thread, beforeMatrixMultTimeNanos, inMatrixMultTimeNanos));
                         }
                     }
 
@@ -51,13 +59,14 @@ public class JmhBenchmarkRunner {
 
     public static BenchmarkResultsCsv runBenchmark(int iterations, int warmupIterations, BenchmarkParameters parameters) throws RunnerException {
         if (parameters instanceof MatrixBenchmarkParameters matrixParam) {
-            System.out.printf("Start benchmark: threads %d, lockType %s, beforeSize %d, inSize %d%n", parameters.threads, parameters.lockType, matrixParam.beforeSize, matrixParam.inSize);
+            System.out.printf("Start benchmark: threads %d, lockType %s, lockSpec %s, beforeSize %d, inSize %d%n", parameters.threads, parameters.lockType, parameters.lockSpec, matrixParam.beforeSize, matrixParam.inSize);
             double withLocksNanos = runBenchmarkNano(JmhParMatrixBenchmark.class, iterations, warmupIterations, Map.of(
                         "beforeSize", Integer.toString(matrixParam.beforeSize),
                         "inSize", Integer.toString(matrixParam.inSize),
                         "threads", Integer.toString(matrixParam.threads),
                         "actionsPerThread", Integer.toString(matrixParam.actionsPerThread),
-                        "lockType", matrixParam.lockType.toString()
+                        "lockType", matrixParam.lockType.toString(),
+                        "lockSpec", matrixParam.lockSpec
                     ));
             double withoutLocksNanos;
             if (matrixParam.inMatrixMultTimeNanos * matrixParam.threads > matrixParam.beforeMatrixMultTimeNanos) {
@@ -72,7 +81,7 @@ public class JmhBenchmarkRunner {
             }
             double overheadNanos = withLocksNanos - withoutLocksNanos;
             double throughputNanos = (parameters.threads * parameters.actionsPerThread) / withLocksNanos;
-            return new BenchmarkResultsCsv(parameters.getBenchmarkName(), parameters.lockType.toString(), parameters.threads, overheadNanos, throughputNanos);
+            return new BenchmarkResultsCsv(parameters.getBenchmarkName(), parameters.lockType.name() + "_" + parameters.lockSpec, parameters.threads, overheadNanos, throughputNanos);
         } else {
             throw new BenchmarkException("Cannot run jmh benchmark");
         }

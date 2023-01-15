@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class Main {
     private static final List<String> RESULTS_HEADERS = List.of("name", "lock", "threads", "overhead(microsec)", "throughput(ops_microsec)");
 
-    public static Lock initLock(LockType lockType) {
+    public static Lock initLock(LockType lockType, String lockSpec) {
         switch (lockType) {
             case UNFAIR_REENTRANT -> {
                 return new ReentrantLock(false);
@@ -54,7 +54,7 @@ public class Main {
                 return new CLHLock();
             }
             case CNA -> {
-                return new CNALock();
+                return new CNALock(new CnaLockSpec(lockSpec));
             }
             default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
         }
@@ -202,18 +202,13 @@ public class Main {
             threadsList = autoThreadsInit();
         }
 
-        array = (JSONArray) obj.get("locks");
-        List<LockType> locksType = new ArrayList<>();
-        for (Object value : array) {
-            String lockType = (String) value;
-            locksType.add(LockType.valueOf(lockType));
-        }
-        array = (JSONArray) obj.get("benches");
+        var locks = (JSONArray) obj.get("locks");
+        var benches = (JSONArray) obj.get("benches");
         List<BenchmarkParameters> benchmarkParametersList;
         if (type.equals("custom")) {
-           benchmarkParametersList = CustomBenchmarkRunner.fillBenchmarkParameters(threadsList, locksType, array, actionsCount);
+           benchmarkParametersList = CustomBenchmarkRunner.fillBenchmarkParameters(threadsList, null, benches, actionsCount);
         } else if (type.equals("jmh")) {
-            benchmarkParametersList = JmhBenchmarkRunner.fillBenchmarkParameters(threadsList, locksType, array, actionsCount);
+            benchmarkParametersList = JmhBenchmarkRunner.fillBenchmarkParameters(threadsList, locks, benches, actionsCount);
         } else {
             throw new BenchmarkException("Illegal benchmark type");
         }

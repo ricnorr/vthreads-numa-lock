@@ -17,7 +17,7 @@ import static ru.ricnorr.benchmarks.Main.*;
 public class CustomBenchmarkRunner {
     public static List<BenchmarkParameters> fillBenchmarkParameters(
             List<Integer> threads,
-            List<LockType> lockTypes,
+            JSONArray lockTypes,
             JSONArray array,
             int actionsCount
     ) {
@@ -32,8 +32,8 @@ public class CustomBenchmarkRunner {
                     double beforeMatrixMultTimeNanos = CustomMatrixUtil.estimateMatrixMultiplicationTimeNanos(before);
                     double inMatrixMultTimeNanos = CustomMatrixUtil.estimateMatrixMultiplicationTimeNanos(in);
                     for (int thread : threads) {
-                        for (LockType lockType : lockTypes) {
-                            paramList.add(new MatrixBenchmarkParameters(thread, lockType, before, in, actionsCount / thread, beforeMatrixMultTimeNanos, inMatrixMultTimeNanos));
+                        for (Object lockType : lockTypes) {
+                            //paramList.add(new MatrixBenchmarkParameters(thread, lockType, before, in, actionsCount / thread, beforeMatrixMultTimeNanos, inMatrixMultTimeNanos));
                         }
                     }
 
@@ -80,7 +80,7 @@ public class CustomBenchmarkRunner {
     }
 
     public static BenchmarkResultsCsv runBenchmark(int iterations, BenchmarkParameters param) {
-        Lock lock = initLock(param.lockType);
+        Lock lock = initLock(param.lockType, param.lockSpec);
         Runnable withLockRunnable;
         Runnable withoutLockRunnable;
         if (param instanceof MatrixBenchmarkParameters matrixParam) {

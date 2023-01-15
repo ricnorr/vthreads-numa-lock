@@ -23,7 +23,7 @@ public class JmhMatrixUtil {
                 .warmupIterations(warmupIterations)
                 .forks(1)
                 .measurementIterations(iterations)
-                .verbosity(SILENT);
+                .verbosity(NORMAL);
         for (Map.Entry<String, String> x : params.entrySet()) {
             optionsBuilder = optionsBuilder.param(x.getKey(), x.getValue());
         }
