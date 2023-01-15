@@ -66,9 +66,9 @@ public class CNALock extends AbstractLock {
             }
         }
 
-        public int spinWait(int spinCounter, boolean useParkingOnSpin, int threshold) {
+        public long spinWait(long spinCounter, boolean useParkingOnSpin, long threshold) {
             if (spinCounter < threshold) {
-                for (int i = 0; i < spinCounter; i++) {
+                for (long i = 0; i < spinCounter; i++) {
                 }
                 spinCounter *= 2;
                 return spinCounter;
@@ -95,7 +95,7 @@ public class CNALock extends AbstractLock {
             }
 
             prevTail.next.set(me);
-            int spinCount = 1;
+            long spinCount = 1;
             while (me.spin.get() == null) {
                 spinCount = spinWait(spinCount, cnaLockSpec.useParkingOnSpin, cnaLockSpec.spinThreshold);
             }
@@ -119,7 +119,7 @@ public class CNALock extends AbstractLock {
                 }
 
                 /* Wait for successor to appear */
-                int spinCounter = 1;
+                long spinCounter = 1;
                 while (me.next.get() == null) {
                     spinCounter = spinWait(spinCounter, false, cnaLockSpec.spinThreshold);
                 }

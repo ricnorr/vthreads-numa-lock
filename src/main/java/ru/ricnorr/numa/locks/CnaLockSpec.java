@@ -11,7 +11,7 @@ public class CnaLockSpec {
     public boolean useParkingOnSpin = true;
     public static String USE_PARKING_ON_SPIN = "useParkingOnSpin";
 
-    public int spinThreshold = 512;
+    public long spinThreshold = 512;
 
     public static String SPIN_THRESHOLD = "spinThreshold";
 
@@ -19,7 +19,7 @@ public class CnaLockSpec {
         var obj = (JSONObject) JSONValue.parse(params);
         this.useJavaAtomics = (Boolean) obj.get(USE_JAVA_ATOMICS);
         this.useParkingOnSpin = (Boolean) obj.get(USE_PARKING_ON_SPIN);
-        this.spinThreshold = (Integer) obj.get(SPIN_THRESHOLD);
+        this.spinThreshold = (Long) obj.get(SPIN_THRESHOLD);
     }
 
     @Override
