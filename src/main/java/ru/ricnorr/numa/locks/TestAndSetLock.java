@@ -14,9 +14,7 @@ public class TestAndSetLock extends AbstractLock {
 
     @Override
     public void lock() {
-        int spinCounter = 1;
         while (true) {
-            spinCounter = spinWaitYield(spinCounter);
             if (flag.compareAndSet(false, true)) {
                 return;
             }

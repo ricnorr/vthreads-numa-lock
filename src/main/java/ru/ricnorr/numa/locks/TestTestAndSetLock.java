@@ -15,12 +15,10 @@ public class TestTestAndSetLock implements Lock {
 
     @Override
     public void lock() {
-        int spinCounter = 1;
         while (true) {
             if (!flag.get() && flag.compareAndSet(false, true)) {
                 return;
             }
-            spinCounter = spinWaitYield(spinCounter);
         }
     }
 
