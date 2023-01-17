@@ -42,7 +42,7 @@
     }
   ],
   "actionsCount" : 10000,
-  "warmupIterations": 0,
+  "warmupIterations": 1,
   "iterations": 1,
   "type": "jmh",
   "benches": [
