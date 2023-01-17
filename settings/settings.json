@@ -27,6 +27,14 @@
       }
     },
     {
+      "name": "CNA",
+      "spec": {
+        "useJavaAtomics": true,
+        "useParkingOnSpin": true,
+        "spinThreshold": 1024
+      }
+    },
+    {
       "name": "TEST_TEST_SET"
     },
     {
