@@ -1,14 +1,45 @@
 {
   "locks": [
-    "FAIR_REENTRANT",
-    "UNFAIR_REENTRANT",
-    "MCS",
-    "TEST_SET",
-    "TEST_TEST_SET",
-    "TICKET",
-    "CLH",
-    "HCLH",
-    "CNA"
+    {
+      "name": "FAIR_REENTRANT"
+    },
+    {
+      "name": "UNFAIR_REENTRANT"
+    },
+    {
+      "name": "MCS"
+    },
+    {
+      "name": "TICKET"
+    },
+    {
+      "name": "CLH"
+    },
+    {
+      "name": "HCLH"
+    },
+    {
+      "name": "CNA",
+      "spec": {
+        "useJavaAtomics": true,
+        "useParkingOnSpin": false,
+        "spinThreshold": 1024
+      }
+    },
+    {
+      "name": "CNA",
+      "spec": {
+        "useJavaAtomics": true,
+        "useParkingOnSpin": true,
+        "spinThreshold": 1024
+      }
+    },
+    {
+      "name": "TEST_TEST_SET"
+    },
+    {
+      "name": "TEST_SET"
+    }
   ],
   "actionsCount" : 10000,
   "warmupIterations": 0,
@@ -23,11 +54,6 @@
     {
       "name": "matrix",
       "before": 50,
-      "in": 100
-    },
-    {
-      "name": "matrix",
-      "before": 100,
       "in": 100
     }
   ]

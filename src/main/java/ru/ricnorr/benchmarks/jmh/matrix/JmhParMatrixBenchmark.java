@@ -17,8 +17,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 import static org.openjdk.jmh.annotations.Scope.Benchmark;
-import static ru.ricnorr.benchmarks.Main.getProcessorsNumbersInNumaNodeOrder;
-import static ru.ricnorr.benchmarks.Main.setAffinity;
+import static ru.ricnorr.benchmarks.Main.*;
 
 @State(Benchmark)
 public class JmhParMatrixBenchmark {
@@ -37,6 +36,9 @@ public class JmhParMatrixBenchmark {
     @Param("")
     public String lockType;
 
+    @Param("")
+    public String lockSpec;
+
     SimpleMatrix beforeMatrixA;
 
     SimpleMatrix beforeMatrixB;
@@ -46,8 +48,6 @@ public class JmhParMatrixBenchmark {
     SimpleMatrix inMatrixB;
 
     Lock lock;
-
-
 
     @Setup
     public void init() {
@@ -64,7 +64,8 @@ public class JmhParMatrixBenchmark {
         inMatrixA = SimpleMatrix.random_DDRM(inSize, inSize, 0, Float.MAX_VALUE, rand);
         inMatrixB = SimpleMatrix.random_DDRM(inSize, inSize, 0, Float.MAX_VALUE, rand);
 
-        lock = Main.initLock(LockType.valueOf(lockType));
+
+        lock = Main.initLock(LockType.valueOf(lockType), lockSpec);
     }
 
 

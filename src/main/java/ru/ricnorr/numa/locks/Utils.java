@@ -45,7 +45,6 @@ public class Utils {
 
     public static int spinWaitYield(int spinCounter) {
         for (int i = 0; i < spinCounter; i++) {
-            Thread.onSpinWait();
         }
         if (spinCounter > WAIT_THRESHOLD) {
             Thread.yield();
@@ -53,18 +52,5 @@ public class Utils {
         }
         spinCounter *= 2;
         return spinCounter;
-    }
-
-    public static int spinWaitPark(int spinCounter) {
-        if (spinCounter < 512) {
-            for (int i = 0; i < spinCounter; i++) {
-                Thread.onSpinWait();
-            }
-            spinCounter *= 2;
-            return spinCounter;
-        } else {
-            LockSupport.park();
-            return 1024;
-        }
     }
 }
