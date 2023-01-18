@@ -161,22 +161,43 @@ public class CNALock extends AbstractLock {
             CNANode secTail = next;
             CNANode cur = next.next.get();
 
+            CNANode curClosestInHierarchy = null;
+            CNANode secTailClosestInHierarchy = null;
+            CNANode secHeadClosestInHierarchy = null;
+
             while (cur != null) {
-                if (cur.socket.get() == mySocket) {
-                    if (me.spin.get() != trueValue) {
-                        me.spin.get().secTail.get().next.set(secHead);
-                    } else {
-                        me.spin.set(secHead);
-                    }
-                    //me.spin.getValue().next.set(null);
-                    secTail.next.set(null);
-                    me.spin.get().secTail.set(secTail);
-                    return cur;
+                int curSocket = cur.socket.get();
+                if (curSocket == mySocket) {
+                    return successor_found(me, cur, secHead, secTail);
+                } else if (cnaLockSpec.kunpengNuma && isFromOneBigNuma(curSocket, mySocket)) {
+                    curClosestInHierarchy = cur;
+                    secTailClosestInHierarchy = secTail;
+                    secHeadClosestInHierarchy = secHead;
                 }
                 secTail = cur;
                 cur = cur.next.get();
             }
+            if (curClosestInHierarchy != null) {
+                return successor_found(me, curClosestInHierarchy, secHeadClosestInHierarchy, secTailClosestInHierarchy);
+            }
             return null;
+        }
+
+        private CNANode successor_found(CNANode me, CNANode cur, CNANode secHead, CNANode secTail) {
+            if (me.spin.get() != trueValue) {
+                me.spin.get().secTail.get().next.set(secHead);
+            } else {
+                me.spin.set(secHead);
+            }
+            //me.spin.getValue().next.set(null);
+            secTail.next.set(null);
+            me.spin.get().secTail.set(secTail);
+            return cur;
+        }
+
+        private boolean isFromOneBigNuma(int curSocket, int mySocket) {
+            return (curSocket == 0 && mySocket == 1) || (curSocket == 1 && mySocket == 1)
+                    || (mySocket == 2 && curSocket == 3) || (mySocket == 3 && curSocket == 2);
         }
 
         private boolean keep_lock_local() { // probability 0.9999
