@@ -21,17 +21,19 @@
     {
       "name": "CNA",
       "spec": {
-        "useJavaAtomics": true,
-        "useParkingOnSpin": false,
-        "spinThreshold": 1024
+        "javatom": true,
+        "park": false,
+        "thres": 1024,
+        "numa": true
       }
     },
     {
       "name": "CNA",
       "spec": {
-        "useJavaAtomics": true,
-        "useParkingOnSpin": true,
-        "spinThreshold": 1024
+        "javatom": true,
+        "park": true,
+        "thres": 1024,
+        "numa": true
       }
     },
     {
