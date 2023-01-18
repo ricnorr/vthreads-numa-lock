@@ -42,19 +42,19 @@
     }
   ],
   "actionsCount" : 10000,
-  "warmupIterations": 1,
+  "warmupIterations": 0,
   "iterations": 1,
   "type": "jmh",
   "benches": [
     {
-      "name": "matrix",
-      "before": 100,
-      "in": 50
+      "name": "consumeCpu",
+      "before": 32000,
+      "in": 64000
     },
     {
-      "name": "matrix",
-      "before": 50,
-      "in": 100
+      "name": "consumeCpu",
+      "before": 390000,
+      "in": 1500
     }
   ]
 }
