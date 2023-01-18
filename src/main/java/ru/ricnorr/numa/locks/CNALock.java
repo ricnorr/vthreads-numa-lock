@@ -169,7 +169,7 @@ public class CNALock extends AbstractLock {
                 int curSocket = cur.socket.get();
                 if (curSocket == mySocket) {
                     return successor_found(me, cur, secHead, secTail);
-                } else if (cnaLockSpec.kunpengNuma && isFromOneBigNuma(curSocket, mySocket)) {
+                } else if (cnaLockSpec.kunpengNuma && curClosestInHierarchy == null && isFromOneBigNuma(curSocket, mySocket)) {
                     curClosestInHierarchy = cur;
                     secTailClosestInHierarchy = secTail;
                     secHeadClosestInHierarchy = secHead;
@@ -196,8 +196,8 @@ public class CNALock extends AbstractLock {
         }
 
         private boolean isFromOneBigNuma(int curSocket, int mySocket) {
-            return (curSocket == 0 && mySocket == 1) || (curSocket == 1 && mySocket == 1)
-                    || (mySocket == 2 && curSocket == 3) || (mySocket == 3 && curSocket == 2);
+            return (curSocket == 0 && mySocket == 1) || (curSocket == 1 && mySocket == 0)
+                    || (curSocket == 2 && mySocket == 3) || (curSocket == 3 && mySocket == 2);
         }
 
         private boolean keep_lock_local() { // probability 0.9999
