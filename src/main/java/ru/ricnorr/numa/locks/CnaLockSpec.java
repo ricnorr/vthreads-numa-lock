@@ -15,16 +15,24 @@ public class CnaLockSpec {
 
     public static String SPIN_THRESHOLD = "thres";
 
-    public boolean kunpengNuma = false;
+    public boolean kunpengNuma = true;
 
     public static String KUNPENG_NUMA_DIST = "numa";
 
     public CnaLockSpec(String params) {
         var obj = (JSONObject) JSONValue.parse(params);
-        this.useJavaAtomics = (Boolean) obj.get(USE_JAVA_ATOMICS);
-        this.useParkingOnSpin = (Boolean) obj.get(USE_PARKING_ON_SPIN);
-        this.spinThreshold = (Long) obj.get(SPIN_THRESHOLD);
-        this.kunpengNuma = (Boolean) obj.get(KUNPENG_NUMA_DIST);
+        if (obj.get(USE_JAVA_ATOMICS) != null) {
+            this.useJavaAtomics = (Boolean) obj.get(USE_JAVA_ATOMICS);
+        }
+        if (obj.get(USE_PARKING_ON_SPIN) != null) {
+            this.useParkingOnSpin = (Boolean) obj.get(USE_PARKING_ON_SPIN);
+        }
+        if (obj.get(SPIN_THRESHOLD) != null) {
+            this.spinThreshold = (Long) obj.get(SPIN_THRESHOLD);
+        }
+        if (obj.get(KUNPENG_NUMA_DIST) != null) {
+            this.kunpengNuma = (Boolean) obj.get(KUNPENG_NUMA_DIST);
+        }
     }
 
     @Override

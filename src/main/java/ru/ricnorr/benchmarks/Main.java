@@ -6,23 +6,25 @@ import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import ru.ricnorr.benchmarks.custom.CustomBenchmarkRunner;
 import ru.ricnorr.benchmarks.jmh.JmhBenchmarkRunner;
+import ru.ricnorr.benchmarks.jmh.cpu.JmhConsumeCpuTokensBenchmark;
 import ru.ricnorr.numa.locks.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Deque;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+
+import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
 
 public class Main {
     private static final List<String> RESULTS_HEADERS = List.of("name", "lock", "threads", "overhead(microsec)", "throughput(ops_microsec)");
@@ -170,6 +172,18 @@ public class Main {
     public static void main(String[] args) throws RunnerException {
         if (args.length != 0 && args[0].equals("print-clusters")) {
             printClusters();
+            return;
+        }
+        if (args.length != 0 && args[0].equals("estimate-consume-cpu")) {
+            var optionsBuilder = new OptionsBuilder()
+                    .include(JmhConsumeCpuTokensBenchmark.class.getSimpleName())
+                    .operationsPerInvocation(1)
+                    .warmupIterations(0)
+                    .forks(2)
+                    .measurementIterations(1)
+                    .param("cpuTokens", args[1])
+                    .verbosity(NORMAL);
+            var res = new Runner(optionsBuilder.build()).run();
             return;
         }
         // Read benchmark parameters
