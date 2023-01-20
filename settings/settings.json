@@ -30,7 +30,7 @@
   ],
   "actionsCount" : 10000,
   "warmupIterations": 1,
-  "iterations": 3,
+  "iterations": 2,
   "type": "jmh",
   "benches": [
     {
