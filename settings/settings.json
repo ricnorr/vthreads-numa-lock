@@ -19,22 +19,7 @@
       "name": "HCLH"
     },
     {
-      "name": "CNA",
-      "spec": {
-        "javatom": true,
-        "park": false,
-        "thres": 1024,
-        "numa": true
-      }
-    },
-    {
-      "name": "CNA",
-      "spec": {
-        "javatom": true,
-        "park": true,
-        "thres": 1024,
-        "numa": true
-      }
+      "name": "CNA"
     },
     {
       "name": "TEST_TEST_SET"
@@ -45,18 +30,18 @@
   ],
   "actionsCount" : 10000,
   "warmupIterations": 1,
-  "iterations": 1,
+  "iterations": 2,
   "type": "jmh",
   "benches": [
     {
-      "name": "matrix",
-      "before": 100,
-      "in": 50
+      "name": "consumeCpu",
+      "before": 32000,
+      "in": 64000
     },
     {
-      "name": "matrix",
-      "before": 50,
-      "in": 100
+      "name": "consumeCpu",
+      "before": 390000,
+      "in": 1500
     }
   ]
 }
