@@ -38,6 +38,11 @@ http://psy-lob-saw.blogspot.com/2013/12/jaq-spsc-latency-benchmarks1.html
 https://hal.inria.fr/tel-01263203v2/document  
 https://www.oracle.com/technical-resources/articles/java/architect-benchmarking.html  
 https://shipilev.net/talks/jvmls-July2013-benchmarking.pdf  
-https://www.baeldung.com/java-testing-multithreaded  
+https://www.baeldung.com/java-testing-multithreaded
+## Отчет
+### Запуск 23 января, arm, 128
+https://drive.google.com/drive/folders/1ocNH0UDuKj5nHrHtIzSVInLM9tsOWJiW?usp=sharing
+
+
 
 
