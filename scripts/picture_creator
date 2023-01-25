@@ -8,23 +8,33 @@ from matplotlib.backends.backend_pdf import PdfPages
 df = pd.read_csv('../results/benchmark_results.csv', index_col=None, header=0)
 bench_names = sorted(set(df['name']))
 locks = sorted(set(df['lock']))
-
+styles = ['--']
 paths = []
-for bench in bench_names:
-    for mode in ['overhead(microsec)','throughput(ops_microsec)']:
+
+
+def draw_by_bench_and_mode(df, bench, mode, threads, suffix):
         ax = plt.axes(title = bench + '\n mode=' + mode)
-        threads = sorted(set(df['threads']))
         ax.set_xscale("log")
         ax.set_xticks(threads)
         ax.set_xticklabels(list(map(lambda x : str(x), threads)))
-        plt.gcf().set_size_inches(5, 5)
+        plt.gcf().set_size_inches(7, 7)
+        ind = 0
+        markevery = [1,2]
         for lock in locks:
-            cur_df = df[(df['name'] == bench) & (df['lock'] == lock)]
-            cur_df.sort_values(by=['threads']).plot(ax=ax, x='threads', y=mode, label=lock)
-        name = '../results/pictures/' + bench + '_' + mode + '.png'
+            cur_df = df[(df['name'] == bench) & (df['lock'] == lock) & (df['threads'].isin(threads))]
+            cur_df.sort_values(by=['threads']).plot(ax=ax, x='threads', y=mode, label=lock, style=[styles[ind % len(styles)]], markevery=markevery[ind % len(markevery)], marker='o')
+            ind+=1
+        name = '../results/pictures/' + bench + '_' + mode  + suffix + '.png'
         paths.append(name)
         plt.savefig(name, bbox_inches="tight")
         plt.close()
+
+for bench in bench_names:
+    for mode in ['overhead(microsec)','throughput(ops_microsec)']:
+        x = sorted(set(df['threads']))
+        y = x[1:-1]
+        draw_by_bench_and_mode(df, bench, mode, x, '_all')
+        draw_by_bench_and_mode(df, bench, mode, y, '_zoomed')
 
 from PIL import Image
 
@@ -32,7 +42,4 @@ im1 = Image.open(paths[0]).convert('RGB')
 images = []
 for i in range(1, len(paths)):
     images.append(Image.open(paths[i]).convert('RGB'))
-im1.save(r'../results/result.pdf', save_all=True, append_images=images, dpi=(50, 50))
-
-
-
+im1.save(r'../results/result.pdf', save_all=True, append_images=images, dpi=(200, 200))
