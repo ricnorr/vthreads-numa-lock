@@ -18,4 +18,6 @@ public enum LockType {
     CLH,
 
     CNA,
+
+    HCLH_CPU_CLUSTER_SPLIT,
 }

@@ -43,6 +43,11 @@ public class Utils {
         return cpu.getValue();
     }
 
+    public static int kungpengGetClusterID() {
+        int cpuId = getCpuID();
+        return cpuId / 4;
+    }
+
     public static int spinWaitYield(int spinCounter) {
         for (int i = 0; i < spinCounter; i++) {
         }

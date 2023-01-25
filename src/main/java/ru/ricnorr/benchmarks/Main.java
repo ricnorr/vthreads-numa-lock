@@ -52,6 +52,9 @@ public class Main {
             case HCLH -> {
                 return new HCLHLock();
             }
+            case HCLH_CPU_CLUSTER_SPLIT -> {
+                return new HCLHCCLSplitLock();
+            }
             case CLH -> {
                 return new CLHLock();
             }
