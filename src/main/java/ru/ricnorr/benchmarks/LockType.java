@@ -18,4 +18,10 @@ public enum LockType {
     CLH,
 
     CNA,
+
+    HCLH_CCL_SPLIT,
+
+    MCS_NO_PARK,
+
+    HMCS,
 }

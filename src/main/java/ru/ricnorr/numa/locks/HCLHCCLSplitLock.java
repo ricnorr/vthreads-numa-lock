@@ -8,15 +8,15 @@ import static kotlinx.atomicfu.AtomicFU.atomic;
 import static ru.ricnorr.numa.locks.Utils.spinWaitYield;
 
 
-public class HCLHLock extends AbstractLock {
+public class HCLHCCLSplitLock extends AbstractLock {
 
-    private final HCLHLockCore lockCore = new HCLHLockCore();
+    private final HCLHCCLSplitLockCore lockCore = new HCLHCCLSplitLockCore();
 
-    ThreadLocal<HCLHLockCore.QNodeHCLH> prevNode = new ThreadLocal<>();
+    ThreadLocal<HCLHCCLSplitLockCore.QNodeHCLH> prevNode = new ThreadLocal<>();
 
-    ThreadLocal<HCLHLockCore.QNodeHCLH> currNode = ThreadLocal.withInitial(HCLHLockCore.QNodeHCLH::new);
+    ThreadLocal<HCLHCCLSplitLockCore.QNodeHCLH> currNode = ThreadLocal.withInitial(HCLHCCLSplitLockCore.QNodeHCLH::new);
 
-    ThreadLocal<Integer> clusterID = ThreadLocal.withInitial(Utils::getClusterID);
+    ThreadLocal<Integer> clusterID = ThreadLocal.withInitial(Utils::kungpengGetClusterID);
 
     @Override
     public void lock() {
@@ -31,12 +31,12 @@ public class HCLHLock extends AbstractLock {
         prevNode.set(null);
     }
 
-    public static class HCLHLockCore {
-        static final int MAX_CLUSTERS = 25;
+    public static class HCLHCCLSplitLockCore {
+        static final int MAX_CLUSTERS = 128;
         final AtomicArray<QNodeHCLH> localQueues;
         final AtomicRef<QNodeHCLH> globalQueue;
 
-        public HCLHLockCore() {
+        public HCLHCCLSplitLockCore() {
             localQueues = new AtomicArray<>(MAX_CLUSTERS);
             QNodeHCLH head = new QNodeHCLH();
             globalQueue = atomic(head);

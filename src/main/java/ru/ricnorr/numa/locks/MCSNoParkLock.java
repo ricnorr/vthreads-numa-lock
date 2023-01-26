@@ -14,19 +14,16 @@ import static ru.ricnorr.numa.locks.Utils.spinWaitYield;
 /**
  * MCS lock with active spin
  */
-public class MCSLock implements Lock {
+public class MCSNoParkLock implements Lock {
 
     public static class QNode {
         private final AtomicRef<QNode> next = atomic(null);
         private final kotlinx.atomicfu.AtomicBoolean spin = atomic(true);
 
-        private final Thread thread = Thread.currentThread();
     }
 
     private final AtomicRef<QNode> tail = atomic(null);
-
     private final ThreadLocal<QNode> node = ThreadLocal.withInitial(QNode::new);
-
     @Override
     public void lock() {
         QNode qnode = node.get();
@@ -36,8 +33,9 @@ public class MCSLock implements Lock {
         QNode pred = tail.getAndSet(qnode);
         if (pred != null) {
             pred.next.setValue(qnode);
+            int spinCounter = 1;
             while (qnode.spin.getValue()) {
-                LockSupport.park(this);
+                 spinCounter = spinWaitYield(spinCounter);
             }
         }
     }
@@ -64,14 +62,11 @@ public class MCSLock implements Lock {
             if (tail.compareAndSet(headNode, null)) {
                 return;
             }
-            int spinCounter = 1;
             while (headNode.next.getValue() == null) {
-                // WAIT when next thread set headNode.next
-                spinCounter = spinWaitYield(spinCounter);
+                // WAIT when next чthread set headNode.next
             }
         }
         headNode.next.getValue().spin.setValue(false);
-        LockSupport.unpark(headNode.next.getValue().thread);
     }
 
     @NotNull

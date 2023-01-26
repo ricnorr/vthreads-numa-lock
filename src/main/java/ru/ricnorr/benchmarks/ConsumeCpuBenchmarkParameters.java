@@ -10,6 +10,8 @@ public class ConsumeCpuBenchmarkParameters extends BenchmarkParameters {
 
     public double beforeConsumeCpuTokensTimeNanos;
 
+    public boolean isHigh;
+
     public ConsumeCpuBenchmarkParameters(int threads, LockType lockType, String lockSpec, long beforeCpuTokens, long inCpuTokens, int actionsPerThread,
                                      double beforeConsumeCpuTokensTimeNanos, double inConsumeCpuTokensTimeNanos) {
         super(threads, lockType, actionsPerThread, lockSpec);
@@ -17,14 +19,16 @@ public class ConsumeCpuBenchmarkParameters extends BenchmarkParameters {
         this.inCpuTokens = inCpuTokens;
         this.beforeConsumeCpuTokensTimeNanos = beforeConsumeCpuTokensTimeNanos;
         this.inConsumeCpuTokensTimeNanos = inConsumeCpuTokensTimeNanos;
+        this.isHigh = inConsumeCpuTokensTimeNanos * threads > beforeConsumeCpuTokensTimeNanos;
     }
 
     @Override
     public String getBenchmarkName() {
         return String.format(
-                "Consume cpu tokens. Before crit.section: %d tokens. In crit.section: %d tokens",
+                "Consume cpu tokens. Before crit.section: %d tokens. In crit.section: %d tokens (%s)",
                 beforeCpuTokens,
-                inCpuTokens
+                inCpuTokens,
+                isHigh ? "High contention" : "Low contention"
         );
     }
 
