@@ -43,10 +43,10 @@ public class HMCS extends AbstractLock {
 
     final ThreadLocal<Integer> localClusterID = ThreadLocal.withInitial(Utils::kungpengGetClusterID);
 
-    public HMCS() {
+    public HMCS(HMCSLockSpec spec) {
         int availableProcessors = Runtime.getRuntime().availableProcessors();
         int treeHeight = 4;
-        int cclSize = 1;
+        int cclSize = (int)spec.ccl;
         List<List<HNode>> levels = new ArrayList<>();
 
         {
@@ -115,12 +115,12 @@ public class HMCS extends AbstractLock {
     }
 
     private void unlockH(HNode hNode, QNode qNode) {
-        if (hNode.parent == null) {
+        if (hNode.parent == null) { // top hierarchy
             releaseHelper(hNode, qNode, UNLOCKED);
             return;
         }
         int curCount = qNode.status.get();
-        if (curCount == 999999) {
+        if (curCount == 10000) {
             unlockH(hNode.parent, hNode.node);
             releaseHelper(hNode, qNode, ACQUIRE_PARENT);
             return;

@@ -26,9 +26,18 @@
     },
     {
       "name": "TEST_SET"
+    },
+    {
+      "name": "HMCS"
+    },
+    {
+      "name": "HCLH_CCL_SPLIT"
+    },
+    {
+      "name": "MCS_NO_PARK"
     }
   ],
-  "actionsCount" : 10000,
+  "actionsCount" : 8192,
   "warmupIterations": 1,
   "iterations": 2,
   "type": "jmh",
@@ -42,6 +51,10 @@
       "name": "consumeCpu",
       "before": 390000,
       "in": 1500
+    },
+    {
+      "name": "consumeCpuMiddleContention",
+      "before": 8192
     }
   ]
 }

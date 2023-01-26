@@ -9,8 +9,8 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 import ru.ricnorr.benchmarks.*;
 import ru.ricnorr.benchmarks.jmh.cpu.JmhParConsumeCpuTokensBenchmark;
 import ru.ricnorr.benchmarks.jmh.cpu.JmhConsumeCpuTokensUtil;
-import ru.ricnorr.benchmarks.jmh.cpu.JmhSeqConsumeCpuTokensBenchmarkOversubscription;
-import ru.ricnorr.benchmarks.jmh.cpu.JmhSeqConsumeCpuTokensBenchmarkUndersubsription;
+import ru.ricnorr.benchmarks.jmh.cpu.JmhSeqConsumeCpuTokensBenchmarkHighContention;
+import ru.ricnorr.benchmarks.jmh.cpu.JmhSeqConsumeCpuTokensBenchmarkLowContention;
 import ru.ricnorr.benchmarks.jmh.matrix.JmhMatrixUtil;
 import ru.ricnorr.benchmarks.jmh.matrix.JmhParMatrixBenchmark;
 import ru.ricnorr.benchmarks.jmh.matrix.JmhSeqMatrixBenchmarkOversubscription;
@@ -140,15 +140,33 @@ public class JmhBenchmarkRunner {
             ));
             double withoutLocksNanos;
             if (param.inConsumeCpuTokensTimeNanos * param.threads > param.beforeConsumeCpuTokensTimeNanos) {
-                withoutLocksNanos = runBenchmarkNano(JmhSeqConsumeCpuTokensBenchmarkOversubscription.class, iterations, warmupIterations,  Map.of(
+                withoutLocksNanos = runBenchmarkNano(JmhSeqConsumeCpuTokensBenchmarkHighContention.class, iterations, warmupIterations,  Map.of(
                         "beforeCpuTokens", Long.toString(param.beforeCpuTokens),
                         "inCpuTokens", Long.toString(param.inCpuTokens),
                         "actionsPerThread", Integer.toString(param.actionsPerThread),
                         "threads", Integer.toString(param.threads))
                 );
             } else {
-                withoutLocksNanos = runBenchmarkNano(JmhSeqConsumeCpuTokensBenchmarkUndersubsription.class, iterations, warmupIterations, Map.of("beforeCpuTokens", Long.toString(param.beforeCpuTokens), "inCpuTokens", Long.toString(param.inCpuTokens), "actionsPerThread", Integer.toString(param.actionsPerThread)));
+                withoutLocksNanos = runBenchmarkNano(JmhSeqConsumeCpuTokensBenchmarkLowContention.class, iterations, warmupIterations, Map.of("beforeCpuTokens", Long.toString(param.beforeCpuTokens), "inCpuTokens", Long.toString(param.inCpuTokens), "actionsPerThread", Integer.toString(param.actionsPerThread)));
             }
+            double overheadNanos = withLocksNanos - withoutLocksNanos;
+            double throughputNanos = (parameters.threads * parameters.actionsPerThread) / withLocksNanos;
+            return new BenchmarkResultsCsv(parameters.getBenchmarkName(), parameters.lockType.name() + "_" + parameters.lockSpec, parameters.threads, overheadNanos, throughputNanos);
+        } else if (parameters instanceof ConsumeCpuNormalContentionBenchmarkParameters param) {
+            double withLocksNanos = runBenchmarkNano(JmhParConsumeCpuTokensBenchmark.class, iterations, warmupIterations, Map.of(
+                    "beforeCpuTokens", Long.toString(param.beforeCpuTokens),
+                    "inCpuTokens", Long.toString(param.beforeCpuTokens / param.threads),
+                    "threads", Integer.toString(param.threads),
+                    "actionsPerThread", Integer.toString(param.actionsPerThread),
+                    "lockType", param.lockType.toString(),
+                    "lockSpec", param.lockSpec
+            ));
+            double withoutLocksNanos = runBenchmarkNano(JmhSeqConsumeCpuTokensBenchmarkHighContention.class, iterations, warmupIterations,  Map.of(
+                    "beforeCpuTokens", Long.toString(param.beforeCpuTokens),
+                    "inCpuTokens", Long.toString(param.beforeCpuTokens / param.threads),
+                    "actionsPerThread", Integer.toString(param.actionsPerThread),
+                    "threads", Integer.toString(param.threads))
+            );
             double overheadNanos = withLocksNanos - withoutLocksNanos;
             double throughputNanos = (parameters.threads * parameters.actionsPerThread) / withLocksNanos;
             return new BenchmarkResultsCsv(parameters.getBenchmarkName(), parameters.lockType.name() + "_" + parameters.lockSpec, parameters.threads, overheadNanos, throughputNanos);
