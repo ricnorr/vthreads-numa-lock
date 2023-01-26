@@ -73,7 +73,22 @@ public class JmhBenchmarkRunner {
                         }
                     }
                 }
-
+                case "consumeCpuNormalContention" -> {
+                    long before =  ((long) obj.get("before"));
+                    for (int thread : threads) {
+                        for (Object lockDescription : locks) {
+                            var lockName = (String)((JSONObject)lockDescription).get("name");
+                            var lockSpec = (JSONObject)((JSONObject)lockDescription).get("spec");
+                            var lockSpecString = "";
+                            if (lockSpec == null) {
+                                lockSpecString = "{}";
+                            } else {
+                                lockSpecString = lockSpec.toJSONString();
+                            }
+                            paramList.add(new ConsumeCpuNormalContentionBenchmarkParameters(thread, LockType.valueOf(lockName), lockSpecString, before, actionsCount / thread));
+                        }
+                    }
+                }
                 default -> {
                     throw new IllegalStateException("Unknown benchmark type " + name);
                 }

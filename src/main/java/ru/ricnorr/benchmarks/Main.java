@@ -65,7 +65,7 @@ public class Main {
                 return new MCSNoParkLock();
             }
             case HMCS -> {
-                return new HMCS();
+                return new HMCS(new HMCSLockSpec(lockSpec));
             }
             default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
         }

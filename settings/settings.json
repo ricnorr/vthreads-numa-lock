@@ -21,7 +21,7 @@
     {
       "name": "HMCS",
       "spec": {
-        "ccl": 1
+        "ccl": 4
       }
     },
     {
@@ -47,7 +47,7 @@
       "in": 1500
     },
     {
-      "name": "consumeCpuMiddleContention",
+      "name": "consumeCpuNormalContention",
       "before": 8192
     }
   ]
