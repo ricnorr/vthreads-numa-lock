@@ -52,7 +52,7 @@ public class Main {
             case HCLH -> {
                 return new HCLHLock();
             }
-            case HCLH_CPU_CLUSTER_SPLIT -> {
+            case HCLH_CCL_SPLIT -> {
                 return new HCLHCCLSplitLock();
             }
             case CLH -> {
@@ -63,6 +63,9 @@ public class Main {
             }
             case MCS_NO_PARK -> {
                 return new MCSNoParkLock();
+            }
+            case HMCS -> {
+                return new HMCS();
             }
             default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
         }

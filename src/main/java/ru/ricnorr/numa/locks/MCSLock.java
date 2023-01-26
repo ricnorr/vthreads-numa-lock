@@ -20,24 +20,26 @@ public class MCSLock implements Lock {
         private final AtomicRef<QNode> next = atomic(null);
         private final kotlinx.atomicfu.AtomicBoolean spin = atomic(true);
 
-        private final AtomicRef<Thread> thread = atomic(null);
+        private final Thread thread = Thread.currentThread();
     }
 
     private final AtomicRef<QNode> tail = atomic(null);
-    private final AtomicRef<QNode> head = atomic(null);
+
+    private final ThreadLocal<QNode> node = ThreadLocal.withInitial(QNode::new);
 
     @Override
     public void lock() {
-        QNode qnode = new QNode();
+        QNode qnode = node.get();
+        qnode.spin.setValue(true);
+        qnode.next.setValue(null);
+
         QNode pred = tail.getAndSet(qnode);
-        qnode.thread.setValue(Thread.currentThread());
         if (pred != null) {
             pred.next.setValue(qnode);
             while (qnode.spin.getValue()) {
                 LockSupport.park(this);
             }
         }
-        head.setValue(qnode);
     }
 
     @Override
@@ -57,7 +59,7 @@ public class MCSLock implements Lock {
 
     @Override
     public void unlock() {
-        QNode headNode = head.getValue();
+        QNode headNode = node.get();
         if (headNode.next.getValue() == null) {
             if (tail.compareAndSet(headNode, null)) {
                 return;
@@ -69,7 +71,7 @@ public class MCSLock implements Lock {
             }
         }
         headNode.next.getValue().spin.setValue(false);
-        LockSupport.unpark(headNode.next.getValue().thread.getValue());
+        LockSupport.unpark(headNode.next.getValue().thread);
     }
 
     @NotNull

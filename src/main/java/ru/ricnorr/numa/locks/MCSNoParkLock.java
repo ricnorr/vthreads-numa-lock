@@ -23,16 +23,21 @@ public class MCSNoParkLock implements Lock {
     }
 
     private final AtomicRef<QNode> tail = atomic(null);
-    private final AtomicRef<QNode> head = atomic(null);
-
+    private final ThreadLocal<QNode> node = ThreadLocal.withInitial(QNode::new);
     @Override
     public void lock() {
-        QNode qnode = new QNode();
+        QNode qnode = node.get();
+        qnode.spin.setValue(true);
+        qnode.next.setValue(null);
+
         QNode pred = tail.getAndSet(qnode);
         if (pred != null) {
             pred.next.setValue(qnode);
+            int spinCounter = 1;
+            while (qnode.spin.getValue()) {
+                 spinCounter = spinWaitYield(spinCounter);
+            }
         }
-        head.setValue(qnode);
     }
 
     @Override
@@ -52,13 +57,13 @@ public class MCSNoParkLock implements Lock {
 
     @Override
     public void unlock() {
-        QNode headNode = head.getValue();
+        QNode headNode = node.get();
         if (headNode.next.getValue() == null) {
             if (tail.compareAndSet(headNode, null)) {
                 return;
             }
             while (headNode.next.getValue() == null) {
-                // WAIT when next thread set headNode.next
+                // WAIT when next чthread set headNode.next
             }
         }
         headNode.next.getValue().spin.setValue(false);
