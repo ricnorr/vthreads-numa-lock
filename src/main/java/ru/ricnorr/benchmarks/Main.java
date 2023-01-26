@@ -61,6 +61,9 @@ public class Main {
             case CNA -> {
                 return new CNALock(new CnaLockSpec(lockSpec));
             }
+            case MCS_NO_PARK -> {
+                return new MCSNoParkLock();
+            }
             default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
         }
     }

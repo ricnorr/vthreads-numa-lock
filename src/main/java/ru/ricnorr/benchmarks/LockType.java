@@ -20,4 +20,6 @@ public enum LockType {
     CNA,
 
     HCLH_CPU_CLUSTER_SPLIT,
+
+    MCS_NO_PARK,
 }
