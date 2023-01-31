@@ -1,14 +1,8 @@
 # NUMA-aware-locks
 Repository for my bachelor's diploma, implementing and benchmarking NUMA aware locks.
 # Install instruments
-* download openjdk 17 (```sudo apt-get install openjdk-17-jdk```)
-* set JAVA_HOME
-* download gradle 7.3 
-```
-  VERSION=7.3  
-  wget https://services.gradle.org/distributions/gradle-${VERSION}-bin.zip -P /tmp
-  sudo unzip -d /opt/gradle /tmp/gradle-${VERSION}-bin.zip
-  ```
+* prepare java and gradle
+* ```install_java.sh``` 
 * ```gradle wrapper``` in project dir
 * prepare conda and python libraries
   * Run ```activate-conda.sh``` to install miniconda
