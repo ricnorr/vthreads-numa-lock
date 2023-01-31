@@ -61,15 +61,17 @@ public class JmhBenchmarkRunner {
                     double inConsumeCpuTokensTimeNanos = JmhConsumeCpuTokensUtil.estimateConsumeCpuTokensTimeNanos(in);
                     for (int thread : threads) {
                         for (Object lockDescription : locks) {
-                            var lockName = (String)((JSONObject)lockDescription).get("name");
-                            var lockSpec = (JSONObject)((JSONObject)lockDescription).get("spec");
+                            var lockDescriptionJson = (JSONObject)lockDescription;
+                            var lockName = (String)lockDescriptionJson.get("name");
+                            var lockSpec = (JSONObject)lockDescriptionJson.get("spec");
+                            var isLightThread = (Boolean)lockDescriptionJson.get("light");;
                             var lockSpecString = "";
                             if (lockSpec == null) {
                                 lockSpecString = "{}";
                             } else {
                                 lockSpecString = lockSpec.toJSONString();
                             }
-                            paramList.add(new ConsumeCpuBenchmarkParameters(thread, LockType.valueOf(lockName), lockSpecString, before, in, actionsCount / thread, beforeConsumeCpuTokensTimeNanos, inConsumeCpuTokensTimeNanos));
+                            paramList.add(new ConsumeCpuBenchmarkParameters(thread, LockType.valueOf(lockName), lockSpecString, isLightThread, before, in, actionsCount / thread, beforeConsumeCpuTokensTimeNanos, inConsumeCpuTokensTimeNanos));
                         }
                     }
                 }
@@ -146,6 +148,7 @@ public class JmhBenchmarkRunner {
         } else if (parameters instanceof ConsumeCpuBenchmarkParameters param) {
             System.out.printf("Start benchmark: threads %d, lockType %s, lockSpec %s, beforeTokens %d, inTokens %d%n", parameters.threads, parameters.lockType, parameters.lockSpec, param.beforeCpuTokens, param.inCpuTokens);
             double withLocksNanos = runBenchmarkNano(JmhParConsumeCpuTokensBenchmark.class, iterations, warmupIterations, Map.of(
+                    "useLightThreads", Boolean.toString(param.isLight),
                     "beforeCpuTokens", Long.toString(param.beforeCpuTokens),
                     "inCpuTokens", Long.toString(param.inCpuTokens),
                     "threads", Integer.toString(param.threads),
