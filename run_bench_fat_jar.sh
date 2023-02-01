@@ -6,6 +6,7 @@ source "$CONDA_PROFILE"
 conda activate pip3
 sdk use java 19.0.2-open
 
+cp settings/settings.json fatjar/settings/settings.json
 cd fatjar
 java --enable-preview -jar NUMA-aware-locks.jar
 cp ./results/benchmark_results.csv ../results/benchmark_results.csv
