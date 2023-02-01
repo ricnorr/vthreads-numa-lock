@@ -4,9 +4,12 @@ public class ConsumeCpuNormalContentionBenchmarkParameters extends BenchmarkPara
 
     public long beforeCpuTokens;
 
-    public ConsumeCpuNormalContentionBenchmarkParameters(int threads, LockType lockType, String lockSpec, long beforeCpuTokens, int actionsPerThread) {
+    public boolean isLightThread;
+
+    public ConsumeCpuNormalContentionBenchmarkParameters(int threads, LockType lockType, String lockSpec, boolean isLightThread, long beforeCpuTokens, int actionsPerThread) {
         super(threads, lockType, actionsPerThread, lockSpec);
         this.beforeCpuTokens = beforeCpuTokens;
+        this.isLightThread = isLightThread;
     }
 
     @Override

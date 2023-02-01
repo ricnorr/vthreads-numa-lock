@@ -3,6 +3,7 @@ plugins {
     `java-library`
     kotlin("jvm") version "1.7.20"
     id("io.github.reyerizo.gradle.jcstress") version "0.8.13"
+    id("com.github.johnrengelman.shadow") version "6.0.0"
 }
 
 
@@ -19,14 +20,18 @@ buildscript {
 apply(plugin = "kotlinx-atomicfu")
 
 application {
-    mainClass.set("ru.ricnorr.benchmarks.Main")
+    @Suppress("DEPRECATION")
+    mainClassName = "ru.ricnorr.benchmarks.Main"
+}
+
+tasks.jar {
+    manifest.attributes["Main-Class"] = "ru.ricnorr.benchmarks.Main"
 }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_19
     targetCompatibility = JavaVersion.VERSION_19
 }
-
 
 tasks.withType<JavaCompile>().configureEach {
     options.compilerArgs = listOf(
