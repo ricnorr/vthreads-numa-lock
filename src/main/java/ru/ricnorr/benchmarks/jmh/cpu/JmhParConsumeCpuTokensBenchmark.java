@@ -19,6 +19,10 @@ import static ru.ricnorr.benchmarks.Main.setAffinity;
 
 @State(Benchmark)
 public class JmhParConsumeCpuTokensBenchmark {
+
+    @Param("false")
+    public boolean useLightThreads;
+
     @Param("0")
     public long beforeCpuTokens;
 
@@ -41,8 +45,10 @@ public class JmhParConsumeCpuTokensBenchmark {
 
     @Setup
     public void init() {
-        List<Integer> processors = getProcessorsNumbersInNumaNodeOrder();
-        setAffinity(threads, ProcessHandle.current().pid(), processors);
+        if (!useLightThreads) {
+            List<Integer> processors = getProcessorsNumbersInNumaNodeOrder();
+            setAffinity(threads, ProcessHandle.current().pid(), processors);
+        }
 
         lock = Main.initLock(LockType.valueOf(lockType), lockSpec);
     }
@@ -55,7 +61,7 @@ public class JmhParConsumeCpuTokensBenchmark {
         final CyclicBarrier ready = new CyclicBarrier(threads);
         List<Thread> threadList = new ArrayList<>();
         for (int i = 0; i < threads; i++) {
-            threadList.add(new Thread(() -> {
+            Runnable runnable = () -> {
                 try {
                     ready.await();
                 } catch (InterruptedException | BrokenBarrierException e) {
@@ -67,7 +73,12 @@ public class JmhParConsumeCpuTokensBenchmark {
                     Blackhole.consumeCPU(inCpuTokens);
                     lock.unlock();
                 }
-            }));
+            };
+            if (useLightThreads) {
+                threadList.add(Thread.ofVirtual().factory().newThread(runnable));
+            } else {
+                threadList.add(Thread.ofPlatform().factory().newThread(runnable));
+            }
         }
         for (int i = 0; i < threads; i++) {
             threadList.get(i).start();

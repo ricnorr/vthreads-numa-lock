@@ -57,35 +57,39 @@ public class JmhBenchmarkRunner {
                 case "consumeCpu" -> {
                     long before =  ((long) obj.get("before"));
                     long in = ((long) obj.get("in"));
+                    var isLightThread = (Boolean)obj.get("light");;
                     double beforeConsumeCpuTokensTimeNanos = JmhConsumeCpuTokensUtil.estimateConsumeCpuTokensTimeNanos(before);
                     double inConsumeCpuTokensTimeNanos = JmhConsumeCpuTokensUtil.estimateConsumeCpuTokensTimeNanos(in);
                     for (int thread : threads) {
                         for (Object lockDescription : locks) {
-                            var lockName = (String)((JSONObject)lockDescription).get("name");
-                            var lockSpec = (JSONObject)((JSONObject)lockDescription).get("spec");
+                            var lockDescriptionJson = (JSONObject)lockDescription;
+                            var lockName = (String)lockDescriptionJson.get("name");
+                            var lockSpec = (JSONObject)lockDescriptionJson.get("spec");
                             var lockSpecString = "";
                             if (lockSpec == null) {
                                 lockSpecString = "{}";
                             } else {
                                 lockSpecString = lockSpec.toJSONString();
                             }
-                            paramList.add(new ConsumeCpuBenchmarkParameters(thread, LockType.valueOf(lockName), lockSpecString, before, in, actionsCount / thread, beforeConsumeCpuTokensTimeNanos, inConsumeCpuTokensTimeNanos));
+                            paramList.add(new ConsumeCpuBenchmarkParameters(thread, LockType.valueOf(lockName), lockSpecString, isLightThread, before, in, actionsCount / thread, beforeConsumeCpuTokensTimeNanos, inConsumeCpuTokensTimeNanos));
                         }
                     }
                 }
                 case "consumeCpuNormalContention" -> {
                     long before =  ((long) obj.get("before"));
+                    var isLightThread = (Boolean)obj.get("light");
                     for (int thread : threads) {
                         for (Object lockDescription : locks) {
-                            var lockName = (String)((JSONObject)lockDescription).get("name");
-                            var lockSpec = (JSONObject)((JSONObject)lockDescription).get("spec");
+                            var lockDescriptionJson = (JSONObject)lockDescription;
+                            var lockName = (String)lockDescriptionJson.get("name");
+                            var lockSpec = (JSONObject)lockDescriptionJson.get("spec");
                             var lockSpecString = "";
                             if (lockSpec == null) {
                                 lockSpecString = "{}";
                             } else {
                                 lockSpecString = lockSpec.toJSONString();
                             }
-                            paramList.add(new ConsumeCpuNormalContentionBenchmarkParameters(thread, LockType.valueOf(lockName), lockSpecString, before, actionsCount / thread));
+                            paramList.add(new ConsumeCpuNormalContentionBenchmarkParameters(thread, LockType.valueOf(lockName), lockSpecString, isLightThread, before, actionsCount / thread));
                         }
                     }
                 }
@@ -146,6 +150,7 @@ public class JmhBenchmarkRunner {
         } else if (parameters instanceof ConsumeCpuBenchmarkParameters param) {
             System.out.printf("Start benchmark: threads %d, lockType %s, lockSpec %s, beforeTokens %d, inTokens %d%n", parameters.threads, parameters.lockType, parameters.lockSpec, param.beforeCpuTokens, param.inCpuTokens);
             double withLocksNanos = runBenchmarkNano(JmhParConsumeCpuTokensBenchmark.class, iterations, warmupIterations, Map.of(
+                    "useLightThreads", Boolean.toString(param.isLight),
                     "beforeCpuTokens", Long.toString(param.beforeCpuTokens),
                     "inCpuTokens", Long.toString(param.inCpuTokens),
                     "threads", Integer.toString(param.threads),
@@ -169,6 +174,7 @@ public class JmhBenchmarkRunner {
             return new BenchmarkResultsCsv(parameters.getBenchmarkName(), parameters.lockType.name() + "_" + parameters.lockSpec, parameters.threads, overheadNanos, throughputNanos);
         } else if (parameters instanceof ConsumeCpuNormalContentionBenchmarkParameters param) {
             double withLocksNanos = runBenchmarkNano(JmhParConsumeCpuTokensBenchmark.class, iterations, warmupIterations, Map.of(
+                    "useLightThreads", Boolean.toString(param.isLightThread),
                     "beforeCpuTokens", Long.toString(param.beforeCpuTokens),
                     "inCpuTokens", Long.toString(param.beforeCpuTokens / param.threads),
                     "threads", Integer.toString(param.threads),

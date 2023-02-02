@@ -68,7 +68,6 @@ public class HCLHLock extends AbstractLock {
             // inform successor it is the new master
             localTail.setTailWhenSpliced(true);
             while (myPred.isSuccessorMustWait()) {
-                Thread.onSpinWait();
             }
 
             return myPred;
@@ -103,7 +102,6 @@ public class HCLHLock extends AbstractLock {
                     } else if (getClusterID() != myCluster || isTailWhenSpliced()) {
                         return false;
                     }
-                    Thread.onSpinWait();
                 }
             }
             public void prepareForLock(int clusterId) {

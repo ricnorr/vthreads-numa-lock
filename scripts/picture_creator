@@ -24,6 +24,12 @@ def draw_by_bench_and_mode(df, bench, mode, threads, suffix):
             cur_df = df[(df['name'] == bench) & (df['lock'] == lock) & (df['threads'].isin(threads))]
             cur_df.sort_values(by=['threads']).plot(ax=ax, x='threads', y=mode, label=lock, style=[styles[ind % len(styles)]], markevery=markevery[ind % len(markevery)], marker='o')
             ind+=1
+        l = plt.legend()
+        for text in l.get_texts():
+            t = text.get_text()
+            if t == 'FAIR_REENTRANT_{}' or t == 'UNFAIR_REENTRANT_{}':
+                text.set_color("red")
+
         name = '../results/pictures/' + bench + '_' + mode  + suffix + '.png'
         paths.append(name)
         plt.savefig(name, bbox_inches="tight")

@@ -3,7 +3,9 @@ plugins {
     `java-library`
     kotlin("jvm") version "1.7.20"
     id("io.github.reyerizo.gradle.jcstress") version "0.8.13"
+    id("com.github.johnrengelman.shadow") version "6.0.0"
 }
+
 
 buildscript {
     repositories {
@@ -17,24 +19,32 @@ buildscript {
 
 apply(plugin = "kotlinx-atomicfu")
 
-
 application {
-    mainClass.set("ru.ricnorr.benchmarks.Main")
+    @Suppress("DEPRECATION")
+    mainClassName = "ru.ricnorr.benchmarks.Main"
+}
+
+tasks.jar {
+    manifest.attributes["Main-Class"] = "ru.ricnorr.benchmarks.Main"
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_19
+    targetCompatibility = JavaVersion.VERSION_19
 }
-
 
 tasks.withType<JavaCompile>().configureEach {
     options.compilerArgs = listOf(
         "--add-opens",
         "java.base/jdk.internal.misc=ALL-UNNAMED",
         "--add-exports",
-        "java.base/jdk.internal.util=ALL-UNNAMED"
+        "java.base/jdk.internal.util=ALL-UNNAMED",
+        "--enable-preview"
     )
+}
+
+tasks.withType<JavaExec>().configureEach {
+    jvmArgs = listOf("--enable-preview")
 }
 
 group = "me.ricnorr"
@@ -67,6 +77,6 @@ tasks.test {
         "--add-exports",
         "java.base/jdk.internal.loader=ALL-UNNAMED",
         "--add-exports",
-        "java.base/jdk.internal.util=ALL-UNNAMED"
+        "java.base/jdk.internal.util=ALL-UNNAMED",
     )
 }
