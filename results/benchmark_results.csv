@@ -1,2 +1,0 @@
-name,lock,threads,overhead(microsec),throughput(ops_microsec)
-Consume cpu tokens. Light threads. Before crit.section: 32000 tokens. In crit.section: 64000 tokens (High contention),FAIR_REENTRANT_{},1,11.869115528774186,0.003697696767701639
