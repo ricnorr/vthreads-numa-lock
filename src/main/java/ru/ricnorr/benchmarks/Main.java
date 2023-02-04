@@ -67,6 +67,27 @@ public class Main {
             case HMCS -> {
                 return new HMCS(new HMCSLockSpec(lockSpec));
             }
+            case HCLH_CCL_SPLIT_BACKOFF -> {
+                return new HCLHCCLSplitWithBackoffLock(new HCLHCCLSplitWithBackoffLock.HCLHCCLSplitWithBackoffLockSpec(lockSpec));
+            }
+            case HMCS_PARK -> {
+                return new HMCS_PARK(new HMCSLockSpec(lockSpec));
+            }
+            case HMCS_PARK_V2 -> {
+                return new HMCS_PARK_V2(new HMCSLockSpec(lockSpec));
+            }
+            case HMCS_PARK_V3 -> {
+                return new HMCS_PARK_V3(new HMCSLockSpec(lockSpec));
+            }
+            case HMCS_PARK_V4 -> {
+                return new HMCS_PARK_V4(new HMCSLockSpec(lockSpec));
+            }
+            case HMCS_PARK_V5 -> {
+                return new HMCS_PARK_V5(new HMCSLockSpec(lockSpec));
+            }
+            case HMCS_PARK_V6 -> {
+                return new HMCS_PARK_V6(new HMCSLockSpec(lockSpec));
+            }
             default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
         }
     }

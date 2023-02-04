@@ -10,29 +10,46 @@ public class ConsumeCpuBenchmarkParameters extends BenchmarkParameters {
 
     public double beforeConsumeCpuTokensTimeNanos;
 
-    public boolean isHigh;
+    public boolean isHighContention;
 
-    public boolean isLight;
+    public boolean isLightThread;
 
-    public ConsumeCpuBenchmarkParameters(int threads, LockType lockType, String lockSpec, boolean isLight, long beforeCpuTokens, long inCpuTokens, int actionsPerThread,
-                                     double beforeConsumeCpuTokensTimeNanos, double inConsumeCpuTokensTimeNanos) {
+    public double highContentionWithoutLockNanos;
+
+    public ConsumeCpuBenchmarkParameters(int threads, LockType lockType, String lockSpec, boolean isLightThread, long beforeCpuTokens, long inCpuTokens, int actionsPerThread,
+                                         double beforeConsumeCpuTokensTimeNanos, double inConsumeCpuTokensTimeNanos, double highContentionWithoutLockNanos) {
         super(threads, lockType, actionsPerThread, lockSpec);
-        this.isLight = isLight;
+        this.isLightThread = isLightThread;
         this.beforeCpuTokens = beforeCpuTokens;
         this.inCpuTokens = inCpuTokens;
         this.beforeConsumeCpuTokensTimeNanos = beforeConsumeCpuTokensTimeNanos;
         this.inConsumeCpuTokensTimeNanos = inConsumeCpuTokensTimeNanos;
-        this.isHigh = inConsumeCpuTokensTimeNanos * threads > beforeConsumeCpuTokensTimeNanos;
+        this.isHighContention = inConsumeCpuTokensTimeNanos * threads > beforeConsumeCpuTokensTimeNanos;
+        this.highContentionWithoutLockNanos = highContentionWithoutLockNanos;
     }
 
     @Override
     public String getBenchmarkName() {
         return String.format(
                 "Consume cpu tokens. %s threads. Before crit.section: %d tokens. In crit.section: %d tokens (%s)",
-                isLight ? "Light" : "Hard",
+                isLightThread ? "Light" : "Hard",
                 beforeCpuTokens,
                 inCpuTokens,
-                isHigh ? "High contention" : "Low contention"
+                isHighContention ? "High contention" : "Low contention"
+        );
+    }
+
+    public String logBegin() {
+        return String.format(
+                "%nStart %s contention consume cpu benchmark: threads=%d, lockType=%s, lockSpec=%s, beforeTokens=%d, inTokens=%d, beforeTimeNanos=%f, inTimeNanos=%f%n",
+                isHighContention ? "high" : "low",
+                threads,
+                lockType,
+                lockSpec,
+                beforeCpuTokens,
+                inCpuTokens,
+                beforeConsumeCpuTokensTimeNanos,
+                inConsumeCpuTokensTimeNanos
         );
     }
 

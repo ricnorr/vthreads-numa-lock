@@ -1,4 +1,4 @@
-package ru.ricnorr.benchmarks.jmh.cpu;
+package ru.ricnorr.benchmarks.jmh.lockunlock;
 
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
@@ -18,16 +18,10 @@ import static ru.ricnorr.benchmarks.Main.getProcessorsNumbersInNumaNodeOrder;
 import static ru.ricnorr.benchmarks.Main.setAffinity;
 
 @State(Benchmark)
-public class JmhParConsumeCpuTokensBenchmark {
+public class JmhLockUnlockBenchmark {
 
     @Param("false")
     public boolean useLightThreads;
-
-    @Param("0")
-    public long beforeCpuTokens;
-
-    @Param("0")
-    public long inCpuTokens;
 
     @Param("0")
     public int actionsPerThread;
@@ -68,14 +62,13 @@ public class JmhParConsumeCpuTokensBenchmark {
                     throw new BenchmarkException("Fail waiting barrier", e);
                 }
                 for (int i1 = 0; i1 < actionsPerThread; i1++) {
-                    Blackhole.consumeCPU(beforeCpuTokens);
                     lock.lock();
-                    Blackhole.consumeCPU(inCpuTokens);
                     lock.unlock();
                 }
             };
             if (useLightThreads) {
-                threadList.add(Thread.ofVirtual().factory().newThread(runnable));
+                throw new RuntimeException("fail");
+                //threadList.add(Thread.ofVirtual().factory().newThread(runnable));
             } else {
                 threadList.add(Thread.ofPlatform().factory().newThread(runnable));
             }
