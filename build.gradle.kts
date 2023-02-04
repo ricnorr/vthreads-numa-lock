@@ -44,7 +44,7 @@ tasks.withType<JavaCompile>().configureEach {
 }
 
 tasks.withType<JavaExec>().configureEach {
-    jvmArgs = listOf("--enable-preview")
+    jvmArgs = listOf("--enable-preview", "-XX:+UseNUMA", "-XX:+UseParallelGC")
 }
 
 group = "me.ricnorr"

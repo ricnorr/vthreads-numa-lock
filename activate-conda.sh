@@ -6,8 +6,10 @@
 DIR=${CONDA_PREFIX:-$HOME/miniconda3}
 CONDA_PROFILE=$DIR/etc/profile.d/conda.sh
 [ -f $CONDA_PROFILE ] || { # install it
-    if [ `uname -s` == "Darwin" ]; then
+    if [ `uname -s` == "Darwin"  ] && [ `uname -m` == "x86_64"  ]; then
       INST="Miniconda3-latest-MacOSX-x86_64.sh"
+    elif [ `uname -s` == "Darwin"  ] && [ `uname -m` == "arm64"  ]; then
+        INST="Miniconda3-latest-MacOSX-arm64.sh"
     elif [ `uname -s` == "Linux"  ] && [ `uname -m` == "aarch64"  ]; then
       INST="Miniconda3-latest-Linux-aarch64.sh"
     elif [ `uname -s` == "Linux"  ] && [ `uname -m` == "x86_64"  ]; then
