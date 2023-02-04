@@ -18,7 +18,10 @@ import ru.ricnorr.numa.locks.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Deque;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -181,8 +184,8 @@ public class Main {
         }
         for (int i = 0; i < Runtime.getRuntime().availableProcessors() * 2; i++) {
             threads.add(new Thread(() -> {
-                        numaNodes.add(Utils.getClusterID());
-                        cpuIds.add(Utils.getCpuID());
+                numaNodes.add(Utils.getClusterID());
+                cpuIds.add(Utils.getCpuID());
             }));
         }
         for (Thread thread : threads) {
@@ -228,12 +231,12 @@ public class Main {
         int warmupIterations = (int) ((long) obj.get("warmupIterations"));
         int iterations = (int) ((long) obj.get("iterations"));
         int actionsCount = (int) ((long) obj.get("actionsCount"));
-        String type = (String)obj.get("type");
+        String type = (String) obj.get("type");
         System.out.printf(
-            "benchmark params: warmupIterations=%d, iterations=%d, type=%s%n",
-            warmupIterations,
-            iterations,
-            type
+                "benchmark params: warmupIterations=%d, iterations=%d, type=%s%n",
+                warmupIterations,
+                iterations,
+                type
         );
 
         JSONArray array = (JSONArray) obj.get("threads");
@@ -250,7 +253,7 @@ public class Main {
         var benches = (JSONArray) obj.get("benches");
         List<BenchmarkParameters> benchmarkParametersList;
         if (type.equals("custom")) {
-           benchmarkParametersList = CustomBenchmarkRunner.fillBenchmarkParameters(threadsList, null, benches, actionsCount);
+            benchmarkParametersList = CustomBenchmarkRunner.fillBenchmarkParameters(threadsList, null, benches, actionsCount);
         } else if (type.equals("jmh")) {
             benchmarkParametersList = JmhBenchmarkRunner.fillBenchmarkParameters(threadsList, locks, benches, actionsCount);
         } else {

@@ -131,6 +131,7 @@ public class HCLHCCLSplitWithBackoffLock extends AbstractLock {
                     lim = backoff.backoff(lim);
                 }
             }
+
             public void prepareForLock(int clusterId) {
                 int oldState = 0;
                 int newState = clusterId;

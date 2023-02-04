@@ -1,7 +1,5 @@
 package ru.ricnorr.benchmarks;
 
-import java.util.concurrent.locks.Lock;
-
 public class MatrixBenchmarkParameters extends BenchmarkParameters {
     public int beforeSize;
     public int inSize;
@@ -22,9 +20,9 @@ public class MatrixBenchmarkParameters extends BenchmarkParameters {
     @Override
     public String getBenchmarkName() {
         return String.format(
-            "Square matrix multiplication. Before crit.section size: %d. In crit.section size: %d",
-            beforeSize,
-            inSize
+                "Square matrix multiplication. Before crit.section size: %d. In crit.section size: %d",
+                beforeSize,
+                inSize
         );
     }
 }

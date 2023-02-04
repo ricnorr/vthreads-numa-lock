@@ -1,11 +1,5 @@
 package ru.ricnorr.benchmarks;
 
-import com.fasterxml.jackson.core.JsonParser;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-
-import java.util.concurrent.locks.Lock;
-
 public abstract class BenchmarkParameters {
     public int threads;
     public String lockSpec;

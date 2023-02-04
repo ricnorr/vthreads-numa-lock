@@ -1,7 +1,6 @@
 package ru.ricnorr.benchmarks.jmh.lockunlock;
 
 import org.openjdk.jmh.annotations.*;
-import org.openjdk.jmh.infra.Blackhole;
 import ru.ricnorr.benchmarks.BenchmarkException;
 import ru.ricnorr.benchmarks.LockType;
 import ru.ricnorr.benchmarks.Main;

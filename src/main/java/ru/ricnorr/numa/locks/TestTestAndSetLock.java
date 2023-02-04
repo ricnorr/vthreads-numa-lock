@@ -7,11 +7,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-import static ru.ricnorr.numa.locks.Utils.spinWaitYield;
-
 public class TestTestAndSetLock implements Lock {
 
-    private AtomicBoolean flag = new AtomicBoolean(false);
+    private final AtomicBoolean flag = new AtomicBoolean(false);
 
     @Override
     public void lock() {

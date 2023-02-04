@@ -27,10 +27,11 @@ public class JmhOneMatrixBenchmark {
         matrixA = SimpleMatrix.random_DDRM(matrixSize, matrixSize, 0, Float.MAX_VALUE, rand);
         matrixB = SimpleMatrix.random_DDRM(matrixSize, matrixSize, 0, Float.MAX_VALUE, rand);
     }
+
     @Benchmark
     @BenchmarkMode({Mode.AverageTime})
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     public void multMatrix(Blackhole bh) {
-          bh.consume(matrixA.mult(matrixB));
+        bh.consume(matrixA.mult(matrixB));
     }
 }

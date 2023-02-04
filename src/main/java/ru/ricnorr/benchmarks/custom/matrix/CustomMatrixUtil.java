@@ -39,7 +39,7 @@ public class CustomMatrixUtil {
             return () -> {
                 beforeMatrixA.mult(beforeMatrixB);
                 // bM + iM * T * I
-                for (int i = 0; i < matrixParam.actionsPerThread * matrixParam.threads;  i++) {
+                for (int i = 0; i < matrixParam.actionsPerThread * matrixParam.threads; i++) {
                     inMatrixA.mult(inMatrixB);
                 }
             };

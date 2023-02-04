@@ -7,10 +7,10 @@ import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
-import ru.ricnorr.benchmarks.*;
 import ru.ricnorr.benchmarks.LockUnlockBenchmarkParameters;
-import ru.ricnorr.benchmarks.jmh.cpu.JmhParConsumeCpuTokensBenchmark;
+import ru.ricnorr.benchmarks.*;
 import ru.ricnorr.benchmarks.jmh.cpu.JmhConsumeCpuTokensUtil;
+import ru.ricnorr.benchmarks.jmh.cpu.JmhParConsumeCpuTokensBenchmark;
 import ru.ricnorr.benchmarks.jmh.cpu.JmhSeqConsumeCpuTokensBenchmarkHighContention;
 import ru.ricnorr.benchmarks.jmh.cpu.JmhSeqConsumeCpuTokensBenchmarkLowContention;
 import ru.ricnorr.benchmarks.jmh.lockunlock.JmhLockUnlockBenchmark;
@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
 import static org.openjdk.jmh.runner.options.VerboseMode.SILENT;
 
 public class JmhBenchmarkRunner {

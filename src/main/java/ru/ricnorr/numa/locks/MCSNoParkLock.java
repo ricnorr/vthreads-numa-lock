@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.LockSupport;
 
 import static kotlinx.atomicfu.AtomicFU.atomic;
 import static ru.ricnorr.numa.locks.Utils.spinWaitYield;
@@ -24,6 +23,7 @@ public class MCSNoParkLock implements Lock {
 
     private final AtomicRef<QNode> tail = atomic(null);
     private final ThreadLocal<QNode> node = ThreadLocal.withInitial(QNode::new);
+
     @Override
     public void lock() {
         QNode qnode = node.get();
@@ -35,7 +35,7 @@ public class MCSNoParkLock implements Lock {
             pred.next.setValue(qnode);
             int spinCounter = 1;
             while (qnode.spin.getValue()) {
-                 spinCounter = spinWaitYield(spinCounter);
+                spinCounter = spinWaitYield(spinCounter);
             }
         }
     }

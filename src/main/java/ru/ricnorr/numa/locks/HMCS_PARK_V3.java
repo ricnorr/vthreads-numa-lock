@@ -1,7 +1,6 @@
 package ru.ricnorr.numa.locks;
 
 import kotlinx.atomicfu.AtomicRef;
-import org.apache.commons.math3.analysis.function.Abs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,7 +102,6 @@ public class HMCS_PARK_V3 extends AbstractLock {
                 while (qNode.status == LOCKED) {
                     LockSupport.park(this);
                 } // spin
-                return;
             }
         } else {
             qNode.next = null;

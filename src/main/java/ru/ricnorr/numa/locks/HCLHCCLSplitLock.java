@@ -102,6 +102,7 @@ public class HCLHCCLSplitLock extends AbstractLock {
                     }
                 }
             }
+
             public void prepareForLock(int clusterId) {
                 int oldState = 0;
                 int newState = clusterId;

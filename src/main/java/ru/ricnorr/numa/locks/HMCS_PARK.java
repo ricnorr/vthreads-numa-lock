@@ -48,7 +48,7 @@ public class HMCS_PARK extends AbstractLock {
     public HMCS_PARK(HMCSLockSpec spec) {
         int availableProcessors = Runtime.getRuntime().availableProcessors();
         int treeHeight = 4;
-        int cclSize = (int)spec.ccl;
+        int cclSize = (int) spec.ccl;
         List<List<HNode>> levels = new ArrayList<>();
 
         {
@@ -100,7 +100,6 @@ public class HMCS_PARK extends AbstractLock {
                 while (qNode.status.get() == LOCKED) {
                     LockSupport.park(this);
                 } // spin
-                return;
             }
         } else {
             qNode.next.set(null);

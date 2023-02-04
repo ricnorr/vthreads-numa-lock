@@ -10,8 +10,8 @@ public class CLHLock extends AbstractLock {
     private final ThreadLocal<QNodeCLH> curNode = ThreadLocal.withInitial(QNodeCLH::new);
     private final AtomicReference<QNodeCLH> tail = new AtomicReference<>(new QNodeCLH());
 
-    private static class QNodeCLH{
-        private AtomicBoolean locked = new AtomicBoolean(false);
+    private static class QNodeCLH {
+        private final AtomicBoolean locked = new AtomicBoolean(false);
     }
 
     public void lock() {
@@ -20,7 +20,7 @@ public class CLHLock extends AbstractLock {
         QNodeCLH prev = tail.getAndSet(node);
         prevNode.set(prev);
         int spinCounter = 1;
-        while(prev.locked.get()) {
+        while (prev.locked.get()) {
             spinCounter = spinWaitYield(spinCounter);
         }
     }

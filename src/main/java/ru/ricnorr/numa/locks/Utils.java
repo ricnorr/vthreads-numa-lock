@@ -3,8 +3,6 @@ package ru.ricnorr.numa.locks;
 import com.sun.jna.Platform;
 import com.sun.jna.ptr.IntByReference;
 
-import java.util.concurrent.locks.LockSupport;
-
 public class Utils {
 
     public static int WAIT_THRESHOLD = 4096;
