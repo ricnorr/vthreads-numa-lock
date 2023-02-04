@@ -1,11 +1,8 @@
 package ru.ricnorr.benchmarks.jmh.cpu;
 
-import org.ejml.concurrency.EjmlConcurrency;
-import org.ejml.simple.SimpleMatrix;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 @State(Scope.Benchmark)

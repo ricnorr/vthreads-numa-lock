@@ -46,7 +46,7 @@ public class HMCS extends AbstractLock {
     public HMCS(HMCSLockSpec spec) {
         int availableProcessors = Runtime.getRuntime().availableProcessors();
         int treeHeight = 4;
-        int cclSize = (int)spec.ccl;
+        int cclSize = (int) spec.ccl;
         List<List<HNode>> levels = new ArrayList<>();
 
         {
@@ -96,7 +96,6 @@ public class HMCS extends AbstractLock {
                 pred.next.set(qNode);
                 while (qNode.status.get() == LOCKED) {
                 } // spin
-                return;
             }
         } else {
             qNode.next.set(null);
@@ -104,7 +103,8 @@ public class HMCS extends AbstractLock {
             QNode pred = hNode.tail.getAndSet(qNode);
             if (pred != null) {
                 pred.next.set(qNode);
-                while (qNode.status.get() == WAIT) {} // spin
+                while (qNode.status.get() == WAIT) {
+                } // spin
                 if (qNode.status.get() < ACQUIRE_PARENT) {
                     return;
                 }

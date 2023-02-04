@@ -5,8 +5,6 @@ import kotlinx.atomicfu.AtomicInt;
 import kotlinx.atomicfu.AtomicRef;
 
 import static kotlinx.atomicfu.AtomicFU.atomic;
-import static ru.ricnorr.numa.locks.Utils.spinWaitYield;
-
 
 public class HCLHCCLSplitLock extends AbstractLock {
 
@@ -68,7 +66,6 @@ public class HCLHCCLSplitLock extends AbstractLock {
             // inform successor it is the new master
             localTail.setTailWhenSpliced(true);
             while (myPred.isSuccessorMustWait()) {
-                Thread.onSpinWait();
             }
 
             return myPred;
@@ -103,9 +100,9 @@ public class HCLHCCLSplitLock extends AbstractLock {
                     } else if (getClusterID() != myCluster || isTailWhenSpliced()) {
                         return false;
                     }
-                    Thread.onSpinWait();
                 }
             }
+
             public void prepareForLock(int clusterId) {
                 int oldState = 0;
                 int newState = clusterId;
@@ -134,7 +131,6 @@ public class HCLHCCLSplitLock extends AbstractLock {
                 } else {
                     newState = oldState & ~SMW_MASK;
                 }
-                int spinCounter = 1;
                 while (!state.compareAndSet(oldState, newState)) {
                     oldState = state.getValue();
                     if (successorMustWait) {
@@ -142,7 +138,6 @@ public class HCLHCCLSplitLock extends AbstractLock {
                     } else {
                         newState = oldState & ~SMW_MASK;
                     }
-                    spinCounter = spinWaitYield(spinCounter);
                 }
             }
 

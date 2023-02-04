@@ -3,8 +3,11 @@ package ru.ricnorr.benchmarks.custom;
 import org.ejml.concurrency.EjmlConcurrency;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import ru.ricnorr.benchmarks.*;
+import ru.ricnorr.benchmarks.BenchmarkException;
+import ru.ricnorr.benchmarks.BenchmarkResultsCsv;
 import ru.ricnorr.benchmarks.custom.matrix.CustomMatrixUtil;
+import ru.ricnorr.benchmarks.params.BenchmarkParameters;
+import ru.ricnorr.benchmarks.params.MatrixBenchmarkParameters;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,22 +28,18 @@ public class CustomBenchmarkRunner {
         for (Object o : array) {
             JSONObject obj = (JSONObject) o;
             String name = (String) obj.get("name");
-            switch (name) {
-                case "matrix" -> {
-                    int before = (int) ((long) obj.get("before"));
-                    int in = (int) ((long) obj.get("in"));
-                    double beforeMatrixMultTimeNanos = CustomMatrixUtil.estimateMatrixMultiplicationTimeNanos(before);
-                    double inMatrixMultTimeNanos = CustomMatrixUtil.estimateMatrixMultiplicationTimeNanos(in);
-                    for (int thread : threads) {
-                        for (Object lockType : lockTypes) {
-                            //paramList.add(new MatrixBenchmarkParameters(thread, lockType, before, in, actionsCount / thread, beforeMatrixMultTimeNanos, inMatrixMultTimeNanos));
-                        }
+            if (name.equals("matrix")) {
+                int before = (int) ((long) obj.get("before"));
+                int in = (int) ((long) obj.get("in"));
+                double beforeMatrixMultTimeNanos = CustomMatrixUtil.estimateMatrixMultiplicationTimeNanos(before);
+                double inMatrixMultTimeNanos = CustomMatrixUtil.estimateMatrixMultiplicationTimeNanos(in);
+                for (int thread : threads) {
+                    for (Object lockType : lockTypes) {
+                        //paramList.add(new MatrixBenchmarkParameters(thread, lockType, before, in, actionsCount / thread, beforeMatrixMultTimeNanos, inMatrixMultTimeNanos));
                     }
-
                 }
-                default -> {
-                    throw new IllegalStateException("Unknown benchmark type " + name);
-                }
+            } else {
+                throw new IllegalStateException("Unknown benchmark type " + name);
             }
 
         }

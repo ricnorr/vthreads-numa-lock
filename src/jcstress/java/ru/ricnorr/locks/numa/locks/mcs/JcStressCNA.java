@@ -5,8 +5,6 @@ import org.openjdk.jcstress.annotations.JCStressTest;
 import org.openjdk.jcstress.annotations.Outcome;
 import org.openjdk.jcstress.annotations.State;
 import org.openjdk.jcstress.infra.results.III_Result;
-import ru.ricnorr.benchmarks.BenchmarkParameters;
-import ru.ricnorr.benchmarks.LockType;
 import ru.ricnorr.numa.locks.CNALock;
 import ru.ricnorr.numa.locks.CnaLockSpec;
 

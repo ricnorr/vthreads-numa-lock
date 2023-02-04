@@ -17,17 +17,14 @@ public class JmhSeqConsumeCpuTokensBenchmarkHighContention {
     public long inCpuTokens;
 
     @Param("0")
-    public int actionsPerThread;
-
-    @Param("0")
-    public int threads;
+    public int totalActions;
 
     @Benchmark
     @BenchmarkMode({Mode.AverageTime})
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     public void bench() {
         Blackhole.consumeCPU(beforeCpuTokens);
-        for (int i = 0; i < actionsPerThread * threads; i++) {
+        for (int i = 0; i < totalActions; i++) {
             Blackhole.consumeCPU(inCpuTokens);
         }
     }

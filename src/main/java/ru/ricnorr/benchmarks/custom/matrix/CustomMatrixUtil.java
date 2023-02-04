@@ -1,7 +1,7 @@
 package ru.ricnorr.benchmarks.custom.matrix;
 
 import org.ejml.simple.SimpleMatrix;
-import ru.ricnorr.benchmarks.MatrixBenchmarkParameters;
+import ru.ricnorr.benchmarks.params.MatrixBenchmarkParameters;
 
 import java.util.Random;
 import java.util.concurrent.locks.Lock;
@@ -39,7 +39,7 @@ public class CustomMatrixUtil {
             return () -> {
                 beforeMatrixA.mult(beforeMatrixB);
                 // bM + iM * T * I
-                for (int i = 0; i < matrixParam.actionsPerThread * matrixParam.threads;  i++) {
+                for (int i = 0; i < matrixParam.actionsPerThread * matrixParam.threads; i++) {
                     inMatrixA.mult(inMatrixB);
                 }
             };

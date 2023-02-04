@@ -6,25 +6,24 @@ import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
-import org.openjdk.jmh.runner.options.OptionsBuilder;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import ru.ricnorr.benchmarks.custom.CustomBenchmarkRunner;
 import ru.ricnorr.benchmarks.jmh.JmhBenchmarkRunner;
-import ru.ricnorr.benchmarks.jmh.cpu.JmhConsumeCpuTokensBenchmark;
+import ru.ricnorr.benchmarks.params.BenchmarkParameters;
 import ru.ricnorr.numa.locks.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Deque;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
-
-import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
 
 public class Main {
     private static final List<String> RESULTS_HEADERS = List.of("name", "lock", "threads", "overhead(microsec)", "throughput(ops_microsec)");
@@ -66,6 +65,27 @@ public class Main {
             }
             case HMCS -> {
                 return new HMCS(new HMCSLockSpec(lockSpec));
+            }
+            case HCLH_CCL_SPLIT_BACKOFF -> {
+                return new HCLHCCLSplitWithBackoffLock(new HCLHCCLSplitWithBackoffLock.HCLHCCLSplitWithBackoffLockSpec(lockSpec));
+            }
+            case HMCS_PARK -> {
+                return new HMCS_PARK(new HMCSLockSpec(lockSpec));
+            }
+            case HMCS_PARK_V2 -> {
+                return new HMCS_PARK_V2(new HMCSLockSpec(lockSpec));
+            }
+            case HMCS_PARK_V3 -> {
+                return new HMCS_PARK_V3(new HMCSLockSpec(lockSpec));
+            }
+            case HMCS_PARK_V4 -> {
+                return new HMCS_PARK_V4(new HMCSLockSpec(lockSpec));
+            }
+            case HMCS_PARK_V5 -> {
+                return new HMCS_PARK_V5(new HMCSLockSpec(lockSpec));
+            }
+            case HMCS_PARK_V6 -> {
+                return new HMCS_PARK_V6(new HMCSLockSpec(lockSpec));
             }
             default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
         }
@@ -160,8 +180,8 @@ public class Main {
         }
         for (int i = 0; i < Runtime.getRuntime().availableProcessors() * 2; i++) {
             threads.add(new Thread(() -> {
-                        numaNodes.add(Utils.getClusterID());
-                        cpuIds.add(Utils.getCpuID());
+                numaNodes.add(Utils.getClusterID());
+                cpuIds.add(Utils.getCpuID());
             }));
         }
         for (Thread thread : threads) {
@@ -183,18 +203,6 @@ public class Main {
             printClusters();
             return;
         }
-        if (args.length != 0 && args[0].equals("estimate-consume-cpu")) {
-            var optionsBuilder = new OptionsBuilder()
-                    .include(JmhConsumeCpuTokensBenchmark.class.getSimpleName())
-                    .operationsPerInvocation(1)
-                    .warmupIterations(0)
-                    .forks(2)
-                    .measurementIterations(1)
-                    .param("cpuTokens", args[1])
-                    .verbosity(NORMAL);
-            var res = new Runner(optionsBuilder.build()).run();
-            return;
-        }
         // Read benchmark parameters
         String s;
 
@@ -207,12 +215,12 @@ public class Main {
         int warmupIterations = (int) ((long) obj.get("warmupIterations"));
         int iterations = (int) ((long) obj.get("iterations"));
         int actionsCount = (int) ((long) obj.get("actionsCount"));
-        String type = (String)obj.get("type");
+        String type = (String) obj.get("type");
         System.out.printf(
-            "benchmark params: warmupIterations=%d, iterations=%d, type=%s%n",
-            warmupIterations,
-            iterations,
-            type
+                "benchmark params: warmupIterations=%d, iterations=%d, type=%s%n",
+                warmupIterations,
+                iterations,
+                type
         );
 
         JSONArray array = (JSONArray) obj.get("threads");
@@ -229,7 +237,7 @@ public class Main {
         var benches = (JSONArray) obj.get("benches");
         List<BenchmarkParameters> benchmarkParametersList;
         if (type.equals("custom")) {
-           benchmarkParametersList = CustomBenchmarkRunner.fillBenchmarkParameters(threadsList, null, benches, actionsCount);
+            benchmarkParametersList = CustomBenchmarkRunner.fillBenchmarkParameters(threadsList, null, benches, actionsCount);
         } else if (type.equals("jmh")) {
             benchmarkParametersList = JmhBenchmarkRunner.fillBenchmarkParameters(threadsList, locks, benches, actionsCount);
         } else {

@@ -17,7 +17,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 import static org.openjdk.jmh.annotations.Scope.Benchmark;
-import static ru.ricnorr.benchmarks.Main.*;
+import static ru.ricnorr.benchmarks.Main.getProcessorsNumbersInNumaNodeOrder;
+import static ru.ricnorr.benchmarks.Main.setAffinity;
 
 @State(Benchmark)
 public class JmhParMatrixBenchmark {

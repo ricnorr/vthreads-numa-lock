@@ -6,8 +6,8 @@ import static ru.ricnorr.numa.locks.Utils.spinWaitYield;
 
 public class TicketLock extends AbstractLock {
 
-    private AtomicInteger nowServing = new AtomicInteger(Integer.MIN_VALUE);
-    private AtomicInteger nextTicket = new AtomicInteger(Integer.MIN_VALUE);
+    private final AtomicInteger nowServing = new AtomicInteger(Integer.MIN_VALUE);
+    private final AtomicInteger nextTicket = new AtomicInteger(Integer.MIN_VALUE);
 
     @Override
     public void lock() {

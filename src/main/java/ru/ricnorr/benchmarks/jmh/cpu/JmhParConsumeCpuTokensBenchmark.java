@@ -21,7 +21,7 @@ import static ru.ricnorr.benchmarks.Main.setAffinity;
 public class JmhParConsumeCpuTokensBenchmark {
 
     @Param("false")
-    public boolean useLightThreads;
+    public boolean isLightThread;
 
     @Param("0")
     public long beforeCpuTokens;
@@ -45,7 +45,7 @@ public class JmhParConsumeCpuTokensBenchmark {
 
     @Setup
     public void init() {
-        if (!useLightThreads) {
+        if (!isLightThread && !System.getProperty("os.name").toLowerCase().contains("mac")) {
             List<Integer> processors = getProcessorsNumbersInNumaNodeOrder();
             setAffinity(threads, ProcessHandle.current().pid(), processors);
         }
@@ -74,7 +74,7 @@ public class JmhParConsumeCpuTokensBenchmark {
                     lock.unlock();
                 }
             };
-            if (useLightThreads) {
+            if (isLightThread) {
                 threadList.add(Thread.ofVirtual().factory().newThread(runnable));
             } else {
                 threadList.add(Thread.ofPlatform().factory().newThread(runnable));
