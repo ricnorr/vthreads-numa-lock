@@ -1,7 +1,7 @@
 package ru.ricnorr.benchmarks.custom.matrix;
 
 import org.ejml.simple.SimpleMatrix;
-import ru.ricnorr.benchmarks.MatrixBenchmarkParameters;
+import ru.ricnorr.benchmarks.params.MatrixBenchmarkParameters;
 
 import java.util.Random;
 import java.util.concurrent.locks.Lock;

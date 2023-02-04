@@ -11,6 +11,7 @@ import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import ru.ricnorr.benchmarks.custom.CustomBenchmarkRunner;
 import ru.ricnorr.benchmarks.jmh.JmhBenchmarkRunner;
+import ru.ricnorr.benchmarks.params.BenchmarkParameters;
 import ru.ricnorr.numa.locks.*;
 
 import java.io.*;

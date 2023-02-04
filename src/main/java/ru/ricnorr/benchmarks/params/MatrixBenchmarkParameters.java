@@ -1,4 +1,6 @@
-package ru.ricnorr.benchmarks;
+package ru.ricnorr.benchmarks.params;
+
+import ru.ricnorr.benchmarks.LockType;
 
 public class MatrixBenchmarkParameters extends BenchmarkParameters {
     public int beforeSize;
@@ -10,7 +12,7 @@ public class MatrixBenchmarkParameters extends BenchmarkParameters {
 
     public MatrixBenchmarkParameters(int threads, LockType lockType, String lockSpec, int beforeSize, int inSize, int actionsPerThread,
                                      double beforeMatrixMultTimeNanos, double inMatrixMultTimeNanos) {
-        super(threads, lockType, actionsPerThread, lockSpec);
+        super(threads, lockType, actionsPerThread, lockSpec, false);
         this.beforeSize = beforeSize;
         this.inSize = inSize;
         this.beforeMatrixMultTimeNanos = beforeMatrixMultTimeNanos;

@@ -1,15 +1,14 @@
-package ru.ricnorr.benchmarks;
+package ru.ricnorr.benchmarks.params;
+
+import ru.ricnorr.benchmarks.LockType;
 
 public class ConsumeCpuNormalContentionBenchmarkParameters extends BenchmarkParameters {
 
     public long beforeCpuTokens;
 
-    public boolean isLightThread;
-
     public ConsumeCpuNormalContentionBenchmarkParameters(int threads, LockType lockType, String lockSpec, boolean isLightThread, long beforeCpuTokens, int actionsPerThread) {
-        super(threads, lockType, actionsPerThread, lockSpec);
+        super(threads, lockType, actionsPerThread, lockSpec, isLightThread);
         this.beforeCpuTokens = beforeCpuTokens;
-        this.isLightThread = isLightThread;
     }
 
     @Override

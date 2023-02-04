@@ -4,10 +4,10 @@ import org.ejml.concurrency.EjmlConcurrency;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import ru.ricnorr.benchmarks.BenchmarkException;
-import ru.ricnorr.benchmarks.BenchmarkParameters;
 import ru.ricnorr.benchmarks.BenchmarkResultsCsv;
-import ru.ricnorr.benchmarks.MatrixBenchmarkParameters;
 import ru.ricnorr.benchmarks.custom.matrix.CustomMatrixUtil;
+import ru.ricnorr.benchmarks.params.BenchmarkParameters;
+import ru.ricnorr.benchmarks.params.MatrixBenchmarkParameters;
 
 import java.util.ArrayList;
 import java.util.List;

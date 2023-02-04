@@ -1,4 +1,6 @@
-package ru.ricnorr.benchmarks;
+package ru.ricnorr.benchmarks.params;
+
+import ru.ricnorr.benchmarks.LockType;
 
 public class ConsumeCpuBenchmarkParameters extends BenchmarkParameters {
 
@@ -12,14 +14,12 @@ public class ConsumeCpuBenchmarkParameters extends BenchmarkParameters {
 
     public boolean isHighContention;
 
-    public boolean isLightThread;
 
     public double highContentionWithoutLockNanos;
 
     public ConsumeCpuBenchmarkParameters(int threads, LockType lockType, String lockSpec, boolean isLightThread, long beforeCpuTokens, long inCpuTokens, int actionsPerThread,
                                          double beforeConsumeCpuTokensTimeNanos, double inConsumeCpuTokensTimeNanos, double highContentionWithoutLockNanos) {
-        super(threads, lockType, actionsPerThread, lockSpec);
-        this.isLightThread = isLightThread;
+        super(threads, lockType, actionsPerThread, lockSpec, isLightThread);
         this.beforeCpuTokens = beforeCpuTokens;
         this.inCpuTokens = inCpuTokens;
         this.beforeConsumeCpuTokensTimeNanos = beforeConsumeCpuTokensTimeNanos;

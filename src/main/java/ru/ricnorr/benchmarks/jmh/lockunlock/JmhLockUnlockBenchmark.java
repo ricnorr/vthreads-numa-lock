@@ -20,7 +20,7 @@ import static ru.ricnorr.benchmarks.Main.setAffinity;
 public class JmhLockUnlockBenchmark {
 
     @Param("false")
-    public boolean useLightThreads;
+    public boolean isLightThread;
 
     @Param("0")
     public int actionsPerThread;
@@ -38,7 +38,7 @@ public class JmhLockUnlockBenchmark {
 
     @Setup
     public void init() {
-        if (!useLightThreads && !System.getProperty("os.name").toLowerCase().contains("mac")) {
+        if (!isLightThread && !System.getProperty("os.name").toLowerCase().contains("mac")) {
             List<Integer> processors = getProcessorsNumbersInNumaNodeOrder();
             setAffinity(threads, ProcessHandle.current().pid(), processors);
         }
@@ -65,9 +65,8 @@ public class JmhLockUnlockBenchmark {
                     lock.unlock();
                 }
             };
-            if (useLightThreads) {
-                throw new RuntimeException("fail");
-                //threadList.add(Thread.ofVirtual().factory().newThread(runnable));
+            if (isLightThread) {
+                threadList.add(Thread.ofVirtual().factory().newThread(runnable));
             } else {
                 threadList.add(Thread.ofPlatform().factory().newThread(runnable));
             }

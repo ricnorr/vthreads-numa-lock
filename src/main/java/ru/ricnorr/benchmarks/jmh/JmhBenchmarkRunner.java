@@ -1,5 +1,6 @@
 package ru.ricnorr.benchmarks.jmh;
 
+import kotlin.Pair;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.openjdk.jmh.results.BenchmarkResult;
@@ -7,8 +8,9 @@ import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
-import ru.ricnorr.benchmarks.LockUnlockBenchmarkParameters;
-import ru.ricnorr.benchmarks.*;
+import ru.ricnorr.benchmarks.BenchmarkException;
+import ru.ricnorr.benchmarks.BenchmarkResultsCsv;
+import ru.ricnorr.benchmarks.LockType;
 import ru.ricnorr.benchmarks.jmh.cpu.JmhConsumeCpuTokensUtil;
 import ru.ricnorr.benchmarks.jmh.cpu.JmhParConsumeCpuTokensBenchmark;
 import ru.ricnorr.benchmarks.jmh.cpu.JmhSeqConsumeCpuTokensBenchmarkHighContention;
@@ -18,6 +20,8 @@ import ru.ricnorr.benchmarks.jmh.matrix.JmhMatrixUtil;
 import ru.ricnorr.benchmarks.jmh.matrix.JmhParMatrixBenchmark;
 import ru.ricnorr.benchmarks.jmh.matrix.JmhSeqMatrixBenchmarkOversubscription;
 import ru.ricnorr.benchmarks.jmh.matrix.JmhSeqMatrixBenchmarkUndersubscription;
+import ru.ricnorr.benchmarks.params.LockUnlockBenchmarkParameters;
+import ru.ricnorr.benchmarks.params.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +30,22 @@ import java.util.Map;
 import static org.openjdk.jmh.runner.options.VerboseMode.SILENT;
 
 public class JmhBenchmarkRunner {
+
+    private static boolean shouldSkip(JSONObject lockDesc) {
+        return (lockDesc.get("skip") != null && (Boolean) (lockDesc.get("skip")));
+    }
+
+    private static Pair<String, String> parseLockNameAndSpec(JSONObject lockDescriptionJson) {
+        var lockName = (String) lockDescriptionJson.get("name");
+        var lockSpec = (JSONObject) lockDescriptionJson.get("spec");
+        var lockSpecString = "";
+        if (lockSpec == null) {
+            lockSpecString = "{}";
+        } else {
+            lockSpecString = lockSpec.toJSONString();
+        }
+        return new Pair<>(lockName, lockSpecString);
+    }
 
     public static List<BenchmarkParameters> fillBenchmarkParameters(
             List<Integer> threads,
@@ -36,6 +56,9 @@ public class JmhBenchmarkRunner {
         List<BenchmarkParameters> paramList = new ArrayList<>();
         for (Object o : array) {
             JSONObject obj = (JSONObject) o;
+            if (shouldSkip(obj)) {
+                continue;
+            }
             String name = (String) obj.get("name");
             switch (name) {
                 case "matrix" -> {
@@ -45,15 +68,8 @@ public class JmhBenchmarkRunner {
                     double inMatrixMultTimeNanos = JmhMatrixUtil.estimateMatrixMultiplicationTimeNanos(in);
                     for (int thread : threads) {
                         for (Object lockDescription : locks) {
-                            var lockName = (String) ((JSONObject) lockDescription).get("name");
-                            var lockSpec = (JSONObject) ((JSONObject) lockDescription).get("spec");
-                            var lockSpecString = "";
-                            if (lockSpec == null) {
-                                lockSpecString = "{}";
-                            } else {
-                                lockSpecString = lockSpec.toJSONString();
-                            }
-                            paramList.add(new MatrixBenchmarkParameters(thread, LockType.valueOf(lockName), lockSpecString, before, in, actionsCount / thread, beforeMatrixMultTimeNanos, inMatrixMultTimeNanos));
+                            var lockNameAndSpec = parseLockNameAndSpec((JSONObject) lockDescription);
+                            paramList.add(new MatrixBenchmarkParameters(thread, LockType.valueOf(lockNameAndSpec.component1()), lockNameAndSpec.component2(), before, in, actionsCount / thread, beforeMatrixMultTimeNanos, inMatrixMultTimeNanos));
                         }
                     }
                 }
@@ -66,16 +82,10 @@ public class JmhBenchmarkRunner {
                     double highContentionWithoutLocksNanos = JmhConsumeCpuTokensUtil.estimateHighContentionWithoutLocksTimeNanos(before, in, actionsCount);
                     for (int thread : threads) {
                         for (Object lockDescription : locks) {
-                            var lockDescriptionJson = (JSONObject) lockDescription;
-                            var lockName = (String) lockDescriptionJson.get("name");
-                            var lockSpec = (JSONObject) lockDescriptionJson.get("spec");
-                            var lockSpecString = "";
-                            if (lockSpec == null) {
-                                lockSpecString = "{}";
-                            } else {
-                                lockSpecString = lockSpec.toJSONString();
+                            if (!shouldSkip((JSONObject) lockDescription)) {
+                                var lockNameAndSpec = parseLockNameAndSpec((JSONObject) lockDescription);
+                                paramList.add(new ConsumeCpuBenchmarkParameters(thread, LockType.valueOf(lockNameAndSpec.component1()), lockNameAndSpec.component2(), isLightThread, before, in, actionsCount / thread, beforeConsumeCpuTokensTimeNanos, inConsumeCpuTokensTimeNanos, highContentionWithoutLocksNanos));
                             }
-                            paramList.add(new ConsumeCpuBenchmarkParameters(thread, LockType.valueOf(lockName), lockSpecString, isLightThread, before, in, actionsCount / thread, beforeConsumeCpuTokensTimeNanos, inConsumeCpuTokensTimeNanos, highContentionWithoutLocksNanos));
                         }
                     }
                 }
@@ -84,16 +94,10 @@ public class JmhBenchmarkRunner {
                     var isLightThread = (Boolean) obj.get("light");
                     for (int thread : threads) {
                         for (Object lockDescription : locks) {
-                            var lockDescriptionJson = (JSONObject) lockDescription;
-                            var lockName = (String) lockDescriptionJson.get("name");
-                            var lockSpec = (JSONObject) lockDescriptionJson.get("spec");
-                            var lockSpecString = "";
-                            if (lockSpec == null) {
-                                lockSpecString = "{}";
-                            } else {
-                                lockSpecString = lockSpec.toJSONString();
+                            if (!shouldSkip((JSONObject) lockDescription)) {
+                                var lockNameAndSpec = parseLockNameAndSpec((JSONObject) lockDescription);
+                                paramList.add(new ConsumeCpuNormalContentionBenchmarkParameters(thread, LockType.valueOf(lockNameAndSpec.component1()), lockNameAndSpec.component2(), isLightThread, before, actionsCount / thread));
                             }
-                            paramList.add(new ConsumeCpuNormalContentionBenchmarkParameters(thread, LockType.valueOf(lockName), lockSpecString, isLightThread, before, actionsCount / thread));
                         }
                     }
                 }
@@ -102,16 +106,10 @@ public class JmhBenchmarkRunner {
                     var isLightThread = (Boolean) obj.get("light");
                     for (int thread : threads) {
                         for (Object lockDescription : locks) {
-                            var lockDescriptionJson = (JSONObject) lockDescription;
-                            var lockName = (String) lockDescriptionJson.get("name");
-                            var lockSpec = (JSONObject) lockDescriptionJson.get("spec");
-                            var lockSpecString = "";
-                            if (lockSpec == null) {
-                                lockSpecString = "{}";
-                            } else {
-                                lockSpecString = lockSpec.toJSONString();
+                            if (!shouldSkip((JSONObject) lockDescription)) {
+                                var lockNameAndSpec = parseLockNameAndSpec((JSONObject) lockDescription);
+                                paramList.add(new LockUnlockBenchmarkParameters(thread, LockType.valueOf(lockNameAndSpec.component1()), lockNameAndSpec.component2(), isLightThread, (int) phases));
                             }
-                            paramList.add(new LockUnlockBenchmarkParameters(thread, LockType.valueOf(lockName), lockSpecString, isLightThread, (int) phases));
                         }
                     }
                 }
@@ -173,7 +171,7 @@ public class JmhBenchmarkRunner {
             case ConsumeCpuBenchmarkParameters param -> {
                 System.out.println(param.logBegin());
                 double withLocksNanos = runBenchmarkNano(JmhParConsumeCpuTokensBenchmark.class, iterations, warmupIterations, Map.of(
-                        "useLightThreads", Boolean.toString(param.isLightThread),
+                        "isLightThread", Boolean.toString(param.isLightThread),
                         "beforeCpuTokens", Long.toString(param.beforeCpuTokens),
                         "inCpuTokens", Long.toString(param.inCpuTokens),
                         "threads", Integer.toString(param.threads),
@@ -205,7 +203,7 @@ public class JmhBenchmarkRunner {
                         param.beforeCpuTokens
                 );
                 double withLocksNanos = runBenchmarkNano(JmhParConsumeCpuTokensBenchmark.class, iterations, warmupIterations, Map.of(
-                        "useLightThreads", Boolean.toString(param.isLightThread),
+                        "isLightThread", Boolean.toString(param.isLightThread),
                         "beforeCpuTokens", Long.toString(param.beforeCpuTokens),
                         "inCpuTokens", Long.toString(param.beforeCpuTokens / param.threads),
                         "threads", Integer.toString(param.threads),
@@ -236,7 +234,7 @@ public class JmhBenchmarkRunner {
                         param.actionsPerThread
                 );
                 double overheadNanos = runBenchmarkNano(JmhLockUnlockBenchmark.class, iterations, warmupIterations, Map.of(
-                        "useLightThreads", Boolean.toString(param.isLight),
+                        "isLightThread", Boolean.toString(param.isLightThread),
                         "threads", Integer.toString(param.threads),
                         "actionsPerThread", Integer.toString(param.actionsPerThread),
                         "lockType", param.lockType.toString(),

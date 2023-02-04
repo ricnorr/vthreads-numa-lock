@@ -1,12 +1,12 @@
-package ru.ricnorr.benchmarks;
+package ru.ricnorr.benchmarks.params;
+
+import ru.ricnorr.benchmarks.LockType;
 
 public class LockUnlockBenchmarkParameters extends BenchmarkParameters {
 
-    public boolean isLight;
 
     public LockUnlockBenchmarkParameters(int threads, LockType lockType, String lockSpec, boolean isLight, int actionsPerThread) {
-        super(threads, lockType, actionsPerThread, lockSpec);
-        this.isLight = isLight;
+        super(threads, lockType, actionsPerThread, lockSpec, isLight);
     }
 
     @Override
