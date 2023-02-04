@@ -115,9 +115,7 @@ public class JmhBenchmarkRunner {
                         }
                     }
                 }
-                default -> {
-                    throw new IllegalStateException("Unknown benchmark type " + name);
-                }
+                default -> throw new IllegalStateException("Unknown benchmark type " + name);
             }
 
         }
@@ -146,111 +144,115 @@ public class JmhBenchmarkRunner {
     }
 
     public static BenchmarkResultsCsv runBenchmark(int iterations, int warmupIterations, BenchmarkParameters parameters) throws RunnerException {
-        if (parameters instanceof MatrixBenchmarkParameters matrixParam) {
-            System.out.printf("Start benchmark: threads %d, lockType %s, lockSpec %s, beforeSize %d, inSize %d%n", parameters.threads, parameters.lockType, parameters.lockSpec, matrixParam.beforeSize, matrixParam.inSize);
-            double withLocksNanos = runBenchmarkNano(JmhParMatrixBenchmark.class, iterations, warmupIterations, Map.of(
-                    "beforeSize", Integer.toString(matrixParam.beforeSize),
-                    "inSize", Integer.toString(matrixParam.inSize),
-                    "threads", Integer.toString(matrixParam.threads),
-                    "actionsPerThread", Integer.toString(matrixParam.actionsPerThread),
-                    "lockType", matrixParam.lockType.toString(),
-                    "lockSpec", matrixParam.lockSpec
-            ));
-            double withoutLocksNanos;
-            if (matrixParam.inMatrixMultTimeNanos * matrixParam.threads > matrixParam.beforeMatrixMultTimeNanos) {
-                withoutLocksNanos = runBenchmarkNano(JmhSeqMatrixBenchmarkOversubscription.class, iterations, warmupIterations, Map.of(
+        switch (parameters) {
+            case MatrixBenchmarkParameters matrixParam -> {
+                System.out.printf("Start benchmark: threads %d, lockType %s, lockSpec %s, beforeSize %d, inSize %d%n", parameters.threads, parameters.lockType, parameters.lockSpec, matrixParam.beforeSize, matrixParam.inSize);
+                double withLocksNanos = runBenchmarkNano(JmhParMatrixBenchmark.class, iterations, warmupIterations, Map.of(
                         "beforeSize", Integer.toString(matrixParam.beforeSize),
                         "inSize", Integer.toString(matrixParam.inSize),
+                        "threads", Integer.toString(matrixParam.threads),
                         "actionsPerThread", Integer.toString(matrixParam.actionsPerThread),
-                        "threads", Integer.toString(matrixParam.threads))
+                        "lockType", matrixParam.lockType.toString(),
+                        "lockSpec", matrixParam.lockSpec
+                ));
+                double withoutLocksNanos;
+                if (matrixParam.inMatrixMultTimeNanos * matrixParam.threads > matrixParam.beforeMatrixMultTimeNanos) {
+                    withoutLocksNanos = runBenchmarkNano(JmhSeqMatrixBenchmarkOversubscription.class, iterations, warmupIterations, Map.of(
+                            "beforeSize", Integer.toString(matrixParam.beforeSize),
+                            "inSize", Integer.toString(matrixParam.inSize),
+                            "actionsPerThread", Integer.toString(matrixParam.actionsPerThread),
+                            "threads", Integer.toString(matrixParam.threads))
+                    );
+                } else {
+                    withoutLocksNanos = runBenchmarkNano(JmhSeqMatrixBenchmarkUndersubscription.class, iterations, warmupIterations, Map.of("beforeSize", Integer.toString(matrixParam.beforeSize), "inSize", Integer.toString(matrixParam.inSize), "actionsPerThread", Integer.toString(matrixParam.actionsPerThread)));
+                }
+                double overheadNanos = withLocksNanos - withoutLocksNanos;
+                double throughputNanos = (parameters.threads * parameters.actionsPerThread) / withLocksNanos;
+                return new BenchmarkResultsCsv(parameters.getBenchmarkName(), parameters.lockType.name() + "_" + parameters.lockSpec, parameters.threads, overheadNanos, throughputNanos);
+            }
+            case ConsumeCpuBenchmarkParameters param -> {
+                System.out.println(param.logBegin());
+                double withLocksNanos = runBenchmarkNano(JmhParConsumeCpuTokensBenchmark.class, iterations, warmupIterations, Map.of(
+                        "useLightThreads", Boolean.toString(param.isLightThread),
+                        "beforeCpuTokens", Long.toString(param.beforeCpuTokens),
+                        "inCpuTokens", Long.toString(param.inCpuTokens),
+                        "threads", Integer.toString(param.threads),
+                        "actionsPerThread", Integer.toString(param.actionsPerThread),
+                        "lockType", param.lockType.toString(),
+                        "lockSpec", param.lockSpec
+                ));
+                double withoutLocksNanos;
+                if (param.isHighContention) {
+                    withoutLocksNanos = param.beforeConsumeCpuTokensTimeNanos;
+                } else {
+                    withoutLocksNanos = runBenchmarkNano(JmhSeqConsumeCpuTokensBenchmarkLowContention.class, iterations, warmupIterations, Map.of("beforeCpuTokens", Long.toString(param.beforeCpuTokens), "inCpuTokens", Long.toString(param.inCpuTokens), "actionsPerThread", Integer.toString(param.actionsPerThread)));
+                }
+                double overheadNanos = withLocksNanos - withoutLocksNanos;
+                double throughputNanos = (parameters.threads * parameters.actionsPerThread) / withLocksNanos;
+                System.out.printf(
+                        "Consume cpu bench: i got overhead_nanos=%f, throughput_nanos=%f%n",
+                        overheadNanos,
+                        throughputNanos
                 );
-            } else {
-                withoutLocksNanos = runBenchmarkNano(JmhSeqMatrixBenchmarkUndersubscription.class, iterations, warmupIterations, Map.of("beforeSize", Integer.toString(matrixParam.beforeSize), "inSize", Integer.toString(matrixParam.inSize), "actionsPerThread", Integer.toString(matrixParam.actionsPerThread)));
+                return new BenchmarkResultsCsv(parameters.getBenchmarkName(), parameters.lockType.name() + "_" + parameters.lockSpec, parameters.threads, overheadNanos, throughputNanos);
             }
-            double overheadNanos = withLocksNanos - withoutLocksNanos;
-            double throughputNanos = (parameters.threads * parameters.actionsPerThread) / withLocksNanos;
-            return new BenchmarkResultsCsv(parameters.getBenchmarkName(), parameters.lockType.name() + "_" + parameters.lockSpec, parameters.threads, overheadNanos, throughputNanos);
-        } else if (parameters instanceof ConsumeCpuBenchmarkParameters param) {
-            System.out.println(param.logBegin());
-            double withLocksNanos = runBenchmarkNano(JmhParConsumeCpuTokensBenchmark.class, iterations, warmupIterations, Map.of(
-                    "useLightThreads", Boolean.toString(param.isLightThread),
-                    "beforeCpuTokens", Long.toString(param.beforeCpuTokens),
-                    "inCpuTokens", Long.toString(param.inCpuTokens),
-                    "threads", Integer.toString(param.threads),
-                    "actionsPerThread", Integer.toString(param.actionsPerThread),
-                    "lockType", param.lockType.toString(),
-                    "lockSpec", param.lockSpec
-            ));
-            double withoutLocksNanos;
-            if (param.isHighContention) {
-                withoutLocksNanos = param.beforeConsumeCpuTokensTimeNanos;
-            } else {
-                withoutLocksNanos = runBenchmarkNano(JmhSeqConsumeCpuTokensBenchmarkLowContention.class, iterations, warmupIterations, Map.of("beforeCpuTokens", Long.toString(param.beforeCpuTokens), "inCpuTokens", Long.toString(param.inCpuTokens), "actionsPerThread", Integer.toString(param.actionsPerThread)));
+            case ConsumeCpuNormalContentionBenchmarkParameters param -> {
+                System.out.printf(
+                        "Start benchmark: threads %d, lockType %s, lockSpec %s, beforeTokens %d%n",
+                        parameters.threads,
+                        parameters.lockType,
+                        parameters.lockSpec,
+                        param.beforeCpuTokens
+                );
+                double withLocksNanos = runBenchmarkNano(JmhParConsumeCpuTokensBenchmark.class, iterations, warmupIterations, Map.of(
+                        "useLightThreads", Boolean.toString(param.isLightThread),
+                        "beforeCpuTokens", Long.toString(param.beforeCpuTokens),
+                        "inCpuTokens", Long.toString(param.beforeCpuTokens / param.threads),
+                        "threads", Integer.toString(param.threads),
+                        "actionsPerThread", Integer.toString(param.actionsPerThread),
+                        "lockType", param.lockType.toString(),
+                        "lockSpec", param.lockSpec
+                ));
+                double withoutLocksNanos = runBenchmarkNano(JmhSeqConsumeCpuTokensBenchmarkHighContention.class, iterations, warmupIterations, Map.of(
+                        "beforeCpuTokens", Long.toString(param.beforeCpuTokens),
+                        "inCpuTokens", Long.toString(param.beforeCpuTokens / param.threads),
+                        "actionsPerThread", Integer.toString(param.actionsPerThread),
+                        "threads", Integer.toString(param.threads))
+                );
+                System.out.printf(
+                        "Average execution time of benchmark %f",
+                        withoutLocksNanos
+                );
+                double overheadNanos = withLocksNanos - withoutLocksNanos;
+                double throughputNanos = (parameters.threads * parameters.actionsPerThread) / withLocksNanos;
+                return new BenchmarkResultsCsv(parameters.getBenchmarkName(), parameters.lockType.name() + "_" + parameters.lockSpec, parameters.threads, overheadNanos, throughputNanos);
             }
-            double overheadNanos = withLocksNanos - withoutLocksNanos;
-            double throughputNanos = (parameters.threads * parameters.actionsPerThread) / withLocksNanos;
-            System.out.printf(
-                    "Consume cpu bench: i got overhead_nanos=%f, throughput_nanos=%f%n",
-                    overheadNanos,
-                    throughputNanos
-            );
-            return new BenchmarkResultsCsv(parameters.getBenchmarkName(), parameters.lockType.name() + "_" + parameters.lockSpec, parameters.threads, overheadNanos, throughputNanos);
-        } else if (parameters instanceof ConsumeCpuNormalContentionBenchmarkParameters param) {
-            System.out.printf(
-                    "Start benchmark: threads %d, lockType %s, lockSpec %s, beforeTokens %d%n",
-                    parameters.threads,
-                    parameters.lockType,
-                    parameters.lockSpec,
-                    param.beforeCpuTokens
-            );
-            double withLocksNanos = runBenchmarkNano(JmhParConsumeCpuTokensBenchmark.class, iterations, warmupIterations, Map.of(
-                    "useLightThreads", Boolean.toString(param.isLightThread),
-                    "beforeCpuTokens", Long.toString(param.beforeCpuTokens),
-                    "inCpuTokens", Long.toString(param.beforeCpuTokens / param.threads),
-                    "threads", Integer.toString(param.threads),
-                    "actionsPerThread", Integer.toString(param.actionsPerThread),
-                    "lockType", param.lockType.toString(),
-                    "lockSpec", param.lockSpec
-            ));
-            double withoutLocksNanos = runBenchmarkNano(JmhSeqConsumeCpuTokensBenchmarkHighContention.class, iterations, warmupIterations, Map.of(
-                    "beforeCpuTokens", Long.toString(param.beforeCpuTokens),
-                    "inCpuTokens", Long.toString(param.beforeCpuTokens / param.threads),
-                    "actionsPerThread", Integer.toString(param.actionsPerThread),
-                    "threads", Integer.toString(param.threads))
-            );
-            System.out.printf(
-                    "Average execution time of benchmark %f",
-                    withoutLocksNanos
-            );
-            double overheadNanos = withLocksNanos - withoutLocksNanos;
-            double throughputNanos = (parameters.threads * parameters.actionsPerThread) / withLocksNanos;
-            return new BenchmarkResultsCsv(parameters.getBenchmarkName(), parameters.lockType.name() + "_" + parameters.lockSpec, parameters.threads, overheadNanos, throughputNanos);
-        } else if (parameters instanceof LockUnlockBenchmarkParameters param) {
-            System.out.printf(
-                    "%nStart lock-unlock benchmark: threads %d, lockType %s, lockSpec %s, phases in thread %d%n",
-                    parameters.threads,
-                    parameters.lockType,
-                    parameters.lockSpec,
-                    param.actionsPerThread
-            );
-            double overheadNanos = runBenchmarkNano(JmhLockUnlockBenchmark.class, iterations, warmupIterations, Map.of(
-                    "useLightThreads", Boolean.toString(param.isLight),
-                    "threads", Integer.toString(param.threads),
-                    "actionsPerThread", Integer.toString(param.actionsPerThread),
-                    "lockType", param.lockType.toString(),
-                    "lockSpec", param.lockSpec
-            ));
-            double throughputNanos = (parameters.threads * parameters.actionsPerThread) / overheadNanos;
-            System.out.printf("%nEnd lock-unlock benchmark: i got overhead_nanos=%f, throughput_nanos=%f%n", overheadNanos, throughputNanos);
-            return new BenchmarkResultsCsv(
-                    parameters.getBenchmarkName(),
-                    parameters.lockType.name() + "_" + parameters.lockSpec,
-                    parameters.threads,
-                    overheadNanos,
-                    throughputNanos
-            );
-        } else {
-            throw new BenchmarkException("Cannot run jmh benchmark");
+            case LockUnlockBenchmarkParameters param -> {
+                System.out.printf(
+                        "%nStart lock-unlock benchmark: threads %d, lockType %s, lockSpec %s, phases in thread %d%n",
+                        parameters.threads,
+                        parameters.lockType,
+                        parameters.lockSpec,
+                        param.actionsPerThread
+                );
+                double overheadNanos = runBenchmarkNano(JmhLockUnlockBenchmark.class, iterations, warmupIterations, Map.of(
+                        "useLightThreads", Boolean.toString(param.isLight),
+                        "threads", Integer.toString(param.threads),
+                        "actionsPerThread", Integer.toString(param.actionsPerThread),
+                        "lockType", param.lockType.toString(),
+                        "lockSpec", param.lockSpec
+                ));
+                double throughputNanos = (parameters.threads * parameters.actionsPerThread) / overheadNanos;
+                System.out.printf("%nEnd lock-unlock benchmark: i got overhead_nanos=%f, throughput_nanos=%f%n", overheadNanos, throughputNanos);
+                return new BenchmarkResultsCsv(
+                        parameters.getBenchmarkName(),
+                        parameters.lockType.name() + "_" + parameters.lockSpec,
+                        parameters.threads,
+                        overheadNanos,
+                        throughputNanos
+                );
+            }
+            case null, default -> throw new BenchmarkException("Cannot run jmh benchmark");
         }
     }
 }
