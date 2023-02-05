@@ -19,7 +19,8 @@
       "name": "TICKET"
     },
     {
-      "name": "HCLH"
+      "name": "HCLH",
+      "skip": "true"
     },
     {
       "name": "CLH"
@@ -28,35 +29,54 @@
       "name": "CNA"
     },
     {
-      "name": "HCLH_CCL_SPLIT"
+      "name": "HCLH_CCL_SPLIT",
+      "skip": "true"
     },
     {
-      "name": "MCS_NO_PARK"
+      "name": "MCS_NO_PARK",
+      "skip": "true"
     },
     {
-      "name": "HMCS"
+      "name": "HMCS",
+      "skip": "true"
     },
     {
-      "name": "HCLH_CCL_SPLIT_BACKOFF"
+      "name": "HCLH_CCL_SPLIT_BACKOFF",
+      "skip": "true"
     },
     {
       "name": "HMCS_PARK"
     },
     {
-      "name": "HMCS_PARK_V2"
+      "name": "HMCS_PARK_V2",
+      "skip": "true"
     },
     {
-      "name": "HMCS_PARK_V3"
+      "name": "HMCS_PARK_V3",
+      "skip": "true"
     },
     {
-      "name": "HMCS_PARK_V4"
+      "name": "HMCS_PARK_V4",
+      "skip": "true"
     },
     {
-      "name": "HMCS_PARK_V5"
+      "name": "HMCS_PARK_V5",
+      "skip": "true"
     },
     {
-      "name": "HMCS_PARK_V6"
+      "name": "HMCS_PARK_V6",
+      "skip": "true"
     }
+  ],
+  "threads": [
+    1,
+    8,
+    24,
+    48,
+    96,
+    192,
+    384,
+    768
   ],
   "actionsCount": 12288,
   "warmupIterations": 0,
@@ -66,16 +86,19 @@
     {
       "name": "consumeCpu",
       "before": 32000,
-      "in": 64000
+      "in": 64000,
+      "light": true
     },
     {
       "name": "consumeCpu",
       "before": 390000,
-      "in": 1500
+      "in": 1500,
+      "light": true
     },
     {
       "name": "consumeCpuNormalContention",
-      "before": 8192
+      "before": 8192,
+      "light": true
     }
   ]
 }
