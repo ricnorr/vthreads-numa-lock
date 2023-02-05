@@ -20,7 +20,7 @@
     },
     {
       "name": "HCLH",
-      "skip": "true"
+      "skip": true
     },
     {
       "name": "CLH"
@@ -30,42 +30,42 @@
     },
     {
       "name": "HCLH_CCL_SPLIT",
-      "skip": "true"
+      "skip": true
     },
     {
       "name": "MCS_NO_PARK",
-      "skip": "true"
+      "skip": true
     },
     {
       "name": "HMCS",
-      "skip": "true"
+      "skip": true
     },
     {
       "name": "HCLH_CCL_SPLIT_BACKOFF",
-      "skip": "true"
+      "skip": true
     },
     {
       "name": "HMCS_PARK"
     },
     {
       "name": "HMCS_PARK_V2",
-      "skip": "true"
+      "skip": true
     },
     {
       "name": "HMCS_PARK_V3",
-      "skip": "true"
+      "skip": true
     },
     {
       "name": "HMCS_PARK_V4",
-      "skip": "true"
+      "skip": true
     },
     {
       "name": "HMCS_PARK_V5",
-      "skip": "true"
+      "skip": true
     },
     {
       "name": "HMCS_PARK_V6",
-      "skip": "true"
+      "skip": true
     }
   ],
   "threads": [
