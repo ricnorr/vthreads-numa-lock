@@ -36,7 +36,9 @@ https://www.baeldung.com/java-testing-multithreaded
 ## Отчет
 ### Запуск 23 января, arm, 128
 https://drive.google.com/drive/folders/1ocNH0UDuKj5nHrHtIzSVInLM9tsOWJiW?usp=sharing
-
-
+### Запуск 2 февраля, arm, 96 и 128
+https://drive.google.com/drive/folders/1-NJaYn698CqlS2xXVIWO4WhStdLk9oSU?usp=sharing
+### Запуск 4 февраля, arm, 48. Эксперименты с HMCS, тестирую разные версии
+https://drive.google.com/drive/folders/1OXog79d0MqIfY8hyHO39SxpkSlMakfPt?usp=sharing
 
 
