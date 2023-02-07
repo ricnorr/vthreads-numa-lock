@@ -133,7 +133,7 @@ public class Main {
         }
         List<Integer> result = threads.stream().filter(it -> it < cpuCount).collect(Collectors.toList());
         result.add(cpuCount);
-        result.add(cpuCount * 2);
+        // result.add(cpuCount * 2);
         return result;
     }
 
