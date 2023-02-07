@@ -1,8 +1,7 @@
 # NUMA-aware-locks
 Repository for my bachelor's diploma, implementing and benchmarking NUMA aware locks.
 # Install instruments
-* prepare java and gradle
-* ```install_java.sh``` 
+* prepare java and gradle by ```install_java.sh``` 
 * ```gradle wrapper``` in project dir
 * prepare conda and python libraries
   * Run ```activate-conda.sh``` to install miniconda
