@@ -8,6 +8,15 @@
     },
     {
       "name": "MCS"
+    },
+    {
+      "name": "HMCS_CCL_PLUS_NUMA_HIERARCHY"
+    },
+    {
+      "name": "HMCS_ONLY_CCL_HIERARCHY"
+    },
+    {
+      "name": "HMCS_ONLY_NUMA_HIERARCHY"
     }
   ],
   "threads": [
