@@ -7,75 +7,49 @@
       "name": "FAIR_REENTRANT"
     },
     {
-      "name": "MCS"
+      "name": "HMCS_ONLY_NUMA_HIERARCHY"
     },
     {
-      "name": "TEST_SET"
+      "name": "HMCS_CCL_PLUS_NUMA_HIERARCHY"
     },
     {
-      "name": "TEST_TEST_SET"
+      "name": "HMCS_CCL_PLUS_NUMA_HIERARCHY_WITH_PADDING"
     },
     {
-      "name": "TICKET"
+      "name": "HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY"
     },
     {
-      "name": "HCLH"
+      "name": "HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY_WITH_PADDING"
     },
     {
-      "name": "CLH"
+      "name": "HMCS_ONLY_CCL_HIERARCHY"
     },
     {
-      "name": "CNA"
+      "name": "HMCS_ONLY_CCL_HIERARCHY_WITH_PADDING"
     },
     {
-      "name": "HCLH_CCL_SPLIT"
+      "name": "HMCS_ONLY_NUMA_HIERARCHY"
     },
     {
-      "name": "MCS_NO_PARK"
-    },
-    {
-      "name": "HMCS"
-    },
-    {
-      "name": "HCLH_CCL_SPLIT_BACKOFF"
-    },
-    {
-      "name": "HMCS_PARK"
-    },
-    {
-      "name": "HMCS_PARK_V2"
-    },
-    {
-      "name": "HMCS_PARK_V3"
-    },
-    {
-      "name": "HMCS_PARK_V4"
-    },
-    {
-      "name": "HMCS_PARK_V5"
-    },
-    {
-      "name": "HMCS_PARK_V6"
+      "name": "HMCS_ONLY_NUMA_HIERARCHY_WITH_PADDING"
     }
   ],
   "actionsCount": 12288,
-  "warmupIterations": 0,
+  "warmupIterations": 1,
   "iterations": 1,
   "type": "jmh",
   "benches": [
     {
       "name": "consumeCpu",
-      "before": 32000,
-      "in": 64000
+      "before": 0,
+      "in": 40,
+      "light": false
     },
     {
       "name": "consumeCpu",
-      "before": 390000,
-      "in": 1500
-    },
-    {
-      "name": "consumeCpuNormalContention",
-      "before": 8192
+      "before": 0,
+      "in": 80,
+      "light": false
     }
   ]
 }

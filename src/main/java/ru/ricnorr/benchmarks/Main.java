@@ -28,16 +28,13 @@ import java.util.stream.Collectors;
 public class Main {
     private static final List<String> RESULTS_HEADERS = List.of("name", "lock", "threads", "overhead(microsec)", "throughput(ops_microsec)");
 
-    public static Lock initLock(LockType lockType, String lockSpec) {
+    public static Lock initLock(LockType lockType, String lockSpec, boolean overSubscription) {
         switch (lockType) {
             case UNFAIR_REENTRANT -> {
                 return new ReentrantLock(false);
             }
             case FAIR_REENTRANT -> {
                 return new ReentrantLock(true);
-            }
-            case MCS -> {
-                return new MCSLock();
             }
             case TEST_SET -> {
                 return new TestAndSetLock();
@@ -60,35 +57,46 @@ public class Main {
             case CNA -> {
                 return new CNALock(new CnaLockSpec(lockSpec));
             }
-            case MCS_NO_PARK -> {
-                return new MCSNoParkLock();
+            case MCS -> {
+                return new MCS();
             }
-            case HMCS -> {
-                return new HMCS(new HMCSLockSpec(lockSpec));
+            case MCS_WITH_PADDING -> {
+                return new MCS_WITH_PADDING();
             }
             case HCLH_CCL_SPLIT_BACKOFF -> {
                 return new HCLHCCLSplitWithBackoffLock(new HCLHCCLSplitWithBackoffLock.HCLHCCLSplitWithBackoffLockSpec(lockSpec));
             }
-            case HMCS_PARK -> {
-                return new HMCS_PARK(new HMCSLockSpec(lockSpec));
+            case HMCS_CCL_PLUS_NUMA_HIERARCHY -> {
+                return new HMCS_CCL_PLUS_NUMA_HIERARCHY(overSubscription);
             }
-            case HMCS_PARK_V2 -> {
-                return new HMCS_PARK_V2(new HMCSLockSpec(lockSpec));
+            case HMCS_CCL_PLUS_NUMA_HIERARCHY_WITH_PADDING -> {
+                return new HMCS_CCL_PLUS_NUMA_HIERARCHY_WITH_PADDING(overSubscription);
             }
-            case HMCS_PARK_V3 -> {
-                return new HMCS_PARK_V3(new HMCSLockSpec(lockSpec));
+            case HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY -> {
+                return new HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY(overSubscription);
             }
-            case HMCS_PARK_V4 -> {
-                return new HMCS_PARK_V4(new HMCSLockSpec(lockSpec));
+            case HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY_WITH_PADDING -> {
+                return new HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY_WITH_PADDING(overSubscription);
             }
-            case HMCS_PARK_V5 -> {
-                return new HMCS_PARK_V5(new HMCSLockSpec(lockSpec));
+            case HMCS_ONLY_CCL_HIERARCHY -> {
+                return new HMCS_ONLY_CCL_HIERARCHY(overSubscription);
             }
-            case HMCS_PARK_V6 -> {
-                return new HMCS_PARK_V6(new HMCSLockSpec(lockSpec));
+            case HMCS_ONLY_CCL_HIERARCHY_WITH_PADDING -> {
+                return new HMCS_ONLY_CCL_HIERARCHY_WITH_PADDING(overSubscription);
             }
+            case HMCS_ONLY_NUMA_HIERARCHY -> {
+                return new HMCS_ONLY_NUMA_HIERARCHY(overSubscription);
+            }
+            case HMCS_ONLY_NUMA_HIERARCHY_WITH_PADDING -> {
+                return new HMCS_ONLY_NUMA_HIERARCHY_WITH_PADDING(overSubscription);
+            }
+
             default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
         }
+    }
+
+    public static Lock initLock(LockType lockType, String lockSpec) {
+        return initLock(lockType, lockSpec, false);
     }
 
     public static List<Integer> getProcessorsNumbersInNumaNodeOrder() {
@@ -125,7 +133,7 @@ public class Main {
         }
         List<Integer> result = threads.stream().filter(it -> it < cpuCount).collect(Collectors.toList());
         result.add(cpuCount);
-        result.add(cpuCount * 2);
+        // result.add(cpuCount * 2);
         return result;
     }
 

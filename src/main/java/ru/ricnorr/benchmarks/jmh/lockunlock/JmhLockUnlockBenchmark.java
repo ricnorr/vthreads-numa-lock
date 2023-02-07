@@ -30,7 +30,7 @@ public class JmhLockUnlockBenchmark {
 
     @Param("")
     public String lockType;
-
+    
     @Param("")
     public String lockSpec;
 

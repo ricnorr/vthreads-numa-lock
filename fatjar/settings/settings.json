@@ -1,0 +1,46 @@
+{
+  "locks": [
+    {
+      "name": "FAIR_REENTRANT"
+    },
+    {
+      "name": "UNFAIR_REENTRANT"
+    },
+    {
+      "name": "HMCS_ONLY_CCL_HIERARCHY"
+    },
+    {
+      "name": "HMCS_ONLY_NUMA_HIERARCHY"
+    },
+    {
+      "name": "HMCS_CCL_PLUS_NUMA_HIERARCHY"
+    },
+    {
+      "name": "HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA"
+    }
+  ],
+  "threads": [
+    1,
+    4,
+    8,
+    24,
+    32,
+    48
+  ],
+  "actionsCount": 49152,
+  "warmupIterations": 0,
+  "iterations": 1,
+  "type": "jmh",
+  "benches": [
+    {
+      "name": "consumeCpu",
+      "before": 0,
+      "in": 40
+    },
+    {
+      "name": "consumeCpu",
+      "before": 0,
+      "in": 80
+    }
+  ]
+}

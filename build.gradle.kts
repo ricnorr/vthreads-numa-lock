@@ -6,7 +6,6 @@ plugins {
     id("com.github.johnrengelman.shadow") version "6.0.0"
 }
 
-
 buildscript {
     repositories {
         mavenCentral()
@@ -39,7 +38,7 @@ tasks.withType<JavaCompile>().configureEach {
         "java.base/jdk.internal.misc=ALL-UNNAMED",
         "--add-exports",
         "java.base/jdk.internal.util=ALL-UNNAMED",
-        "--enable-preview"
+        "--enable-preview",
     )
 }
 
@@ -49,7 +48,6 @@ tasks.withType<JavaExec>().configureEach {
 
 group = "me.ricnorr"
 version = "1.0-SNAPSHOT"
-
 
 repositories {
     mavenCentral()
@@ -67,6 +65,7 @@ dependencies {
     implementation("com.github.oshi:oshi-dist:6.4.0")
     implementation("org.openjdk.jmh:jmh-core:1.35")
     annotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:1.35")
+    implementation("org.openjdk.jol:jol-core:0.9")
 }
 
 tasks.test {
