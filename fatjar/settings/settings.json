@@ -1,13 +1,10 @@
 {
   "locks": [
     {
-      "name": "FAIR_REENTRANT"
-    },
-    {
       "name": "UNFAIR_REENTRANT"
     },
     {
-      "name": "HMCS_ONLY_CCL_HIERARCHY"
+      "name": "FAIR_REENTRANT"
     },
     {
       "name": "HMCS_ONLY_NUMA_HIERARCHY"
@@ -16,31 +13,43 @@
       "name": "HMCS_CCL_PLUS_NUMA_HIERARCHY"
     },
     {
-      "name": "HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA"
+      "name": "HMCS_CCL_PLUS_NUMA_HIERARCHY_WITH_PADDING"
+    },
+    {
+      "name": "HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY"
+    },
+    {
+      "name": "HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY_WITH_PADDING"
+    },
+    {
+      "name": "HMCS_ONLY_CCL_HIERARCHY"
+    },
+    {
+      "name": "HMCS_ONLY_CCL_HIERARCHY_WITH_PADDING"
+    },
+    {
+      "name": "HMCS_ONLY_NUMA_HIERARCHY"
+    },
+    {
+      "name": "HMCS_ONLY_NUMA_HIERARCHY_WITH_PADDING"
     }
   ],
-  "threads": [
-    1,
-    4,
-    8,
-    24,
-    32,
-    48
-  ],
-  "actionsCount": 49152,
-  "warmupIterations": 0,
+  "actionsCount": 12288,
+  "warmupIterations": 1,
   "iterations": 1,
   "type": "jmh",
   "benches": [
     {
       "name": "consumeCpu",
       "before": 0,
-      "in": 40
+      "in": 40,
+      "light": false
     },
     {
       "name": "consumeCpu",
       "before": 0,
-      "in": 80
+      "in": 80,
+      "light": false
     }
   ]
 }

@@ -32,3 +32,4 @@ gradlew.bat
 lib/
 pyvenv.cfg
 results/result.pdf
+fatjar/settings/settings.json
