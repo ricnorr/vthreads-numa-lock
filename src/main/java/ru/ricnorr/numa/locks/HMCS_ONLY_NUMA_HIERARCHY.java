@@ -2,7 +2,6 @@ package ru.ricnorr.numa.locks;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.LockSupport;
 
@@ -47,29 +46,15 @@ public class HMCS_ONLY_NUMA_HIERARCHY extends AbstractLock {
             if (overSubscription) {
                 qNode.thread = Thread.currentThread();
             }
-            qNode.status.set(LOCKED);
+            qNode.status = LOCKED;
             QNode pred = hNode.tail.getAndSet(qNode);
             if (pred == null) {
-                qNode.status.set(UNLOCKED);
+                qNode.status = UNLOCKED;
             } else {
                 pred.next.set(qNode);
-                byte spins = 0, postSpins = 0;
-                while (true) {
-                    var status = qNode.status.get();
-                    if (status != LOCKED && status != LOCKED_SLEEP) {
-                        break;
-                    }
+                while (qNode.status == LOCKED) {
                     if (overSubscription) {
-                        if (spins != 0) {
-                            spins--;
-                            Thread.onSpinWait();
-                        } else if (status == LOCKED) {
-                            qNode.status.compareAndSet(LOCKED, LOCKED_SLEEP);
-                        } else {
-                            LockSupport.park(this);
-                            spins = postSpins = (byte) ((postSpins << 1) | 1);
-                            qNode.status.compareAndSet(LOCKED_SLEEP, LOCKED);
-                        }
+                        LockSupport.park();
                     } else {
                         Thread.onSpinWait();
                     }
@@ -80,36 +65,22 @@ public class HMCS_ONLY_NUMA_HIERARCHY extends AbstractLock {
             if (overSubscription) {
                 qNode.thread = Thread.currentThread();
             }
-            qNode.status.set(WAIT);
+            qNode.status = WAIT;
             QNode pred = hNode.tail.getAndSet(qNode);
             if (pred != null) {
                 pred.next.set(qNode);
-                byte spins = 0, postSpins = 0;
-                while (true) {
-                    var status = qNode.status.get();
-                    if (status != WAIT && status != WAIT_SLEEP) {
-                        break;
-                    }
+                while (qNode.status == WAIT) {
                     if (overSubscription) {
-                        if (spins != 0) {
-                            spins--;
-                            Thread.onSpinWait();
-                        } else if (status == WAIT) {
-                            qNode.status.compareAndSet(WAIT, WAIT_SLEEP);
-                        } else {
-                            LockSupport.park(this);
-                            spins = postSpins = (byte) ((postSpins << 1) | 1);
-                            qNode.status.compareAndSet(WAIT_SLEEP, WAIT);
-                        }
+                        LockSupport.park(this);
                     } else {
                         Thread.onSpinWait();
                     }
                 } // spin
-                if (qNode.status.get() < ACQUIRE_PARENT) {
+                if (qNode.status < ACQUIRE_PARENT) {
                     return;
                 }
             }
-            qNode.status.set(COHORT_START);
+            qNode.status = COHORT_START;
             lockH(hNode.node, hNode.parent);
         }
     }
@@ -119,7 +90,7 @@ public class HMCS_ONLY_NUMA_HIERARCHY extends AbstractLock {
             releaseHelper(hNode, qNode, UNLOCKED);
             return;
         }
-        int curCount = qNode.status.get();
+        int curCount = qNode.status;
         if (curCount == 10000) {
             unlockH(hNode.parent, hNode.node);
             releaseHelper(hNode, qNode, ACQUIRE_PARENT);
@@ -127,9 +98,8 @@ public class HMCS_ONLY_NUMA_HIERARCHY extends AbstractLock {
         }
         QNode succ = qNode.next.get();
         if (succ != null) {
-            var prevStatus = succ.status.get();
-            succ.status.set(curCount + 1);
-            if (overSubscription && (prevStatus == LOCKED_SLEEP || prevStatus == WAIT_SLEEP)) {
+            succ.status = curCount + 1;
+            if (overSubscription) {
                 LockSupport.unpark(succ.thread);
             }
             return;
@@ -141,9 +111,8 @@ public class HMCS_ONLY_NUMA_HIERARCHY extends AbstractLock {
     private void releaseHelper(HNode l, QNode i, int val) {
         QNode succ = i.next.get();
         if (succ != null) {
-            var prevStatus = succ.status.get();
-            succ.status.set(val);
-            if (overSubscription && (prevStatus == LOCKED_SLEEP || prevStatus == WAIT_SLEEP)) {
+            succ.status = val;
+            if (overSubscription) {
                 LockSupport.unpark(succ.thread);
             }
         } else {
@@ -153,9 +122,8 @@ public class HMCS_ONLY_NUMA_HIERARCHY extends AbstractLock {
             do {
                 succ = i.next.get();
             } while (succ == null);
-            var prevStatus = succ.status.get();
-            succ.status.set(val);
-            if (overSubscription && (prevStatus == LOCKED_SLEEP || prevStatus == WAIT_SLEEP)) {
+            succ.status = val;
+            if (overSubscription) {
                 LockSupport.unpark(succ.thread);
             }
         }
@@ -174,18 +142,14 @@ public class HMCS_ONLY_NUMA_HIERARCHY extends AbstractLock {
     }
 
     public static class QNode {
-        static int WAIT_SLEEP = Integer.MAX_VALUE;
-        static int WAIT = Integer.MAX_VALUE - 1;
-        static int ACQUIRE_PARENT = Integer.MAX_VALUE - 2;
+        static int WAIT = Integer.MAX_VALUE;
+        static int ACQUIRE_PARENT = Integer.MAX_VALUE - 1;
         static int UNLOCKED = 0x0;
         static int LOCKED = 0x1;
-
-        static int LOCKED_SLEEP = -1;
-
         static int COHORT_START = 0x1;
 
         private final AtomicReference<QNode> next = new AtomicReference<>(null);
-        private AtomicInteger status = new AtomicInteger(WAIT);
+        private volatile int status = WAIT;
 
         private volatile Thread thread = null;
 
