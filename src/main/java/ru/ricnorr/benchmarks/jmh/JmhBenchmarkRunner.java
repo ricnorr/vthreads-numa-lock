@@ -76,7 +76,7 @@ public class JmhBenchmarkRunner {
                 case "consumeCpu" -> {
                     long before = ((long) obj.get("before"));
                     long in = ((long) obj.get("in"));
-                    var isLightThread = (Boolean) obj.get("light");
+                    boolean isLightThread = obj.get("light") != null && ((Boolean) obj.get("light"));
                     double beforeConsumeCpuTokensTimeNanos = JmhConsumeCpuTokensUtil.estimateConsumeCpuTokensTimeNanos(before);
                     double inConsumeCpuTokensTimeNanos = JmhConsumeCpuTokensUtil.estimateConsumeCpuTokensTimeNanos(in);
                     double highContentionWithoutLocksNanos = JmhConsumeCpuTokensUtil.estimateHighContentionWithoutLocksTimeNanos(before, in, actionsCount);

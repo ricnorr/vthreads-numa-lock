@@ -8,7 +8,7 @@ sdk use java 19.0.2-open
 
 cp settings/settings.json fatjar/settings/settings.json
 cd fatjar
-java -XX:+UseParallelGC -XX:+UseNUMA --enable-preview -jar NUMA-aware-locks.jar | ts
+java -XX:+UseParallelGC -XX:+UseNUMA --enable-preview -jar NUMA-aware-locks.jar
 cp ./results/benchmark_results.csv ../results/benchmark_results.csv
 rm -rf ./results/benchmark_results.csv
 cd ../scripts/

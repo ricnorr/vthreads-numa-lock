@@ -1,62 +1,11 @@
 {
   "locks": [
     {
-      "name": "UNFAIR_REENTRANT"
-    },
-    {
-      "name": "FAIR_REENTRANT"
-    },
-    {
-      "name": "MCS"
-    },
-    {
-      "name": "TEST_SET"
-    },
-    {
-      "name": "TEST_TEST_SET"
-    },
-    {
-      "name": "TICKET"
-    },
-    {
-      "name": "HCLH"
-    },
-    {
-      "name": "CLH"
-    },
-    {
-      "name": "CNA"
-    },
-    {
-      "name": "HCLH_CCL_SPLIT"
-    },
-    {
-      "name": "MCS_NO_PARK"
-    },
-    {
-      "name": "HMCS"
-    },
-    {
-      "name": "HCLH_CCL_SPLIT_BACKOFF"
-    },
-    {
-      "name": "HMCS_PARK"
-    },
-    {
-      "name": "HMCS_PARK_V2"
-    },
-    {
-      "name": "HMCS_PARK_V3"
-    },
-    {
-      "name": "HMCS_PARK_V4"
-    },
-    {
-      "name": "HMCS_PARK_V5"
-    },
-    {
-      "name": "HMCS_PARK_V6"
+      "name": "HMCS_ONLY_NUMA_HIERARCHY"
     }
+  ],
+  "threads": [
+    96
   ],
   "actionsCount": 12288,
   "warmupIterations": 0,
@@ -65,17 +14,9 @@
   "benches": [
     {
       "name": "consumeCpu",
-      "before": 32000,
-      "in": 64000
-    },
-    {
-      "name": "consumeCpu",
-      "before": 390000,
-      "in": 1500
-    },
-    {
-      "name": "consumeCpuNormalContention",
-      "before": 8192
+      "before": 0,
+      "in": 80,
+      "light": false
     }
   ]
 }
