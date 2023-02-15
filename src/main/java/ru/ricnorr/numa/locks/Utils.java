@@ -12,15 +12,15 @@ public class Utils {
     private final static int GET_CPU_ARM_SYSCALL = 168;
     private final static int GET_CPU_x86_SYSCALL = 309;
     public static int WAIT_THRESHOLD = 4096;
-    private static final Method currentCarrierThreadMethod;
 
-    public static final MethodHandle currentCarrierMH;
-    private static final Method getByThreadFromThreadLocalMethod;
+    public static final MethodHandle GET_CARRIER_THREAD_METHOD_HANDLE;
 
-    public static final MethodHandle getByThreadFromThreadLocalMH;
+    public static final MethodHandle GET_BY_THREAD_FROM_THREAD_LOCAL_METHOD_HANDLE;
 
 
     static {
+        Method currentCarrierThreadMethod;
+
         try {
             currentCarrierThreadMethod = Thread.class.getDeclaredMethod("currentCarrierThread");
         } catch (NoSuchMethodException e) {
@@ -29,26 +29,12 @@ public class Utils {
         MethodHandles.Lookup lookup = MethodHandles.lookup();
         currentCarrierThreadMethod.setAccessible(true);
         try {
-            currentCarrierMH = lookup.unreflect(currentCarrierThreadMethod);
+            GET_CARRIER_THREAD_METHOD_HANDLE = lookup.unreflect(currentCarrierThreadMethod);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
 
-//        MethodHandle mh = null;
-//        try {
-//            mh = lookup.unreflect(currentCarrierThreadMethod);
-//        } catch (IllegalAccessException e) {
-//            throw new RuntimeException(e);
-//        }
-
-//        try {
-//            currentCarrierLambda = (Supplier<Thread>) LambdaMetafactory.metafactory(
-//                    lookup, "currentCarrierThread", MethodType.methodType(Supplier.class),
-//                    mh.type(), mh, mh.type()).getTarget().invokeExact();
-//        } catch (Throwable e) {
-//            throw new RuntimeException(e);
-//        }
-
+        Method getByThreadFromThreadLocalMethod;
         try {
             getByThreadFromThreadLocalMethod = ThreadLocal.class.getDeclaredMethod("get", Thread.class);
         } catch (NoSuchMethodException e) {
@@ -56,7 +42,7 @@ public class Utils {
         }
         getByThreadFromThreadLocalMethod.setAccessible(true);
         try {
-            getByThreadFromThreadLocalMH = lookup.unreflect(getByThreadFromThreadLocalMethod);
+            GET_BY_THREAD_FROM_THREAD_LOCAL_METHOD_HANDLE = lookup.unreflect(getByThreadFromThreadLocalMethod);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
@@ -111,8 +97,7 @@ public class Utils {
     public static Thread getCurrentCarrierThread() {
 
         try {
-            // return (Thread) currentCarrierThreadMethod.invoke(null);
-            return (Thread) currentCarrierMH.invoke();
+            return (Thread) GET_CARRIER_THREAD_METHOD_HANDLE.invoke();
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -121,8 +106,7 @@ public class Utils {
     @SuppressWarnings("unchecked")
     public static <T> T getByThreadFromThreadLocal(ThreadLocal<T> tl, Thread thread) {
         try {
-//            return (T) getByThreadFromThreadLocalMethod.invoke(tl, thread);
-            return (T) getByThreadFromThreadLocalMH.invoke(tl, thread);
+            return (T) GET_BY_THREAD_FROM_THREAD_LOCAL_METHOD_HANDLE.invoke(tl, thread);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
