@@ -45,12 +45,12 @@ public class JmhParConsumeCpuTokensBenchmark {
 
     @Setup
     public void init() {
-        if (!isLightThread && !System.getProperty("os.name").toLowerCase().contains("mac")) {
+        if (!System.getProperty("os.name").toLowerCase().contains("mac")) {
             List<Integer> processors = getProcessorsNumbersInNumaNodeOrder();
             setAffinity(threads, ProcessHandle.current().pid(), processors);
         }
 
-        lock = Main.initLock(LockType.valueOf(lockType), lockSpec, Runtime.getRuntime().availableProcessors() == threads);
+        lock = Main.initLock(LockType.valueOf(lockType), lockSpec, threads > Runtime.getRuntime().availableProcessors(), isLightThread);
     }
 
 

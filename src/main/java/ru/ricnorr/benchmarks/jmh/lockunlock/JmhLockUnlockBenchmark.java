@@ -30,7 +30,7 @@ public class JmhLockUnlockBenchmark {
 
     @Param("")
     public String lockType;
-    
+
     @Param("")
     public String lockSpec;
 
@@ -43,7 +43,7 @@ public class JmhLockUnlockBenchmark {
             setAffinity(threads, ProcessHandle.current().pid(), processors);
         }
 
-        lock = Main.initLock(LockType.valueOf(lockType), lockSpec);
+        lock = Main.initLock(LockType.valueOf(lockType), lockSpec, false);
     }
 
 

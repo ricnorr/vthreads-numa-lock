@@ -21,7 +21,7 @@ public class JmhTakeOnceLockBenchmark {
 
     @Setup
     public void init() {
-        lock = Main.initLock(LockType.valueOf(lockType), lockSpec);
+        lock = Main.initLock(LockType.valueOf(lockType), lockSpec, false);
     }
 
     @Benchmark

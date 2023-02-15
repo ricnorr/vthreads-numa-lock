@@ -6,11 +6,14 @@ import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
+import org.openjdk.jmh.runner.options.TimeValue;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import ru.ricnorr.benchmarks.custom.CustomBenchmarkRunner;
 import ru.ricnorr.benchmarks.jmh.JmhBenchmarkRunner;
+import ru.ricnorr.benchmarks.jmh.cpu.JmhJniCallBenchmark;
 import ru.ricnorr.benchmarks.params.BenchmarkParameters;
 import ru.ricnorr.numa.locks.*;
 
@@ -25,10 +28,12 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
+import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
+
 public class Main {
     private static final List<String> RESULTS_HEADERS = List.of("name", "lock", "threads", "overhead(microsec)", "throughput(ops_microsec)");
 
-    public static Lock initLock(LockType lockType, String lockSpec, boolean overSubscription) {
+    public static Lock initLock(LockType lockType, String lockSpec, boolean overSubscription, boolean isLight) {
         switch (lockType) {
             case UNFAIR_REENTRANT -> {
                 return new ReentrantLock(false);
@@ -67,36 +72,37 @@ public class Main {
                 return new HCLHCCLSplitWithBackoffLock(new HCLHCCLSplitWithBackoffLock.HCLHCCLSplitWithBackoffLockSpec(lockSpec));
             }
             case HMCS_CCL_PLUS_NUMA_HIERARCHY -> {
-                return new HMCS_CCL_PLUS_NUMA_HIERARCHY(overSubscription);
+                return new HMCS_CCL_PLUS_NUMA_HIERARCHY(overSubscription, isLight);
             }
             case HMCS_CCL_PLUS_NUMA_HIERARCHY_WITH_PADDING -> {
-                return new HMCS_CCL_PLUS_NUMA_HIERARCHY_WITH_PADDING(overSubscription);
+                return null;
             }
+
             case HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY -> {
-                return new HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY(overSubscription);
+                return new HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY(overSubscription, isLight);
             }
             case HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY_WITH_PADDING -> {
-                return new HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY_WITH_PADDING(overSubscription);
+                return null;
             }
             case HMCS_ONLY_CCL_HIERARCHY -> {
-                return new HMCS_ONLY_CCL_HIERARCHY(overSubscription);
+                return new HMCS_ONLY_CCL_HIERARCHY(overSubscription, isLight);
             }
             case HMCS_ONLY_CCL_HIERARCHY_WITH_PADDING -> {
-                return new HMCS_ONLY_CCL_HIERARCHY_WITH_PADDING(overSubscription);
+                return null;
             }
             case HMCS_ONLY_NUMA_HIERARCHY -> {
-                return new HMCS_ONLY_NUMA_HIERARCHY(overSubscription);
+                return new HMCS_ONLY_NUMA_HIERARCHY(overSubscription, isLight);
             }
             case HMCS_ONLY_NUMA_HIERARCHY_WITH_PADDING -> {
-                return new HMCS_ONLY_NUMA_HIERARCHY_WITH_PADDING(overSubscription);
+                return null;
             }
 
             default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
         }
     }
 
-    public static Lock initLock(LockType lockType, String lockSpec) {
-        return initLock(lockType, lockSpec, false);
+    public static Lock initLock(LockType lockType, String lockSpec, boolean isLight) {
+        return initLock(lockType, lockSpec, false, isLight);
     }
 
     public static List<Integer> getProcessorsNumbersInNumaNodeOrder() {
@@ -206,9 +212,36 @@ public class Main {
         System.out.println("Possible cpu ids: " + cpuIds.stream().sorted().distinct().map(Object::toString).collect(Collectors.joining(",")));
     }
 
-    public static void main(String[] args) throws RunnerException {
+    public static void estimateJniCall() {
+        var optionsBuilder = new OptionsBuilder()
+                .include(JmhJniCallBenchmark.class.getSimpleName())
+                .operationsPerInvocation(1)
+                .warmupIterations(1)
+                .forks(1)
+                .measurementTime(TimeValue.seconds(5))
+                .measurementIterations(1)
+                .verbosity(NORMAL);
+        try {
+            new Runner(optionsBuilder.build()).run();
+        } catch (Exception e) {
+            throw new BenchmarkException("Can't get jmh benchmark result");
+        }
+    }
+
+    public static void main(String[] args) throws Throwable {
         if (args.length != 0 && args[0].equals("print-clusters")) {
             printClusters();
+            return;
+        }
+        if (args.length != 0 && args[0].equals("check-jni-call")) {
+            estimateJniCall();
+            return;
+        }
+        if (args.length != 0 && args[0].equals("get-carrier")) {
+            //Utils.currentCarrierMH.invoke();
+            var y = new ThreadLocal<>();
+            y.set(1);
+            var x = Utils.getByThreadFromThreadLocal(y, Thread.currentThread());
             return;
         }
         // Read benchmark parameters

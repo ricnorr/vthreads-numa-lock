@@ -41,9 +41,10 @@ public class ConsumeCpuBenchmarkParameters extends BenchmarkParameters {
 
     public String logBegin() {
         return String.format(
-                "%nStart %s contention consume cpu benchmark: threads=%d, lockType=%s, lockSpec=%s, beforeTokens=%d, inTokens=%d, beforeTimeNanos=%f, inTimeNanos=%f%n",
+                "%nStart %s contention consume cpu benchmark: threads=%d, lightThreads=%b, lockType=%s, lockSpec=%s, beforeTokens=%d, inTokens=%d, beforeTimeNanos=%f, inTimeNanos=%f%n",
                 isHighContention ? "high" : "low",
                 threads,
+                isLightThread,
                 lockType,
                 lockSpec,
                 beforeCpuTokens,
