@@ -7,6 +7,12 @@
       "name": "TEST_SET"
     },
     {
+      "name": "MCS"
+    },
+    {
+      "name": "CNA"
+    },
+    {
       "name": "UNFAIR_REENTRANT"
     },
     {
