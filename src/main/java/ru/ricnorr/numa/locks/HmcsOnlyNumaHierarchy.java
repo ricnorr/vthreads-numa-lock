@@ -1,10 +1,10 @@
 package ru.ricnorr.numa.locks;
 
 
-public class HMCS_ONLY_NUMA_HIERARCHY extends AbstractHmcs {
+public class HmcsOnlyNumaHierarchy extends AbstractHmcs {
 
 
-    public HMCS_ONLY_NUMA_HIERARCHY(boolean overSubscription, boolean isLight) {
+    public HmcsOnlyNumaHierarchy(boolean overSubscription, boolean isLight) {
         super(overSubscription, isLight, Utils::getClusterID);
         int availableProcessors = Runtime.getRuntime().availableProcessors();
         int numaNodesCount;

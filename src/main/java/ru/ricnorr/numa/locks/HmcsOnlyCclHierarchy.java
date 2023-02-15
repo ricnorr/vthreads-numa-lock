@@ -3,9 +3,9 @@ package ru.ricnorr.numa.locks;
 /**
  * HMCS, иерархия только на ccl'ях, то есть поток берет лок на своей ccl, затем глобальный лок.
  */
-public class HMCS_ONLY_CCL_HIERARCHY extends AbstractHmcs {
+public class HmcsOnlyCclHierarchy extends AbstractHmcs {
 
-    public HMCS_ONLY_CCL_HIERARCHY(boolean overSubscription, boolean isLight) {
+    public HmcsOnlyCclHierarchy(boolean overSubscription, boolean isLight) {
         super(overSubscription, isLight, Utils::kungpengGetClusterID);
         int availableProcessors = Runtime.getRuntime().availableProcessors();
         int cclSize = 4;

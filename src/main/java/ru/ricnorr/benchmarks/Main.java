@@ -11,7 +11,6 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
-import ru.ricnorr.benchmarks.custom.CustomBenchmarkRunner;
 import ru.ricnorr.benchmarks.jmh.JmhBenchmarkRunner;
 import ru.ricnorr.benchmarks.jmh.cpu.JmhJniCallBenchmark;
 import ru.ricnorr.benchmarks.params.BenchmarkParameters;
@@ -60,7 +59,7 @@ public class Main {
                 return new CLHLock();
             }
             case CNA -> {
-                return new CNALock(new CnaLockSpec(lockSpec));
+                return new CNALock();
             }
             case MCS -> {
                 return new MCS();
@@ -68,30 +67,27 @@ public class Main {
             case MCS_WITH_PADDING -> {
                 return new MCS_WITH_PADDING();
             }
-            case HCLH_CCL_SPLIT_BACKOFF -> {
-                return new HCLHCCLSplitWithBackoffLock(new HCLHCCLSplitWithBackoffLock.HCLHCCLSplitWithBackoffLockSpec(lockSpec));
-            }
             case HMCS_CCL_PLUS_NUMA_HIERARCHY -> {
-                return new HMCS_CCL_PLUS_NUMA_HIERARCHY(overSubscription, isLight);
+                return new HmcsCclPlusNumaHierarchy(overSubscription, isLight);
             }
             case HMCS_CCL_PLUS_NUMA_HIERARCHY_WITH_PADDING -> {
                 return null;
             }
 
             case HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY -> {
-                return new HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY(overSubscription, isLight);
+                return new HmcsCclPlusNumaPlusSupernumaHierarchy(overSubscription, isLight);
             }
             case HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY_WITH_PADDING -> {
                 return null;
             }
             case HMCS_ONLY_CCL_HIERARCHY -> {
-                return new HMCS_ONLY_CCL_HIERARCHY(overSubscription, isLight);
+                return new HmcsOnlyCclHierarchy(overSubscription, isLight);
             }
             case HMCS_ONLY_CCL_HIERARCHY_WITH_PADDING -> {
                 return null;
             }
             case HMCS_ONLY_NUMA_HIERARCHY -> {
-                return new HMCS_ONLY_NUMA_HIERARCHY(overSubscription, isLight);
+                return new HmcsOnlyNumaHierarchy(overSubscription, isLight);
             }
             case HMCS_ONLY_NUMA_HIERARCHY_WITH_PADDING -> {
                 return null;
@@ -277,9 +273,7 @@ public class Main {
         var locks = (JSONArray) obj.get("locks");
         var benches = (JSONArray) obj.get("benches");
         List<BenchmarkParameters> benchmarkParametersList;
-        if (type.equals("custom")) {
-            benchmarkParametersList = CustomBenchmarkRunner.fillBenchmarkParameters(threadsList, null, benches, actionsCount);
-        } else if (type.equals("jmh")) {
+        if (type.equals("jmh")) {
             benchmarkParametersList = JmhBenchmarkRunner.fillBenchmarkParameters(threadsList, locks, benches, actionsCount);
         } else {
             throw new BenchmarkException("Illegal benchmark type");
@@ -297,7 +291,7 @@ public class Main {
             if (type.equals("jmh")) {
                 resultCsv.add(JmhBenchmarkRunner.runBenchmark(iterations, warmupIterations, param));
             } else {
-                resultCsv.add(CustomBenchmarkRunner.runBenchmark(iterations, param));
+                throw new RuntimeException("Type not found");
             }
 
         }
