@@ -3,7 +3,9 @@ import matplotlib.pyplot as plt
 import os
 import glob
 import re
+import numpy as np
 from matplotlib.backends.backend_pdf import PdfPages
+import matplotlib.ticker as ticker
 
 df = pd.read_csv('../results/benchmark_results.csv', index_col=None, header=0)
 bench_names = sorted(set(df['name']))
@@ -14,20 +16,27 @@ paths = []
 
 def draw_by_bench_and_mode(df, bench, mode, threads, suffix):
         ax = plt.axes(title = bench + '\n mode=' + mode)
-        ax.set_xscale("log")
-        ax.set_xticks(threads)
-        ax.set_xticklabels(list(map(lambda x : str(x), threads)))
+
+
+        #ax.set_xticks(np.linspace(0, 256, 8))
+        #ax.set_xscale("log", base=2)
+        #ax.xaxis.set_major_formatter(ticker.ScalarFormatter())
+        #ax.set_xticks(threads)
+        #ax.set_xticklabels(list(map(lambda x : str(x), threads)))
+
+
         plt.gcf().set_size_inches(7, 7)
         ind = 0
         markevery = [1,2]
         for lock in locks:
-            cur_df = df[(df['name'] == bench) & (df['lock'] == lock) & (df['threads'].isin(threads))]
-            cur_df.sort_values(by=['threads']).plot(ax=ax, x='threads', y=mode, label=lock, style=[styles[ind % len(styles)]], markevery=markevery[ind % len(markevery)], marker='o')
+            cur_df = df[(df['name'] == bench) & (df['lock'] == lock) & (df['threads'].isin(threads))].copy()
+            cur_df['plot_threads'] = cur_df['threads'].map(str)
+            cur_df.sort_values(by=['threads']).plot(ax=ax, x='plot_threads', y=mode, label=lock, style=[styles[ind % len(styles)]], marker='o')
             ind+=1
         l = plt.legend()
         for text in l.get_texts():
             t = text.get_text()
-            if t == 'FAIR_REENTRANT_{}' or t == 'UNFAIR_REENTRANT_{}':
+            if 'REENTRANT' in t:
                 text.set_color("red")
 
         name = '../results/pictures/' + bench + '_' + mode  + suffix + '.png'

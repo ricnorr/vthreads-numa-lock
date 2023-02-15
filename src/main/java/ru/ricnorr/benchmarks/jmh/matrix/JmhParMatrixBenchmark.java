@@ -66,7 +66,7 @@ public class JmhParMatrixBenchmark {
         inMatrixB = SimpleMatrix.random_DDRM(inSize, inSize, 0, Float.MAX_VALUE, rand);
 
 
-        lock = Main.initLock(LockType.valueOf(lockType), lockSpec);
+        lock = Main.initLock(LockType.valueOf(lockType), lockSpec, false);
     }
 
 

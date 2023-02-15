@@ -79,7 +79,7 @@ public class CustomBenchmarkRunner {
     }
 
     public static BenchmarkResultsCsv runBenchmark(int iterations, BenchmarkParameters param) {
-        Lock lock = initLock(param.lockType, param.lockSpec);
+        Lock lock = initLock(param.lockType, param.lockSpec, false);
         Runnable withLockRunnable;
         Runnable withoutLockRunnable;
         if (param instanceof MatrixBenchmarkParameters matrixParam) {
