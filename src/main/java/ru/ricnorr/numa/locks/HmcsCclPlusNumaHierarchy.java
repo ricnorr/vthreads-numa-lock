@@ -7,9 +7,9 @@ import java.util.List;
 /**
  * Сначала берем лок на CCL, затем берем лок на нума ноде, затем берем глобальный
  */
-public class HMCS_CCL_PLUS_NUMA_HIERARCHY extends AbstractHmcs {
-    
-    public HMCS_CCL_PLUS_NUMA_HIERARCHY(boolean overSubscription, boolean isLight) {
+public class HmcsCclPlusNumaHierarchy extends AbstractHmcs {
+
+    public HmcsCclPlusNumaHierarchy(boolean overSubscription, boolean isLight) {
         super(overSubscription, isLight, Utils::kungpengGetClusterID);
         int availableProcessors = Runtime.getRuntime().availableProcessors();
         int cclSize = 4;

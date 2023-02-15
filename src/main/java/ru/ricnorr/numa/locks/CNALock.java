@@ -1,9 +1,8 @@
 package ru.ricnorr.numa.locks;
 
-import ru.ricnorr.numa.locks.atomics.*;
-
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.locks.LockSupport;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class CNALock extends AbstractLock {
@@ -18,12 +17,9 @@ public class CNALock extends AbstractLock {
 
     CNALockCore cnaLockCore;
 
-    CnaLockSpec cnaLockSpec;
-
-    public CNALock(CnaLockSpec cnaLockSpec) {
-        this.cnaLockSpec = cnaLockSpec;
+    public CNALock() {
         node = ThreadLocal.withInitial(() -> {
-            CNANode node = new CNANode(cnaLockSpec, Thread.currentThread());
+            CNANode node = new CNANode();
             node.socket.set(Utils.getClusterID());
             return node;
         });
@@ -51,35 +47,30 @@ public class CNALock extends AbstractLock {
         cnaLockCore.unlock(node.get(), socketID.get());
     }
 
+    public static class CNANode {
+        private final AtomicReference<CNANode> spin;
+        private final AtomicInteger socket;
+        private final AtomicReference<CNANode> secTail;
+        private final AtomicReference<CNANode> next;
+
+
+        public CNANode() {
+            spin = new AtomicReference<>(null);
+            socket = new AtomicInteger(-1);
+            secTail = new AtomicReference<>(null);
+            next = new AtomicReference<>(null);
+        }
+    }
+
     public class CNALockCore {
 
-        private final LockAtomicRef<CNANode> tail;
+        private final AtomicReference<CNANode> tail;
 
         private final CNANode trueValue;
 
         public CNALockCore() {
-            trueValue = new CNANode(cnaLockSpec, null);
-            if (cnaLockSpec.useJavaAtomics) {
-                tail = new JavaAtomicRef<>(null);
-            } else {
-                tail = new KotlinxAtomicRef<>(null);
-            }
-        }
-
-        public long spinWait(long spinCounter, boolean useParkingOnSpin, long threshold) {
-            if (spinCounter < threshold) {
-                for (long i = 0; i < spinCounter; i++) {
-                }
-                spinCounter *= 2;
-                return spinCounter;
-            } else {
-                if (useParkingOnSpin) {
-                    LockSupport.park();
-                } else {
-                    Thread.yield();
-                }
-                return threshold;
-            }
+            trueValue = new CNANode();
+            tail = new AtomicReference<>(null);
         }
 
         public void lock(CNANode me) {
@@ -95,45 +86,39 @@ public class CNALock extends AbstractLock {
             }
 
             prevTail.next.set(me);
-            long spinCount = 1;
             while (me.spin.get() == null) {
-                spinCount = spinWait(spinCount, cnaLockSpec.useParkingOnSpin, cnaLockSpec.spinThreshold);
+                Thread.onSpinWait();
             }
         }
 
         public void unlock(CNANode me, int clusterID) {
             if (me.next.get() == null) {
                 if (me.spin.get() == trueValue) {
-                    if (tail.cas(me, null)) {
+                    if (tail.compareAndSet(me, null)) {
                         return;
                     }
                 } else { // у нас есть secondary queue
                     CNANode secHead = me.spin.get();
-                    if (tail.cas(me, secHead.secTail.get())) {
+                    if (tail.compareAndSet(me, secHead.secTail.get())) {
                         secHead.spin.set(trueValue);
-                        if (cnaLockSpec.useParkingOnSpin) {
-                            LockSupport.unpark(secHead.thread);
-                        }
                         return;
                     }
                 }
 
                 /* Wait for successor to appear */
-                long spinCounter = 1;
                 while (me.next.get() == null) {
-                    spinCounter = spinWait(spinCounter, false, cnaLockSpec.spinThreshold);
+                    Thread.onSpinWait();
                 }
             }
             CNANode succ = null;
-            if (me.spin.get() == trueValue && (ThreadLocalRandom.current().nextInt() & 0xff) != 0) { // probability = 1 - (1 / 2**8) == 0.996
+            //  && (ThreadLocalRandom.current().nextInt() & 0xff) != 0 // probability = 1 - (1 / 2**8) == 0.996
+            if (me.spin.get() == trueValue) {
                 succ = me.next.get();
                 succ.spin.set(trueValue);
-                if (cnaLockSpec.useParkingOnSpin) {
-                    LockSupport.unpark(succ.thread);
-                }
                 return;
             }
-            if (keep_lock_local() && (succ = find_successor(me, clusterID)) != null) {
+            // keep_lock_local() &&
+            if ((succ = find_successor(me, clusterID)) != null) {
                 succ.spin.set(me.spin.get());
             } else if (me.spin.get() != trueValue) {
                 succ = me.spin.get();
@@ -143,9 +128,6 @@ public class CNALock extends AbstractLock {
             } else {
                 succ = me.next.get();
                 succ.spin.set(trueValue);
-            }
-            if (cnaLockSpec.useParkingOnSpin) {
-                LockSupport.unpark(succ.thread);
             }
         }
 
@@ -160,25 +142,14 @@ public class CNALock extends AbstractLock {
             CNANode secHead = next;
             CNANode secTail = next;
             CNANode cur = next.next.get();
-
-            CNANode curClosestInHierarchy = null;
-            CNANode secTailClosestInHierarchy = null;
-            CNANode secHeadClosestInHierarchy = null;
-
+            
             while (cur != null) {
                 int curSocket = cur.socket.get();
                 if (curSocket == mySocket) {
                     return successor_found(me, cur, secHead, secTail);
-                } else if (cnaLockSpec.kunpengNuma && curClosestInHierarchy == null && isFromOneBigNuma(curSocket, mySocket)) {
-                    curClosestInHierarchy = cur;
-                    secTailClosestInHierarchy = secTail;
-                    secHeadClosestInHierarchy = secHead;
                 }
                 secTail = cur;
                 cur = cur.next.get();
-            }
-            if (curClosestInHierarchy != null) {
-                return successor_found(me, curClosestInHierarchy, secHeadClosestInHierarchy, secTailClosestInHierarchy);
             }
             return null;
         }
@@ -202,32 +173,6 @@ public class CNALock extends AbstractLock {
 
         private boolean keep_lock_local() { // probability 0.9999
             return (ThreadLocalRandom.current().nextInt() & 0xffff) != 0;
-        }
-    }
-
-
-    public static class CNANode {
-        private final LockAtomicRef<CNANode> spin;// = atomic(null);
-        private final LockAtomicInt socket;// = atomic(-1);
-        private final LockAtomicRef<CNANode> secTail;// = atomic(null);
-        private final LockAtomicRef<CNANode> next;// = atomic(null);
-
-
-        private final Thread thread;
-
-        public CNANode(CnaLockSpec spec, Thread thread) {
-            if (spec.useJavaAtomics) {
-                spin = new JavaAtomicRef<>(null);
-                socket = new JavaAtomicInt(-1);
-                secTail = new JavaAtomicRef<>(null);
-                next = new JavaAtomicRef<>(null);
-            } else {
-                spin = new KotlinxAtomicRef<>(null);
-                socket = new KotlinxAtomicInt(-1);
-                secTail = new KotlinxAtomicRef<>(null);
-                next = new KotlinxAtomicRef<>(null);
-            }
-            this.thread = thread;
         }
     }
 

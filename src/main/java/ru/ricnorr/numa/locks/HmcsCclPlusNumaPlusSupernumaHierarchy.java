@@ -7,9 +7,9 @@ import java.util.List;
  * Взять лок на CCL, затем на нума ноде, затем на супер-нума ноде, затем глобальный
  * На 48 корной машинке нет смысла считать, только на 96 и 128
  */
-public class HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY extends AbstractHmcs {
+public class HmcsCclPlusNumaPlusSupernumaHierarchy extends AbstractHmcs {
 
-    public HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY(boolean overSubscription, boolean isLight) {
+    public HmcsCclPlusNumaPlusSupernumaHierarchy(boolean overSubscription, boolean isLight) {
         super(overSubscription, isLight, Utils::kungpengGetClusterID);
         int availableProcessors = Runtime.getRuntime().availableProcessors();
         int cclSize = 4;
