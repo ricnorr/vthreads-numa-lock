@@ -16,9 +16,6 @@
       "name": "HMCS_ONLY_NUMA_HIERARCHY"
     },
     {
-      "name": "HMCS_CCL_PLUS_NUMA_HIERARCHY"
-    },
-    {
       "name": "HMCS_ONLY_CCL_HIERARCHY"
     },
     {
@@ -26,7 +23,7 @@
     }
   ],
   "actionsCount": 12288,
-  "warmupIterations": 2,
+  "warmupIterations": 0,
   "iterations": 2,
   "type": "jmh",
   "threads": [
@@ -40,15 +37,10 @@
     64,
     96,
     128,
-    144
+    192,
+    216
   ],
   "benches": [
-    {
-      "name": "consumeCpu",
-      "before": 0,
-      "in": 80,
-      "light": true
-    },
     {
       "name": "consumeCpu",
       "before": 0,
