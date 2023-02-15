@@ -4,6 +4,9 @@
       "name": "TEST_TEST_SET"
     },
     {
+      "name": "TEST_SET"
+    },
+    {
       "name": "UNFAIR_REENTRANT"
     },
     {
@@ -17,6 +20,9 @@
     },
     {
       "name": "HMCS_ONLY_CCL_HIERARCHY"
+    },
+    {
+      "name": "HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY"
     }
   ],
   "actionsCount": 12288,
@@ -24,12 +30,17 @@
   "iterations": 2,
   "type": "jmh",
   "threads": [
+    1,
+    4,
     8,
     16,
     24,
     32,
     48,
-    96
+    64,
+    96,
+    128,
+    144
   ],
   "benches": [
     {
