@@ -1,4 +1,6 @@
-package ru.ricnorr.numa.locks;
+package ru.ricnorr.numa.locks.hmcs;
+
+import ru.ricnorr.numa.locks.Utils;
 
 /**
  * HMCS, иерархия только на ccl'ях, то есть поток берет лок на своей ccl, затем глобальный лок.

@@ -15,7 +15,6 @@ import ru.ricnorr.benchmarks.jmh.cpu.JmhConsumeCpuTokensUtil;
 import ru.ricnorr.benchmarks.jmh.cpu.JmhParConsumeCpuTokensBenchmark;
 import ru.ricnorr.benchmarks.jmh.cpu.JmhSeqConsumeCpuTokensBenchmarkHighContention;
 import ru.ricnorr.benchmarks.jmh.cpu.JmhSeqConsumeCpuTokensBenchmarkLowContention;
-import ru.ricnorr.benchmarks.jmh.lockunlock.JmhLockUnlockBenchmark;
 import ru.ricnorr.benchmarks.jmh.matrix.JmhMatrixUtil;
 import ru.ricnorr.benchmarks.jmh.matrix.JmhParMatrixBenchmark;
 import ru.ricnorr.benchmarks.jmh.matrix.JmhSeqMatrixBenchmarkOversubscription;
@@ -233,20 +232,21 @@ public class JmhBenchmarkRunner {
                         parameters.lockSpec,
                         param.actionsPerThread
                 );
-                double overheadNanos = runBenchmarkNano(JmhLockUnlockBenchmark.class, iterations, warmupIterations, Map.of(
-                        "isLightThread", Boolean.toString(param.isLightThread),
-                        "threads", Integer.toString(param.threads),
-                        "actionsPerThread", Integer.toString(param.actionsPerThread),
-                        "lockType", param.lockType.toString(),
-                        "lockSpec", param.lockSpec
-                ));
+                double overheadNanos = 0;
+//                double overheadNanos = runBenchmarkNano(JmhLockUnlockBenchmark.class, iterations, warmupIterations, Map.of(
+//                        "isLightThread", Boolean.toString(param.isLightThread),
+//                        "threads", Integer.toString(param.threads),
+//                        "actionsPerThread", Integer.toString(param.actionsPerThread),
+//                        "lockType", param.lockType.toString(),
+//                        "lockSpec", param.lockSpec
+//                ));
                 double throughputNanos = (parameters.threads * parameters.actionsPerThread) / overheadNanos;
                 System.out.printf("%nEnd lock-unlock benchmark: i got overhead_nanos=%f, throughput_nanos=%f%n", overheadNanos, throughputNanos);
                 return new BenchmarkResultsCsv(
                         parameters.getBenchmarkName(),
                         parameters.lockType.name() + "_" + parameters.lockSpec,
                         parameters.threads,
-                        overheadNanos,
+                        0,
                         throughputNanos
                 );
             }

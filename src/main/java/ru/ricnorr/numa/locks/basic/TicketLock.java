@@ -1,25 +1,26 @@
-package ru.ricnorr.numa.locks;
+package ru.ricnorr.numa.locks.basic;
+
+import ru.ricnorr.numa.locks.NumaLock;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static ru.ricnorr.numa.locks.Utils.spinWaitYield;
-
-public class TicketLock extends AbstractLock {
+public class TicketLock implements NumaLock {
 
     private final AtomicInteger nowServing = new AtomicInteger(Integer.MIN_VALUE);
     private final AtomicInteger nextTicket = new AtomicInteger(Integer.MIN_VALUE);
 
     @Override
-    public void lock() {
+    public Object lock() {
         int my_ticket = nextTicket.getAndIncrement();
         int spinCounter = 1;
         while (my_ticket != nowServing.get()) {
-            spinCounter = spinWaitYield(spinCounter);
+            Thread.onSpinWait();
         }
+        return null;
     }
 
     @Override
-    public void unlock() {
+    public void unlock(Object t) {
         nowServing.getAndIncrement();
     }
 }

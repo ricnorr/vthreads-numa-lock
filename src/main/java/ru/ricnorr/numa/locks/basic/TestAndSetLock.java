@@ -1,8 +1,10 @@
-package ru.ricnorr.numa.locks;
+package ru.ricnorr.numa.locks.basic;
+
+import ru.ricnorr.numa.locks.NumaLock;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class TestAndSetLock extends AbstractLock {
+public class TestAndSetLock implements NumaLock {
 
     private final AtomicBoolean flag;
 
@@ -11,16 +13,16 @@ public class TestAndSetLock extends AbstractLock {
     }
 
     @Override
-    public void lock() {
+    public Object lock() {
         while (true) {
             if (flag.compareAndSet(false, true)) {
-                return;
+                return null;
             }
         }
     }
 
     @Override
-    public void unlock() {
+    public void unlock(Object t) {
         flag.set(false);
     }
 }

@@ -1,31 +1,22 @@
 {
   "locks": [
     {
-      "name": "TEST_TEST_SET"
+      "name": "CNA_NUMA_PAD"
     },
     {
-      "name": "TEST_SET"
+      "name": "CNA_CCL_PAD"
     },
     {
-      "name": "MCS"
+      "name": "CNA_NUMA_NO_PAD"
     },
     {
-      "name": "CNA"
-    },
-    {
-      "name": "UNFAIR_REENTRANT"
+      "name": "CNA_CCL_NO_PAD"
     },
     {
       "name": "FAIR_REENTRANT"
     },
     {
-      "name": "HMCS_ONLY_NUMA_HIERARCHY"
-    },
-    {
-      "name": "HMCS_ONLY_CCL_HIERARCHY"
-    },
-    {
-      "name": "HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY"
+      "name": "UNFAIR_REENTRANT"
     }
   ],
   "actionsCount": 12288,
@@ -33,18 +24,12 @@
   "iterations": 2,
   "type": "jmh",
   "threads": [
-    1,
-    4,
-    8,
     16,
     24,
     32,
     48,
     64,
-    96,
-    128,
-    192,
-    216
+    96
   ],
   "benches": [
     {

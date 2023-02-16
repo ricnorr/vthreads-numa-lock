@@ -5,13 +5,13 @@ import org.openjdk.jmh.infra.Blackhole;
 import ru.ricnorr.benchmarks.BenchmarkException;
 import ru.ricnorr.benchmarks.LockType;
 import ru.ricnorr.benchmarks.Main;
+import ru.ricnorr.numa.locks.NumaLock;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
 
 import static org.openjdk.jmh.annotations.Scope.Benchmark;
 import static ru.ricnorr.benchmarks.Main.getProcessorsNumbersInNumaNodeOrder;
@@ -41,7 +41,7 @@ public class JmhParConsumeCpuTokensBenchmark {
     @Param("")
     public String lockSpec;
 
-    Lock lock;
+    NumaLock lock;
 
     @Setup
     public void init() {
@@ -69,9 +69,9 @@ public class JmhParConsumeCpuTokensBenchmark {
                 }
                 for (int i1 = 0; i1 < actionsPerThread; i1++) {
                     Blackhole.consumeCPU(beforeCpuTokens);
-                    lock.lock();
+                    var obj = lock.lock();
                     Blackhole.consumeCPU(inCpuTokens);
-                    lock.unlock();
+                    lock.unlock(obj);
                 }
             };
             if (isLightThread) {
