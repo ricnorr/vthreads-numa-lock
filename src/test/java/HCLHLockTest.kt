@@ -5,21 +5,21 @@ import org.jetbrains.kotlinx.lincheck.check
 import org.jetbrains.kotlinx.lincheck.paramgen.IntGen
 import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.ModelCheckingOptions
 import org.junit.Test
-import ru.ricnorr.numa.locks.HCLHLock.HCLHLockCore
+import ru.ricnorr.numa.locks.hclh.HCLHLock.HCLHLockCore
 
 @Param(name = "clusterID", gen = IntGen::class, conf = "0:2")
 class HCLHLockTest {
 
     private val lock = HCLHLockCore()
 
-    private var counter: Long = 0;
+    private var counter: Long = 0
 
     @Operation
     fun add(@Param(name = "clusterID") clusterID: Int) {
         val myNode = HCLHLockCore.QNodeHCLH()
         val prevNode = lock.lock(myNode, clusterID)
         counter++
-        lock.unlock(myNode);
+        lock.unlock(myNode)
     }
 
     @Operation
@@ -28,7 +28,7 @@ class HCLHLockTest {
         val myNode = HCLHLockCore.QNodeHCLH()
         val prevNode = lock.lock(myNode, clusterID)
         value = counter
-        lock.unlock(myNode);
+        lock.unlock(myNode)
         return value
     }
 

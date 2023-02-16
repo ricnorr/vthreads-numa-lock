@@ -1,15 +1,5 @@
-import org.jetbrains.kotlinx.lincheck.LoggingLevel
-import org.jetbrains.kotlinx.lincheck.annotations.Operation
-import org.jetbrains.kotlinx.lincheck.annotations.Param
-import org.jetbrains.kotlinx.lincheck.check
-import org.jetbrains.kotlinx.lincheck.paramgen.IntGen
-import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.ModelCheckingOptions
-import org.junit.Test
-import ru.ricnorr.numa.locks.CNALock
-import ru.ricnorr.numa.locks.CNALock.CNANode
-
-//@Param(name = "clusterID", gen = IntGen::class, conf = "0:1")
-//class CNALockTest {
+// @Param(name = "clusterID", gen = IntGen::class, conf = "0:1")
+// class CNALockTest {
 //
 //    private val lock = CNALock.CNALockCore()
 //
@@ -38,4 +28,4 @@ import ru.ricnorr.numa.locks.CNALock.CNANode
 //        ModelCheckingOptions().sequentialSpecification(LockStateWithClusters::class.java).invocationsPerIteration(10000)
 //            .actorsPerThread(4).actorsBefore(3).actorsAfter(3).iterations(100).logLevel(LoggingLevel.INFO).threads(4)
 //            .check(this::class.java)
-//}
+// }
