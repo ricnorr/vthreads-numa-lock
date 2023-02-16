@@ -1,11 +1,13 @@
-package ru.ricnorr.numa.locks;
+package ru.ricnorr.numa.locks.basic;
+
+import ru.ricnorr.numa.locks.NumaLock;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static ru.ricnorr.numa.locks.Utils.spinWaitYield;
 
-public class CLHLock extends AbstractLock {
+public class CLHLock implements NumaLock {
     private final ThreadLocal<QNodeCLH> prevNode = ThreadLocal.withInitial(() -> null);
     private final ThreadLocal<QNodeCLH> curNode = ThreadLocal.withInitial(QNodeCLH::new);
     private final AtomicReference<QNodeCLH> tail = new AtomicReference<>(new QNodeCLH());
@@ -14,7 +16,8 @@ public class CLHLock extends AbstractLock {
         private final AtomicBoolean locked = new AtomicBoolean(false);
     }
 
-    public void lock() {
+    @Override
+    public Object lock() {
         QNodeCLH node = curNode.get();
         node.locked.set(true);
         QNodeCLH prev = tail.getAndSet(node);
@@ -23,9 +26,11 @@ public class CLHLock extends AbstractLock {
         while (prev.locked.get()) {
             spinCounter = spinWaitYield(spinCounter);
         }
+        return null;
     }
 
-    public void unlock() {
+    @Override
+    public void unlock(Object obj) {
         QNodeCLH qNode = curNode.get();
         qNode.locked.set(false);
         curNode.set(prevNode.get());

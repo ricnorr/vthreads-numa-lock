@@ -5,8 +5,6 @@ import org.ejml.simple.SimpleMatrix;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import ru.ricnorr.benchmarks.BenchmarkException;
-import ru.ricnorr.benchmarks.LockType;
-import ru.ricnorr.benchmarks.Main;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +64,7 @@ public class JmhParMatrixBenchmark {
         inMatrixB = SimpleMatrix.random_DDRM(inSize, inSize, 0, Float.MAX_VALUE, rand);
 
 
-        lock = Main.initLock(LockType.valueOf(lockType), lockSpec, false);
+//        lock = Main.initLock(LockType.valueOf(lockType), lockSpec, false);
     }
 
 

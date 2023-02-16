@@ -1,5 +1,7 @@
-package ru.ricnorr.numa.locks;
+package ru.ricnorr.numa.locks.hmcs;
 
+
+import ru.ricnorr.numa.locks.Utils;
 
 import java.util.ArrayList;
 import java.util.List;

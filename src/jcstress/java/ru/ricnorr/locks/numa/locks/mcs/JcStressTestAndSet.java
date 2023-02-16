@@ -5,9 +5,8 @@ import org.openjdk.jcstress.annotations.JCStressTest;
 import org.openjdk.jcstress.annotations.Outcome;
 import org.openjdk.jcstress.annotations.State;
 import org.openjdk.jcstress.infra.results.III_Result;
-import ru.ricnorr.numa.locks.TestAndSetLock;
-
-import java.util.concurrent.locks.Lock;
+import ru.ricnorr.numa.locks.NumaLock;
+import ru.ricnorr.numa.locks.basic.TestAndSetLock;
 
 import static org.openjdk.jcstress.annotations.Expect.ACCEPTABLE;
 
@@ -16,7 +15,7 @@ import static org.openjdk.jcstress.annotations.Expect.ACCEPTABLE;
 @State
 public class JcStressTestAndSet {
 
-    private final Lock lock = new TestAndSetLock();
+    private final NumaLock lock = new TestAndSetLock();
     private int v;
 
     @Actor
@@ -25,7 +24,7 @@ public class JcStressTestAndSet {
         try {
             r.r1 = ++v;
         } finally {
-            lock.unlock();
+            lock.unlock(null);
         }
     }
 
@@ -35,7 +34,7 @@ public class JcStressTestAndSet {
         try {
             r.r2 = ++v;
         } finally {
-            lock.unlock();
+            lock.unlock(null);
         }
     }
 
@@ -45,7 +44,7 @@ public class JcStressTestAndSet {
         try {
             r.r3 = ++v;
         } finally {
-            lock.unlock();
+            lock.unlock(null);
         }
     }
 }

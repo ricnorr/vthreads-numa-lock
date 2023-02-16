@@ -14,7 +14,19 @@ import oshi.hardware.CentralProcessor;
 import ru.ricnorr.benchmarks.jmh.JmhBenchmarkRunner;
 import ru.ricnorr.benchmarks.jmh.cpu.JmhJniCallBenchmark;
 import ru.ricnorr.benchmarks.params.BenchmarkParameters;
-import ru.ricnorr.numa.locks.*;
+import ru.ricnorr.numa.locks.NumaLock;
+import ru.ricnorr.numa.locks.Utils;
+import ru.ricnorr.numa.locks.basic.*;
+import ru.ricnorr.numa.locks.cna.nopadding.CnaCcl;
+import ru.ricnorr.numa.locks.cna.nopadding.CnaNuma;
+import ru.ricnorr.numa.locks.cna.padding.CnaCclWithPadding;
+import ru.ricnorr.numa.locks.cna.padding.CnaNumaWithPadding;
+import ru.ricnorr.numa.locks.hclh.HCLHLock;
+import ru.ricnorr.numa.locks.hmcs.HmcsCclPlusNumaHierarchy;
+import ru.ricnorr.numa.locks.hmcs.HmcsCclPlusNumaPlusSupernumaHierarchy;
+import ru.ricnorr.numa.locks.hmcs.HmcsOnlyCclHierarchy;
+import ru.ricnorr.numa.locks.hmcs.HmcsOnlyNumaHierarchy;
+import ru.ricnorr.numa.locks.reentrant.NumaReentrantLock;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -23,8 +35,6 @@ import java.util.Comparator;
 import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
@@ -32,13 +42,13 @@ import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
 public class Main {
     private static final List<String> RESULTS_HEADERS = List.of("name", "lock", "threads", "overhead(microsec)", "throughput(ops_microsec)");
 
-    public static Lock initLock(LockType lockType, String lockSpec, boolean overSubscription, boolean isLight) {
+    public static NumaLock initLock(LockType lockType, String lockSpec, boolean overSubscription, boolean isLight) {
         switch (lockType) {
             case UNFAIR_REENTRANT -> {
-                return new ReentrantLock(false);
+                return new NumaReentrantLock(false);
             }
             case FAIR_REENTRANT -> {
-                return new ReentrantLock(true);
+                return new NumaReentrantLock(true);
             }
             case TEST_SET -> {
                 return new TestAndSetLock();
@@ -52,14 +62,23 @@ public class Main {
             case HCLH -> {
                 return new HCLHLock();
             }
-            case HCLH_CCL_SPLIT -> {
-                return new HCLHCCLSplitLock();
-            }
             case CLH -> {
                 return new CLHLock();
             }
-            case CNA -> {
-                return new CNALock();
+            /**
+             * CNA
+             */
+            case CNA_NUMA_NO_PAD -> {
+                return new CnaNuma(isLight);
+            }
+            case CNA_CCL_NO_PAD -> {
+                return new CnaCcl(isLight);
+            }
+            case CNA_CCL_PAD -> {
+                return new CnaCclWithPadding(isLight);
+            }
+            case CNA_NUMA_PAD -> {
+                return new CnaNumaWithPadding(isLight);
             }
             case MCS -> {
                 return new MCS();
@@ -70,34 +89,34 @@ public class Main {
             case HMCS_CCL_PLUS_NUMA_HIERARCHY -> {
                 return new HmcsCclPlusNumaHierarchy(overSubscription, isLight);
             }
-            case HMCS_CCL_PLUS_NUMA_HIERARCHY_WITH_PADDING -> {
-                return null;
-            }
-
+//            case HMCS_CCL_PLUS_NUMA_HIERARCHY_WITH_PADDING -> {
+//                return null;
+//            }
+//
             case HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY -> {
                 return new HmcsCclPlusNumaPlusSupernumaHierarchy(overSubscription, isLight);
             }
-            case HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY_WITH_PADDING -> {
-                return null;
-            }
+//            case HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY_WITH_PADDING -> {
+//                return null;
+//            }
             case HMCS_ONLY_CCL_HIERARCHY -> {
                 return new HmcsOnlyCclHierarchy(overSubscription, isLight);
             }
-            case HMCS_ONLY_CCL_HIERARCHY_WITH_PADDING -> {
-                return null;
-            }
+//            case HMCS_ONLY_CCL_HIERARCHY_WITH_PADDING -> {
+//                return null;
+//            }
             case HMCS_ONLY_NUMA_HIERARCHY -> {
                 return new HmcsOnlyNumaHierarchy(overSubscription, isLight);
             }
-            case HMCS_ONLY_NUMA_HIERARCHY_WITH_PADDING -> {
-                return null;
-            }
+//            case HMCS_ONLY_NUMA_HIERARCHY_WITH_PADDING -> {
+//                return null;
+//            }
 
             default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
         }
     }
 
-    public static Lock initLock(LockType lockType, String lockSpec, boolean isLight) {
+    public static NumaLock initLock(LockType lockType, String lockSpec, boolean isLight) {
         return initLock(lockType, lockSpec, false, isLight);
     }
 

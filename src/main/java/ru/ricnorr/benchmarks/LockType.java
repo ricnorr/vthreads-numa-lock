@@ -19,10 +19,18 @@ public enum LockType {
 
     CLH,
 
-    CNA,
+    /**
+     * CNA
+     */
+    CNA_CCL_NO_PAD,
+
+    CNA_NUMA_NO_PAD,
+
+    CNA_CCL_PAD,
+    CNA_NUMA_PAD,
 
     HCLH_CCL_SPLIT,
-    
+
     HMCS_CCL_PLUS_NUMA_HIERARCHY,
 
     HMCS_CCL_PLUS_NUMA_HIERARCHY_WITH_PADDING,

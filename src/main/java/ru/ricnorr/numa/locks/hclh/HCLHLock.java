@@ -1,40 +1,45 @@
-package ru.ricnorr.numa.locks;
+package ru.ricnorr.numa.locks.hclh;
 
 import kotlinx.atomicfu.AtomicArray;
 import kotlinx.atomicfu.AtomicInt;
 import kotlinx.atomicfu.AtomicRef;
+import ru.ricnorr.numa.locks.NumaLock;
+import ru.ricnorr.numa.locks.Utils;
 
 import static kotlinx.atomicfu.AtomicFU.atomic;
+import static ru.ricnorr.numa.locks.Utils.spinWaitYield;
 
-public class HCLHCCLSplitLock extends AbstractLock {
 
-    private final HCLHCCLSplitLockCore lockCore = new HCLHCCLSplitLockCore();
+public class HCLHLock implements NumaLock {
 
-    ThreadLocal<HCLHCCLSplitLockCore.QNodeHCLH> prevNode = new ThreadLocal<>();
+    private final HCLHLockCore lockCore = new HCLHLockCore();
 
-    ThreadLocal<HCLHCCLSplitLockCore.QNodeHCLH> currNode = ThreadLocal.withInitial(HCLHCCLSplitLockCore.QNodeHCLH::new);
+    ThreadLocal<HCLHLockCore.QNodeHCLH> prevNode = new ThreadLocal<>();
 
-    ThreadLocal<Integer> clusterID = ThreadLocal.withInitial(Utils::kungpengGetClusterID);
+    ThreadLocal<HCLHLockCore.QNodeHCLH> currNode = ThreadLocal.withInitial(HCLHLockCore.QNodeHCLH::new);
+
+    ThreadLocal<Integer> clusterID = ThreadLocal.withInitial(Utils::getClusterID);
 
     @Override
-    public void lock() {
+    public Object lock() {
         var myPred = lockCore.lock(currNode.get(), clusterID.get());
         prevNode.set(myPred);
+        return null;
     }
 
     @Override
-    public void unlock() {
+    public void unlock(Object t) {
         lockCore.unlock(currNode.get());
         currNode.set(prevNode.get());
         prevNode.set(null);
     }
 
-    public static class HCLHCCLSplitLockCore {
-        static final int MAX_CLUSTERS = 128;
+    public static class HCLHLockCore {
+        static final int MAX_CLUSTERS = 25;
         final AtomicArray<QNodeHCLH> localQueues;
         final AtomicRef<QNodeHCLH> globalQueue;
 
-        public HCLHCCLSplitLockCore() {
+        public HCLHLockCore() {
             localQueues = new AtomicArray<>(MAX_CLUSTERS);
             QNodeHCLH head = new QNodeHCLH();
             globalQueue = atomic(head);
@@ -131,6 +136,7 @@ public class HCLHCCLSplitLock extends AbstractLock {
                 } else {
                     newState = oldState & ~SMW_MASK;
                 }
+                int spinCounter = 1;
                 while (!state.compareAndSet(oldState, newState)) {
                     oldState = state.getValue();
                     if (successorMustWait) {
@@ -138,6 +144,7 @@ public class HCLHCCLSplitLock extends AbstractLock {
                     } else {
                         newState = oldState & ~SMW_MASK;
                     }
+                    spinCounter = spinWaitYield(spinCounter);
                 }
             }
 

@@ -2,12 +2,11 @@ package ru.ricnorr.locks.numa.locks.mcs;
 
 import org.openjdk.jcstress.annotations.Actor;
 import org.openjdk.jcstress.infra.results.III_Result;
-import ru.ricnorr.numa.locks.TicketLock;
-
-import java.util.concurrent.locks.Lock;
+import ru.ricnorr.numa.locks.NumaLock;
+import ru.ricnorr.numa.locks.basic.TicketLock;
 
 public class JcStressTicket {
-    private final Lock lock = new TicketLock();
+    private final NumaLock lock = new TicketLock();
     private int v;
 
     @Actor
@@ -16,7 +15,7 @@ public class JcStressTicket {
         try {
             r.r1 = ++v;
         } finally {
-            lock.unlock();
+            lock.unlock(null);
         }
     }
 
@@ -26,7 +25,7 @@ public class JcStressTicket {
         try {
             r.r2 = ++v;
         } finally {
-            lock.unlock();
+            lock.unlock(null);
         }
     }
 
@@ -36,7 +35,7 @@ public class JcStressTicket {
         try {
             r.r3 = ++v;
         } finally {
-            lock.unlock();
+            lock.unlock(null);
         }
     }
 }
