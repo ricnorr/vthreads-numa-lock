@@ -1,10 +1,25 @@
 {
   "locks": [
     {
-      "name": "CNA_NUMA_PAD"
+      "name": "MCS"
     },
     {
-      "name": "CNA_CCL_PAD"
+      "name": "TEST_SET"
+    },
+    {
+      "name": "TEST_TEST_SET"
+    },
+    {
+      "name": "TICKET"
+    },
+    {
+      "name": "CLH"
+    },
+    {
+      "name": "FAIR_REENTRANT"
+    },
+    {
+      "name": "UNFAIR_REENTRANT"
     },
     {
       "name": "CNA_NUMA_NO_PAD"
@@ -13,29 +28,54 @@
       "name": "CNA_CCL_NO_PAD"
     },
     {
-      "name": "FAIR_REENTRANT"
+      "name": "HCLH_NUMA"
     },
     {
-      "name": "UNFAIR_REENTRANT"
+      "name": "HCLH_CCL"
+    },
+    {
+      "name": "HMCS_CCL_PLUS_NUMA"
+    },
+    {
+      "name": "HMCS_ONLY_CCL"
+    },
+    {
+      "name": "HMCS_ONLY_NUMA"
     }
   ],
-  "actionsCount": 12288,
+  "actionsCount": 36864,
   "warmupIterations": 0,
-  "iterations": 2,
+  "iterations": 3,
   "type": "jmh",
   "threads": [
+    1,
+    2,
+    4,
+    8,
     16,
     24,
     32,
-    48,
-    64,
-    96
+    48
   ],
   "benches": [
     {
       "name": "consumeCpu",
       "before": 0,
       "in": 500,
+      "light": true,
+      "skip": true
+    },
+    {
+      "name": "consumeCpu",
+      "before": 0,
+      "in": 1500,
+      "light": true,
+      "skip": true
+    },
+    {
+      "name": "consumeCpu",
+      "before": 0,
+      "in": 5000,
       "light": true
     }
   ]
