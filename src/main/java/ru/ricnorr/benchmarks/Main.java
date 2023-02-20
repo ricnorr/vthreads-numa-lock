@@ -21,7 +21,8 @@ import ru.ricnorr.numa.locks.cna.nopadding.CnaCcl;
 import ru.ricnorr.numa.locks.cna.nopadding.CnaNuma;
 import ru.ricnorr.numa.locks.cna.padding.CnaCclWithPadding;
 import ru.ricnorr.numa.locks.cna.padding.CnaNumaWithPadding;
-import ru.ricnorr.numa.locks.hclh.HCLHLock;
+import ru.ricnorr.numa.locks.hclh.HCLHNuma;
+import ru.ricnorr.numa.locks.hclh.HclhCcl;
 import ru.ricnorr.numa.locks.hmcs.HmcsCclPlusNumaHierarchy;
 import ru.ricnorr.numa.locks.hmcs.HmcsCclPlusNumaPlusSupernumaHierarchy;
 import ru.ricnorr.numa.locks.hmcs.HmcsOnlyCclHierarchy;
@@ -40,7 +41,7 @@ import java.util.stream.Collectors;
 import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
 
 public class Main {
-    private static final List<String> RESULTS_HEADERS = List.of("name", "lock", "threads", "overhead(microsec)", "throughput(ops_microsec)");
+    private static final List<String> RESULTS_HEADERS = List.of("name", "lock", "threads", "overhead(microsec)", "throughput(ops_microsec)", "throughput^-1(microsec_ops)");
 
     public static NumaLock initLock(LockType lockType, String lockSpec, boolean overSubscription, boolean isLight) {
         switch (lockType) {
@@ -58,9 +59,6 @@ public class Main {
             }
             case TICKET -> {
                 return new TicketLock();
-            }
-            case HCLH -> {
-                return new HCLHLock();
             }
             case CLH -> {
                 return new CLHLock();
@@ -80,32 +78,41 @@ public class Main {
             case CNA_NUMA_PAD -> {
                 return new CnaNumaWithPadding(isLight);
             }
+            /**
+             * HCLH
+             */
+            case HCLH_CCL -> {
+                return new HclhCcl(isLight);
+            }
+            case HCLH_NUMA -> {
+                return new HCLHNuma(isLight);
+            }
             case MCS -> {
                 return new MCS();
             }
             case MCS_WITH_PADDING -> {
                 return new MCS_WITH_PADDING();
             }
-            case HMCS_CCL_PLUS_NUMA_HIERARCHY -> {
+            case HMCS_CCL_PLUS_NUMA -> {
                 return new HmcsCclPlusNumaHierarchy(overSubscription, isLight);
             }
 //            case HMCS_CCL_PLUS_NUMA_HIERARCHY_WITH_PADDING -> {
 //                return null;
 //            }
 //
-            case HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY -> {
+            case HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA -> {
                 return new HmcsCclPlusNumaPlusSupernumaHierarchy(overSubscription, isLight);
             }
 //            case HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY_WITH_PADDING -> {
 //                return null;
 //            }
-            case HMCS_ONLY_CCL_HIERARCHY -> {
+            case HMCS_ONLY_CCL -> {
                 return new HmcsOnlyCclHierarchy(overSubscription, isLight);
             }
 //            case HMCS_ONLY_CCL_HIERARCHY_WITH_PADDING -> {
 //                return null;
 //            }
-            case HMCS_ONLY_NUMA_HIERARCHY -> {
+            case HMCS_ONLY_NUMA -> {
                 return new HmcsOnlyNumaHierarchy(overSubscription, isLight);
             }
 //            case HMCS_ONLY_NUMA_HIERARCHY_WITH_PADDING -> {
@@ -135,7 +142,7 @@ public class Main {
                 printer.printRecord(RESULTS_HEADERS);
                 results.forEach(it -> {
                     try {
-                        printer.printRecord(it.name(), it.lock(), it.threads(), it.overheadNanos() / 1000, it.throughputNanos() * 1000);
+                        printer.printRecord(it.name(), it.lock(), it.threads(), it.overheadNanos() / 1000, it.throughputNanos() * 1000, 1 / (it.throughputNanos() * 1000));
                     } catch (IOException e) {
                         throw new BenchmarkException("Cannot write record to file with benchmarks results", e);
                     }

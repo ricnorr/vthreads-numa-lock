@@ -54,7 +54,7 @@ public abstract class AbstractHmcs implements NumaLock {
 
     private void lockH(QNode qNode, HNode hNode) {
         if (hNode.parent == null) {
-            qNode.next.set(null);
+            qNode.next = null;
             if (overSubscription) {
                 qNode.thread = Thread.currentThread();
             }
@@ -63,7 +63,7 @@ public abstract class AbstractHmcs implements NumaLock {
             if (pred == null) {
                 qNode.status = UNLOCKED;
             } else {
-                pred.next.set(qNode);
+                pred.next = qNode;
                 while (qNode.status == LOCKED) {
                     if (overSubscription) {
                         LockSupport.park();
@@ -73,14 +73,14 @@ public abstract class AbstractHmcs implements NumaLock {
                 } // spin
             }
         } else {
-            qNode.next.set(null);
+            qNode.next = null;
             if (overSubscription) {
                 qNode.thread = Thread.currentThread();
             }
             qNode.status = WAIT;
             QNode pred = hNode.tail.getAndSet(qNode);
             if (pred != null) {
-                pred.next.set(qNode);
+                pred.next = qNode;
                 while (qNode.status == WAIT) {
                     if (overSubscription) {
                         LockSupport.park(this);
@@ -108,7 +108,7 @@ public abstract class AbstractHmcs implements NumaLock {
             releaseHelper(hNode, qNode, ACQUIRE_PARENT);
             return;
         }
-        QNode succ = qNode.next.get();
+        QNode succ = qNode.next;
         if (succ != null) {
             succ.status = curCount + 1;
             if (overSubscription) {
@@ -121,7 +121,7 @@ public abstract class AbstractHmcs implements NumaLock {
     }
 
     private void releaseHelper(HNode l, QNode i, int val) {
-        QNode succ = i.next.get();
+        QNode succ = i.next;
         if (succ != null) {
             succ.status = val;
             if (overSubscription) {
@@ -132,7 +132,7 @@ public abstract class AbstractHmcs implements NumaLock {
                 return;
             }
             do {
-                succ = i.next.get();
+                succ = i.next;
             } while (succ == null);
             succ.status = val;
             if (overSubscription) {
@@ -144,7 +144,7 @@ public abstract class AbstractHmcs implements NumaLock {
     public static class HNode {
         private final AtomicReference<QNode> tail;
         QNode node;
-        private HNode parent;
+        private final HNode parent;
 
         public HNode(HNode parent) {
             this.parent = parent;
@@ -160,7 +160,7 @@ public abstract class AbstractHmcs implements NumaLock {
         static int LOCKED = 0x1;
         static int COHORT_START = 0x1;
 
-        private final AtomicReference<QNode> next = new AtomicReference<>(null);
+        private volatile QNode next = null;
         private volatile int status = WAIT;
 
         private volatile Thread thread = null;
