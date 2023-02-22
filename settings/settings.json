@@ -70,13 +70,14 @@
       "before": 0,
       "in": 1500,
       "light": true,
-      "skip": true
+      "skip": false
     },
     {
       "name": "consumeCpu",
       "before": 0,
       "in": 5000,
-      "light": true
+      "light": true,
+      "skip": true
     }
   ]
 }
