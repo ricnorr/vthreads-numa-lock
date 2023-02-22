@@ -41,7 +41,8 @@ import java.util.stream.Collectors;
 import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
 
 public class Main {
-    private static final List<String> RESULTS_HEADERS = List.of("name", "lock", "threads", "overhead(microsec)", "throughput(ops_microsec)", "throughput^-1(microsec_ops)");
+
+    private static final List<String> RESULTS_HEADERS = List.of("name", "lock", "threads", "mx_overhead(microsec)", "mn_overhead(microsec)", "med_overhead(microsec)", "mx_thrpt(ops_microsec)", "mn_thrpt(ops_microsec)", "med_thrpt(ops_microsec)");
 
     public static NumaLock initLock(LockType lockType, String lockSpec, boolean overSubscription, boolean isLight) {
         switch (lockType) {
@@ -142,7 +143,17 @@ public class Main {
                 printer.printRecord(RESULTS_HEADERS);
                 results.forEach(it -> {
                     try {
-                        printer.printRecord(it.name(), it.lock(), it.threads(), it.overheadNanos() / 1000, it.throughputNanos() * 1000, 1 / (it.throughputNanos() * 1000));
+                        printer.printRecord(
+                                it.name(),
+                                it.lock(),
+                                it.threads(),
+                                it.overheadNanosMax() / 1000,
+                                it.overheadNanosMin() / 1000,
+                                it.overheadNanosMedian() / 1000,
+                                it.throughputNanosMax() * 1000,
+                                it.throughputNanosMin() * 1000,
+                                it.throughputNanosMedian() * 1000
+                        );
                     } catch (IOException e) {
                         throw new BenchmarkException("Cannot write record to file with benchmarks results", e);
                     }

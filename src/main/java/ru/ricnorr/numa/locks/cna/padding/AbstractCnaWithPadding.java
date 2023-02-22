@@ -2,30 +2,28 @@ package ru.ricnorr.numa.locks.cna.padding;
 
 import ru.ricnorr.numa.locks.NumaLock;
 import ru.ricnorr.numa.locks.Utils;
-import ru.ricnorr.numa.locks.cna.nopadding.AbstractCna;
-import ru.ricnorr.numa.locks.cna.nopadding.CNANode;
 
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 public class AbstractCnaWithPadding implements NumaLock {
-    ThreadLocal<CNANode> threadNodeThreadLocal;
+    ThreadLocal<CNANodeWithPadding> threadNodeThreadLocal;
 
     ThreadLocal<Integer> clusterIdThreadLocal;
     boolean useLightThread;
 
-    AbstractCna.CNALockCore cnaLockCore = new AbstractCna.CNALockCore();
+    CNALockCore cnaLockCore = new CNALockCore();
 
     public AbstractCnaWithPadding(boolean useLightThread, Supplier<Integer> clusterSupplier) {
         this.useLightThread = useLightThread;
         this.clusterIdThreadLocal = ThreadLocal.withInitial(clusterSupplier);
-        threadNodeThreadLocal = ThreadLocal.withInitial(() -> new CNANode(clusterSupplier.get()));
+        threadNodeThreadLocal = ThreadLocal.withInitial(() -> new CNANodeWithPadding(clusterSupplier.get()));
     }
 
     @Override
     public Object lock() {
         if (useLightThread) {
-            var node = new CNANode(Utils.getByThreadFromThreadLocal(clusterIdThreadLocal, Utils.getCurrentCarrierThread()));
+            var node = new CNANodeWithPadding(Utils.getByThreadFromThreadLocal(clusterIdThreadLocal, Utils.getCurrentCarrierThread()));
             cnaLockCore.lock(node);
             return node;
         } else {
@@ -37,7 +35,7 @@ public class AbstractCnaWithPadding implements NumaLock {
     @Override
     public void unlock(Object t) {
         if (useLightThread) {
-            cnaLockCore.unlock(((CNANode) t));
+            cnaLockCore.unlock(((CNANodeWithPadding) t));
         } else {
             cnaLockCore.unlock(threadNodeThreadLocal.get());
         }
@@ -45,21 +43,19 @@ public class AbstractCnaWithPadding implements NumaLock {
 
     public static class CNALockCore {
 
-        public static CNANode TRUE_VALUE = new CNANode(-1);
+        public static CNANodeWithPadding TRUE_VALUE = new CNANodeWithPadding(-1);
 
-        private final AtomicReference<CNANode> tail;
+        private final AtomicReference<CNANodeWithPadding> tail;
 
         public CNALockCore() {
             tail = new AtomicReference<>(null);
         }
 
-        public void lock(CNANode me) {
+        public void lock(CNANodeWithPadding me) {
             me.next = null;
             me.spin = null;
             me.secTail.set(null);
-
-            CNANode prevTail = tail.getAndSet(me);
-
+            CNANodeWithPadding prevTail = tail.getAndSet(me);
             if (prevTail == null) {
                 me.spin = TRUE_VALUE;
                 return;
@@ -71,14 +67,14 @@ public class AbstractCnaWithPadding implements NumaLock {
             }
         }
 
-        public void unlock(CNANode me) {
+        public void unlock(CNANodeWithPadding me) {
             if (me.next == null) {
                 if (me.spin == TRUE_VALUE) {
                     if (tail.compareAndSet(me, null)) {
                         return;
                     }
                 } else { // у нас есть secondary queue
-                    CNANode secHead = me.spin;
+                    CNANodeWithPadding secHead = me.spin;
                     if (tail.compareAndSet(me, secHead.secTail.get())) {
                         secHead.spin = TRUE_VALUE;
                         return;
@@ -90,7 +86,8 @@ public class AbstractCnaWithPadding implements NumaLock {
                     Thread.onSpinWait();
                 }
             }
-            CNANode succ = null;
+
+            CNANodeWithPadding succ = null;
             if (me.spin == TRUE_VALUE) {
                 succ = me.next;
                 succ.spin = TRUE_VALUE;
@@ -109,17 +106,17 @@ public class AbstractCnaWithPadding implements NumaLock {
             }
         }
 
-        private CNANode find_successor(CNANode me) {
-            CNANode next = me.next;
+        private CNANodeWithPadding find_successor(CNANodeWithPadding me) {
+            CNANodeWithPadding next = me.next;
             int mySocket = me.socket;
 
             if (next.socket == mySocket) {
                 return next;
             }
 
-            CNANode secHead = next;
-            CNANode secTail = next;
-            CNANode cur = next.next;
+            CNANodeWithPadding secHead = next;
+            CNANodeWithPadding secTail = next;
+            CNANodeWithPadding cur = next.next;
 
             while (cur != null) {
                 int curSocket = cur.socket;

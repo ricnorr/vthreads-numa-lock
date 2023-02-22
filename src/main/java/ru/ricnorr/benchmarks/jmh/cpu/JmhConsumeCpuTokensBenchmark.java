@@ -12,6 +12,9 @@ public class JmhConsumeCpuTokensBenchmark {
     public long cpuTokens;
 
     @Benchmark
+    @Fork(1)
+    @Warmup(iterations = 1, time = 5)
+    @Measurement(iterations = 1, time = 5)
     @BenchmarkMode({Mode.AverageTime})
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     public void consumeCpu() {

@@ -55,25 +55,28 @@ public class JmhParConsumeCpuTokensBenchmark {
 
 
     @Benchmark
-    @BenchmarkMode({Mode.AverageTime})
+    @Fork(1)
+    @Warmup(iterations = 30)
+    @Measurement(iterations = 11)
+    @BenchmarkMode({Mode.SingleShotTime})
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     public void bench() {
         final CyclicBarrier ready = new CyclicBarrier(threads);
         List<Thread> threadList = new ArrayList<>();
+        Runnable runnable = () -> {
+            try {
+                ready.await();
+            } catch (InterruptedException | BrokenBarrierException e) {
+                throw new BenchmarkException("Fail waiting barrier", e);
+            }
+            for (int i1 = 0; i1 < actionsPerThread; i1++) {
+                Blackhole.consumeCPU(beforeCpuTokens);
+                var obj = lock.lock();
+                Blackhole.consumeCPU(inCpuTokens);
+                lock.unlock(obj);
+            }
+        };
         for (int i = 0; i < threads; i++) {
-            Runnable runnable = () -> {
-                try {
-                    ready.await();
-                } catch (InterruptedException | BrokenBarrierException e) {
-                    throw new BenchmarkException("Fail waiting barrier", e);
-                }
-                for (int i1 = 0; i1 < actionsPerThread; i1++) {
-                    Blackhole.consumeCPU(beforeCpuTokens);
-                    var obj = lock.lock();
-                    Blackhole.consumeCPU(inCpuTokens);
-                    lock.unlock(obj);
-                }
-            };
             if (isLightThread) {
                 threadList.add(Thread.ofVirtual().factory().newThread(runnable));
             } else {
