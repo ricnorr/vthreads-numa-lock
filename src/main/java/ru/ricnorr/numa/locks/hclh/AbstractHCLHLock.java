@@ -71,6 +71,7 @@ public class AbstractHCLHLock implements NumaLock {
             // splice my QNode into local queue
             QNodeHCLH myPred = localQueue.get();
             while (!localQueue.compareAndSet(myPred, myNode)) {
+                Thread.onSpinWait();
                 myPred = localQueue.get();
             }
             if (myPred != null) {
@@ -83,6 +84,7 @@ public class AbstractHCLHLock implements NumaLock {
             QNodeHCLH localTail = localQueue.get();
             myPred = globalQueue.get();
             while (!globalQueue.compareAndSet(myPred, localTail)) {
+                Thread.onSpinWait();
                 myPred = globalQueue.get();
                 localTail = localQueue.get();
             }

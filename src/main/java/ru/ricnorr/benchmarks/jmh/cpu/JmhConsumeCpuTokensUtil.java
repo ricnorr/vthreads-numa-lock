@@ -9,7 +9,7 @@ import static ru.ricnorr.benchmarks.jmh.JmhBenchmarkRunner.runBenchmarkNano;
 public class JmhConsumeCpuTokensUtil {
     public static double estimateConsumeCpuTokensTimeNanos(long cpuTokens) throws RunnerException {
         System.out.printf("Run estimate consume %d cpu tokens time nanos%n", cpuTokens);
-        return runBenchmarkNano(JmhConsumeCpuTokensBenchmark.class, 1, 0, Map.of("cpuTokens", Long.toString(cpuTokens)));
+        return runBenchmarkNano(JmhConsumeCpuTokensBenchmark.class, 1, 0, Map.of("cpuTokens", Long.toString(cpuTokens))).stream().findFirst().get();
     }
 
     public static double estimateHighContentionWithoutLocksTimeNanos(long beforeCpu, long inCpu, long totalActions) throws RunnerException {
@@ -19,6 +19,6 @@ public class JmhConsumeCpuTokensUtil {
                 inCpu,
                 totalActions
         );
-        return runBenchmarkNano(JmhSeqConsumeCpuTokensBenchmarkHighContention.class, 1, 0, Map.of("beforeCpuTokens", Long.toString(beforeCpu), "inCpuTokens", Long.toString(inCpu), "totalActions", Long.toString(totalActions)));
+        return runBenchmarkNano(JmhSeqConsumeCpuTokensBenchmarkHighContention.class, 1, 0, Map.of("beforeCpuTokens", Long.toString(beforeCpu), "inCpuTokens", Long.toString(inCpu), "totalActions", Long.toString(totalActions))).stream().findFirst().get();
     }
 }

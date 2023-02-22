@@ -6,17 +6,18 @@ import com.sun.jna.ptr.IntByReference;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class Utils {
 
+    public static final MethodHandle GET_CARRIER_THREAD_METHOD_HANDLE;
+    public static final MethodHandle GET_BY_THREAD_FROM_THREAD_LOCAL_METHOD_HANDLE;
     private final static int GET_CPU_ARM_SYSCALL = 168;
     private final static int GET_CPU_x86_SYSCALL = 309;
     public static int WAIT_THRESHOLD = 4096;
-
-    public static final MethodHandle GET_CARRIER_THREAD_METHOD_HANDLE;
-
-    public static final MethodHandle GET_BY_THREAD_FROM_THREAD_LOCAL_METHOD_HANDLE;
-
 
     static {
         Method currentCarrierThreadMethod;
@@ -47,7 +48,7 @@ public class Utils {
             throw new RuntimeException(e);
         }
     }
-
+    
     public static int getClusterID() {
         int res;
         final IntByReference numaNode = new IntByReference();
@@ -92,6 +93,21 @@ public class Utils {
         }
         spinCounter *= 2;
         return spinCounter;
+    }
+
+
+    public static double median(Collection<Double> numbers) {
+        if (numbers.isEmpty()) {
+            throw new IllegalArgumentException("Cannot compute median on empty collection of numbers");
+        }
+        List<Double> numbersList = new ArrayList<>(numbers);
+        Collections.sort(numbersList);
+        int middle = numbersList.size() / 2;
+        if (numbersList.size() % 2 == 0) {
+            return 0.5 * (numbersList.get(middle) + numbersList.get(middle - 1));
+        } else {
+            return numbersList.get(middle);
+        }
     }
 
     public static Thread getCurrentCarrierThread() {

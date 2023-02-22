@@ -42,7 +42,7 @@ public abstract class AbstractHmcs implements NumaLock {
             return null;
         }
     }
-
+    
     @Override
     public void unlock(Object obj) {
         if (isLight) {
