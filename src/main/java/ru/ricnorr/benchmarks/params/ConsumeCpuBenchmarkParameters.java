@@ -31,12 +31,17 @@ public class ConsumeCpuBenchmarkParameters extends BenchmarkParameters {
     @Override
     public String getBenchmarkName() {
         return String.format(
-                "Consume cpu tokens. %s threads. Before crit.section: %d tokens. In crit.section: %d tokens (%s)",
-                isLightThread ? "Light" : "Hard",
-                beforeCpuTokens,
-                inCpuTokens,
-                isHighContention ? "High contention" : "Low contention"
+                "%s contention. Consume CPU. %s threads.",
+                isHighContention ? "High" : "Low",
+                isLightThread ? "Virtual" : "Platform"
         );
+//        return String.format(
+//                "Consume cpu tokens. %s threads. Before crit.section: %d tokens. In crit.section: %d tokens (%s)",
+//                isLightThread ? "Light" : "Hard",
+//                beforeCpuTokens,
+//                inCpuTokens,
+//                isHighContention ? "High contention" : "Low contention"
+//        );
     }
 
     public String logBegin() {

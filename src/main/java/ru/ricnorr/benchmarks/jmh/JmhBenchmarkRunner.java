@@ -153,7 +153,7 @@ public class JmhBenchmarkRunner {
                 double throughputNanosMax = (parameters.threads * parameters.actionsPerThread) / withLockNanosMin;
                 double throughputNanosMedian = (parameters.threads * parameters.actionsPerThread) / withLockNanosMedian;
                 System.out.printf("Consume cpu bench: i got max_over=%f, min_over=%f, avg_over=%f, max_thrpt=%f, min_thrpt=%f, avg_thrpt=%f%n", overheadNanosMax, overheadNanosMin, overheadNanosAverage, throughputNanosMax, throughputNanosMin, throughputNanosMedian);
-                return new BenchmarkResultsCsv(parameters.getBenchmarkName(), parameters.lockType.name() + "_" + parameters.lockSpec, parameters.threads, overheadNanosMax, overheadNanosMin, overheadNanosAverage, throughputNanosMax, throughputNanosMin, throughputNanosMedian);
+                return new BenchmarkResultsCsv(parameters.getBenchmarkName(), parameters.lockType.name(), parameters.threads, overheadNanosMax, overheadNanosMin, overheadNanosAverage, throughputNanosMax, throughputNanosMin, throughputNanosMedian);
             }
 //            case ConsumeCpuNormalContentionBenchmarkParameters param -> {
 //                System.out.printf(

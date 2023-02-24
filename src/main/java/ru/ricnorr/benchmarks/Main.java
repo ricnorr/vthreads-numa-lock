@@ -42,7 +42,7 @@ import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
 
 public class Main {
 
-    private static final List<String> RESULTS_HEADERS = List.of("name", "lock", "threads", "mx_overhead(microsec)", "mn_overhead(microsec)", "med_overhead(microsec)", "mx_thrpt(ops_microsec)", "mn_thrpt(ops_microsec)", "med_thrpt(ops_microsec)");
+    private static final List<String> RESULTS_HEADERS = List.of("name", "lock", "threads", "Maximum overhead (microsec)", "Minimum overhead (microsec)", "Median overhead (microsec)", "Maximum throughout (ops/microsec)", "Minimum throughput (ops/microsec)", "Median throughput (ops/microsec)");
 
     public static NumaLock initLock(LockType lockType, String lockSpec, boolean overSubscription, boolean isLight) {
         switch (lockType) {
@@ -52,10 +52,10 @@ public class Main {
             case FAIR_REENTRANT -> {
                 return new NumaReentrantLock(true);
             }
-            case TEST_SET -> {
+            case TAS -> {
                 return new TestAndSetLock();
             }
-            case TEST_TEST_SET -> {
+            case TTAS -> {
                 return new TestTestAndSetLock();
             }
             case TICKET -> {
@@ -94,26 +94,26 @@ public class Main {
             case MCS_WITH_PADDING -> {
                 return new MCS_WITH_PADDING();
             }
-            case HMCS_CCL_PLUS_NUMA -> {
+            case HMCS_CCL_NUMA -> {
                 return new HmcsCclPlusNumaHierarchy(overSubscription, isLight);
             }
 //            case HMCS_CCL_PLUS_NUMA_HIERARCHY_WITH_PADDING -> {
 //                return null;
 //            }
 //
-            case HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA -> {
+            case HMCS_CCL_NUMA_SUPERNUMA -> {
                 return new HmcsCclPlusNumaPlusSupernumaHierarchy(overSubscription, isLight);
             }
 //            case HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY_WITH_PADDING -> {
 //                return null;
 //            }
-            case HMCS_ONLY_CCL -> {
+            case HMCS_CCL -> {
                 return new HmcsOnlyCclHierarchy(overSubscription, isLight);
             }
 //            case HMCS_ONLY_CCL_HIERARCHY_WITH_PADDING -> {
 //                return null;
 //            }
-            case HMCS_ONLY_NUMA -> {
+            case HMCS_NUMA -> {
                 return new HmcsOnlyNumaHierarchy(overSubscription, isLight);
             }
 //            case HMCS_ONLY_NUMA_HIERARCHY_WITH_PADDING -> {

@@ -22,13 +22,15 @@ def draw_by_bench_and_mode(df, bench, mode, threads, suffix):
         #ax.set_xscale("log", base=2)
         #ax.xaxis.set_major_formatter(ticker.ScalarFormatter())
         #ax.set_xticks(threads)
-        #ax.set_xticklabels(list(map(lambda x : str(x), threads)))
+        ax.set_xticklabels(list(map(lambda x : str(x), threads)))
 
 
         plt.gcf().set_size_inches(7, 7)
         ind = 0
         markevery = [1,2]
         for lock in locks:
+            #if lock == 'TEST_TEST_SET_{}' or lock == 'TEST_SET_{}' or lock == 'TICKET_{}' or lock == 'CLH_{}' or lock == 'MCS_{}':
+            #    continue
             cur_df = df[(df['name'] == bench) & (df['lock'] == lock) & (df['threads'].isin(threads))].copy()
             cur_df['plot_threads'] = cur_df['threads'].map(str)
             cur_df.sort_values(by=['threads']).plot(ax=ax, x='plot_threads', y=mode, label=lock, style=[styles[ind % len(styles)]], marker='o')
@@ -45,7 +47,7 @@ def draw_by_bench_and_mode(df, bench, mode, threads, suffix):
         plt.close()
 
 for bench in bench_names:
-    for mode in ['med_overhead(microsec)','med_thrpt(ops_microsec)', 'mx_overhead(microsec)', 'mx_thrpt(ops_microsec)']:
+    for mode in ['med_overhead(microsec)','med_thrpt(ops_microsec)', 'mx_overhead(microsec)', 'mn_thrpt(ops_microsec)']:
         x = sorted(set(df['threads']))
         y = x[1:-1]
         draw_by_bench_and_mode(df, bench, mode, x, '_all')
