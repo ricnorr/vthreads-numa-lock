@@ -1,4 +1,4 @@
-package ru.ricnorr.numa.locks.hmcs;
+package ru.ricnorr.numa.locks.hmcs.nopad;
 
 import ru.ricnorr.numa.locks.Utils;
 
@@ -8,12 +8,11 @@ import ru.ricnorr.numa.locks.Utils;
 public class HmcsOnlyCclHierarchy extends AbstractHmcs {
 
     public HmcsOnlyCclHierarchy(boolean overSubscription, boolean isLight) {
-        super(overSubscription, isLight, Utils::kungpengGetClusterID);
+        super(overSubscription, isLight, Utils::kungpengGetClusterID, Runtime.getRuntime().availableProcessors() / CCL_SIZE);
         int availableProcessors = Runtime.getRuntime().availableProcessors();
-        int cclSize = 4;
         var root = new HNode(null);
-        for (int i = 0; i < availableProcessors / cclSize; i++) {
-            leafs.add(new HNode(root));
+        for (int i = 0; i < availableProcessors / CCL_SIZE; i++) {
+            leafs[i] = new HNode(root);
         }
     }
 }

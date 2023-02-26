@@ -7,7 +7,9 @@ public enum LockType {
 
     MCS,
 
-    MCS_WITH_PADDING,
+    MCS_PAD,
+
+    MCS_SIMPLE_PAD,
 
     TAS,
 
@@ -20,13 +22,13 @@ public enum LockType {
     /**
      * CNA
      */
-    CNA_CCL_NO_PAD,
+    CNA_CCL,
 
-    CNA_NUMA_NO_PAD,
+    CNA_NUMA,
 
     CNA_CCL_PAD,
     CNA_NUMA_PAD,
-
+    
     /**
      * HCLH
      */
@@ -34,13 +36,20 @@ public enum LockType {
 
     HCLH_NUMA,
 
+    HCLH_CCL_PAD,
+
+    HCLH_NUMA_PAD,
+
+    /**
+     * HMCS
+     */
     HMCS_CCL_NUMA,
 
-    HMCS_CCL_NUMA_PADDING,
+    HMCS_CCL_NUMA_PAD,
 
     HMCS_CCL_NUMA_SUPERNUMA,
 
-    HMCS_CCL_NUMA_SUPERNUMA_PADDING,
+    HMCS_CCL_NUMA_SUPERNUMA_PAD,
 
     HMCS_CCL,
 

@@ -1,4 +1,4 @@
-package ru.ricnorr.numa.locks.hmcs;
+package ru.ricnorr.numa.locks.hmcs.nopad;
 
 
 import ru.ricnorr.numa.locks.Utils;
@@ -12,23 +12,22 @@ import java.util.List;
 public class HmcsCclPlusNumaHierarchy extends AbstractHmcs {
 
     public HmcsCclPlusNumaHierarchy(boolean overSubscription, boolean isLight) {
-        super(overSubscription, isLight, Utils::kungpengGetClusterID);
+        super(overSubscription, isLight, Utils::kungpengGetClusterID, Runtime.getRuntime().availableProcessors() / CCL_SIZE);
         int availableProcessors = Runtime.getRuntime().availableProcessors();
-        int cclSize = 4;
         int numaNodesCount;
         if (availableProcessors == 128 || availableProcessors == 96) {
             numaNodesCount = 4;
         } else {
             numaNodesCount = 2;
         }
-        int cclPerNuma = (availableProcessors / cclSize) / numaNodesCount;
+        int cclPerNuma = (availableProcessors / CCL_SIZE) / numaNodesCount;
         var root = new HNode(null);
         List<HNode> numaNodes = new ArrayList<>();
         for (int i = 0; i < numaNodesCount; i++) {
             numaNodes.add(new HNode(root));
         }
-        for (int i = 0; i < availableProcessors / cclSize; i++) {
-            leafs.add(new HNode(numaNodes.get(i / cclPerNuma)));
+        for (int i = 0; i < availableProcessors / CCL_SIZE; i++) {
+            leafs[i] = new HNode(numaNodes.get(i / cclPerNuma));
         }
     }
 }

@@ -1,11 +1,10 @@
-package ru.ricnorr.numa.locks.hclh;
+package ru.ricnorr.numa.locks.hclh.nopad;
 
 import ru.ricnorr.numa.locks.NumaLock;
 import ru.ricnorr.numa.locks.Utils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.Supplier;
 
 public class AbstractHCLHLock implements NumaLock {
@@ -51,14 +50,11 @@ public class AbstractHCLHLock implements NumaLock {
 
     public static class HCLHLockCore {
         static final int MAX_CLUSTERS = 35;
-        final List<AtomicReference<QNodeHCLH>> localQueues;
+        final AtomicReferenceArray<QNodeHCLH> localQueues;
         final AtomicReference<QNodeHCLH> globalQueue;
 
         public HCLHLockCore() {
-            localQueues = new ArrayList<>();
-            for (int i = 0; i < MAX_CLUSTERS; i++) {
-                localQueues.add(new AtomicReference<>());
-            }
+            localQueues = new AtomicReferenceArray<>(MAX_CLUSTERS);
             QNodeHCLH head = new QNodeHCLH();
             globalQueue = new AtomicReference<>(head);
         }
@@ -67,12 +63,11 @@ public class AbstractHCLHLock implements NumaLock {
             myNode.prepareForLock(clusterID);
 
             int index = clusterID;
-            AtomicReference<QNodeHCLH> localQueue = localQueues.get(index);
             // splice my QNode into local queue
-            QNodeHCLH myPred = localQueue.get();
-            while (!localQueue.compareAndSet(myPred, myNode)) {
+            QNodeHCLH myPred = localQueues.get(index);
+            while (!localQueues.compareAndSet(index, myPred, myNode)) {
                 Thread.onSpinWait();
-                myPred = localQueue.get();
+                myPred = localQueues.get(index);
             }
             if (myPred != null) {
                 boolean iOwnLock = myPred.waitForGrantOrClusterMaster(clusterID);
@@ -81,12 +76,12 @@ public class AbstractHCLHLock implements NumaLock {
                 }
             }
             // I am the cluster master: splice local queue into global queue.
-            QNodeHCLH localTail = localQueue.get();
+            QNodeHCLH localTail = localQueues.get(index);
             myPred = globalQueue.get();
             while (!globalQueue.compareAndSet(myPred, localTail)) {
                 Thread.onSpinWait();
                 myPred = globalQueue.get();
-                localTail = localQueue.get();
+                localTail = localQueues.get(index);
             }
             // inform successor it is the new master
             localTail.setTailWhenSpliced(true);

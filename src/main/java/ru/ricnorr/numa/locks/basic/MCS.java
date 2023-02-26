@@ -4,8 +4,6 @@ import ru.ricnorr.numa.locks.NumaLock;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import static ru.ricnorr.numa.locks.Utils.spinWaitYield;
-
 /**
  * MCS lock with active spin
  */
@@ -25,7 +23,7 @@ public class MCS implements NumaLock {
             pred.next.set(qnode);
             int spinCounter = 1;
             while (qnode.spin) {
-                spinCounter = spinWaitYield(spinCounter);
+                Thread.onSpinWait();
             }
         }
         return null;
@@ -40,6 +38,7 @@ public class MCS implements NumaLock {
                 return;
             }
             while (headNode.next.get() == null) {
+                Thread.onSpinWait();
                 // WAIT when next чthread set headNode.next
             }
         }

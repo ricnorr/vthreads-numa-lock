@@ -18,7 +18,7 @@ class CLHLockTest {
     fun add() {
         lock.lock()
         counter++
-        lock.unlock()
+//        lock.unlock()
     }
 
     @Operation
@@ -26,7 +26,7 @@ class CLHLockTest {
         val value: Long
         lock.lock()
         value = counter
-        lock.unlock()
+//        lock.unlock()
         return value
     }
 

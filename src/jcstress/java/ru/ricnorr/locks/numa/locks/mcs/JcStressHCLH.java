@@ -6,7 +6,7 @@ import org.openjdk.jcstress.annotations.Outcome;
 import org.openjdk.jcstress.annotations.State;
 import org.openjdk.jcstress.infra.results.II_Result;
 import ru.ricnorr.numa.locks.NumaLock;
-import ru.ricnorr.numa.locks.hclh.HCLHNuma;
+import ru.ricnorr.numa.locks.hclh.nopad.HCLHNuma;
 
 import static org.openjdk.jcstress.annotations.Expect.ACCEPTABLE;
 
