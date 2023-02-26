@@ -5,7 +5,7 @@ import org.jetbrains.kotlinx.lincheck.check
 import org.jetbrains.kotlinx.lincheck.paramgen.IntGen
 import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.ModelCheckingOptions
 import org.junit.Test
-import ru.ricnorr.numa.locks.hclh.AbstractHCLHLock
+import ru.ricnorr.numa.locks.hclh.nopad.AbstractHCLHLock
 
 @Param(name = "clusterID", gen = IntGen::class, conf = "0:2")
 class HCLHNumaTest {

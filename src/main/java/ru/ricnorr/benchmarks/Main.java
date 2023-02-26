@@ -17,16 +17,22 @@ import ru.ricnorr.benchmarks.params.BenchmarkParameters;
 import ru.ricnorr.numa.locks.NumaLock;
 import ru.ricnorr.numa.locks.Utils;
 import ru.ricnorr.numa.locks.basic.*;
-import ru.ricnorr.numa.locks.cna.nopadding.CnaCcl;
-import ru.ricnorr.numa.locks.cna.nopadding.CnaNuma;
-import ru.ricnorr.numa.locks.cna.padding.CnaCclWithPadding;
-import ru.ricnorr.numa.locks.cna.padding.CnaNumaWithPadding;
-import ru.ricnorr.numa.locks.hclh.HCLHNuma;
-import ru.ricnorr.numa.locks.hclh.HclhCcl;
-import ru.ricnorr.numa.locks.hmcs.HmcsCclPlusNumaHierarchy;
-import ru.ricnorr.numa.locks.hmcs.HmcsCclPlusNumaPlusSupernumaHierarchy;
-import ru.ricnorr.numa.locks.hmcs.HmcsOnlyCclHierarchy;
-import ru.ricnorr.numa.locks.hmcs.HmcsOnlyNumaHierarchy;
+import ru.ricnorr.numa.locks.cna.nopad.CnaCcl;
+import ru.ricnorr.numa.locks.cna.nopad.CnaNuma;
+import ru.ricnorr.numa.locks.cna.pad.CnaCclWithContendedPadding;
+import ru.ricnorr.numa.locks.cna.pad.CnaNumaWithContendedPadding;
+import ru.ricnorr.numa.locks.hclh.nopad.HCLHNuma;
+import ru.ricnorr.numa.locks.hclh.nopad.HclhCcl;
+import ru.ricnorr.numa.locks.hclh.pad.HCLHNumaPad;
+import ru.ricnorr.numa.locks.hclh.pad.HclhCclPad;
+import ru.ricnorr.numa.locks.hmcs.nopad.HmcsCclPlusNumaHierarchy;
+import ru.ricnorr.numa.locks.hmcs.nopad.HmcsCclPlusNumaPlusSupernumaHierarchy;
+import ru.ricnorr.numa.locks.hmcs.nopad.HmcsOnlyCclHierarchy;
+import ru.ricnorr.numa.locks.hmcs.nopad.HmcsOnlyNumaHierarchy;
+import ru.ricnorr.numa.locks.hmcs.pad.HmcsCclPlusNumaHierarchyPad;
+import ru.ricnorr.numa.locks.hmcs.pad.HmcsCclPlusNumaPlusSupernumaHierarchyPad;
+import ru.ricnorr.numa.locks.hmcs.pad.HmcsOnlyCclHierarchyPad;
+import ru.ricnorr.numa.locks.hmcs.pad.HmcsOnlyNumaHierarchyPad;
 import ru.ricnorr.numa.locks.reentrant.NumaReentrantLock;
 
 import java.io.*;
@@ -42,7 +48,7 @@ import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
 
 public class Main {
 
-    private static final List<String> RESULTS_HEADERS = List.of("name", "lock", "threads", "Maximum overhead (microsec)", "Minimum overhead (microsec)", "Median overhead (microsec)", "Maximum throughout (ops/microsec)", "Minimum throughput (ops/microsec)", "Median throughput (ops/microsec)");
+    private static final List<String> RESULTS_HEADERS = List.of("name", "lock", "threads", "Maximum_overhead_(microsec)", "Minimum_overhead_(microsec)", "Median_overhead_(microsec)", "Maximum_throughout_(ops_microsec)", "Minimum_throughput_(ops_microsec)", "Median_throughput_(ops_microsec)");
 
     public static NumaLock initLock(LockType lockType, String lockSpec, boolean overSubscription, boolean isLight) {
         switch (lockType) {
@@ -51,6 +57,15 @@ public class Main {
             }
             case FAIR_REENTRANT -> {
                 return new NumaReentrantLock(true);
+            }
+            /**
+             * MCS
+             */
+            case MCS -> {
+                return new MCS();
+            }
+            case MCS_PAD -> {
+                return new MCSWithPad();
             }
             case TAS -> {
                 return new TestAndSetLock();
@@ -67,17 +82,17 @@ public class Main {
             /**
              * CNA
              */
-            case CNA_NUMA_NO_PAD -> {
+            case CNA_NUMA -> {
                 return new CnaNuma(isLight);
             }
-            case CNA_CCL_NO_PAD -> {
+            case CNA_CCL -> {
                 return new CnaCcl(isLight);
             }
             case CNA_CCL_PAD -> {
-                return new CnaCclWithPadding(isLight);
+                return new CnaCclWithContendedPadding(isLight);
             }
             case CNA_NUMA_PAD -> {
-                return new CnaNumaWithPadding(isLight);
+                return new CnaNumaWithContendedPadding(isLight);
             }
             /**
              * HCLH
@@ -88,38 +103,39 @@ public class Main {
             case HCLH_NUMA -> {
                 return new HCLHNuma(isLight);
             }
-            case MCS -> {
-                return new MCS();
+            case HCLH_CCL_PAD -> {
+                return new HclhCclPad(isLight);
             }
-            case MCS_WITH_PADDING -> {
-                return new MCS_WITH_PADDING();
+            case HCLH_NUMA_PAD -> {
+                return new HCLHNumaPad(isLight);
             }
+            /**
+             * HMCS
+             */
             case HMCS_CCL_NUMA -> {
                 return new HmcsCclPlusNumaHierarchy(overSubscription, isLight);
             }
-//            case HMCS_CCL_PLUS_NUMA_HIERARCHY_WITH_PADDING -> {
-//                return null;
-//            }
-//
+            case HMCS_CCL_NUMA_PAD -> {
+                return new HmcsCclPlusNumaHierarchyPad(overSubscription, isLight);
+            }
             case HMCS_CCL_NUMA_SUPERNUMA -> {
                 return new HmcsCclPlusNumaPlusSupernumaHierarchy(overSubscription, isLight);
             }
-//            case HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA_HIERARCHY_WITH_PADDING -> {
-//                return null;
-//            }
+            case HMCS_CCL_NUMA_SUPERNUMA_PAD -> {
+                return new HmcsCclPlusNumaPlusSupernumaHierarchyPad(overSubscription, isLight);
+            }
             case HMCS_CCL -> {
                 return new HmcsOnlyCclHierarchy(overSubscription, isLight);
             }
-//            case HMCS_ONLY_CCL_HIERARCHY_WITH_PADDING -> {
-//                return null;
-//            }
+            case HMCS_CCL_PAD -> {
+                return new HmcsOnlyCclHierarchyPad(overSubscription, isLight);
+            }
             case HMCS_NUMA -> {
                 return new HmcsOnlyNumaHierarchy(overSubscription, isLight);
             }
-//            case HMCS_ONLY_NUMA_HIERARCHY_WITH_PADDING -> {
-//                return null;
-//            }
-
+            case HMCS_NUMA_PAD -> {
+                return new HmcsOnlyNumaHierarchyPad(overSubscription, isLight);
+            }
             default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
         }
     }

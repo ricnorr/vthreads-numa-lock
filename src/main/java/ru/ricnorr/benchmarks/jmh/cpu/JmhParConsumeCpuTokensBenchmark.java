@@ -56,8 +56,8 @@ public class JmhParConsumeCpuTokensBenchmark {
 
     @Benchmark
     @Fork(1)
-    @Warmup(iterations = 30)
-    @Measurement(iterations = 11)
+    @Warmup(iterations = 20)
+    @Measurement(iterations = 20)
     @BenchmarkMode({Mode.SingleShotTime})
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     public void bench() {

@@ -1,4 +1,4 @@
-package ru.ricnorr.numa.locks.cna.nopadding;
+package ru.ricnorr.numa.locks.cna.nopad;
 
 import ru.ricnorr.numa.locks.Utils;
 

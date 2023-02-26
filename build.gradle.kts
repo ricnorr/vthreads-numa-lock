@@ -39,11 +39,20 @@ tasks.withType<JavaCompile>().configureEach {
         "--add-exports",
         "java.base/jdk.internal.util=ALL-UNNAMED",
         "--enable-preview",
+        "--add-exports",
+        "java.base/jdk.internal.vm.annotation=ALL-UNNAMED",
     )
 }
 
 tasks.withType<JavaExec>().configureEach {
-    jvmArgs = listOf("--enable-preview", "-XX:+UseNUMA", "-XX:+UseParallelGC", "--add-opens", "java.base/java.lang=ALL-UNNAMED")
+    jvmArgs = listOf(
+        "--enable-preview",
+        "-XX:+UseNUMA",
+        "-XX:+UseParallelGC",
+        "-XX:-RestrictContended",
+        "--add-opens",
+        "java.base/java.lang=ALL-UNNAMED",
+    )
 }
 
 group = "me.ricnorr"

@@ -1,13 +1,13 @@
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.openjdk.jol.info.ClassLayout;
-import ru.ricnorr.numa.locks.basic.MCS_WITH_PADDING;
+import ru.ricnorr.numa.locks.basic.MCSWithPad;
 import ru.ricnorr.numa.locks.cna.padding.CNANodeWithPadding;
 
 public class FalseSharingTest {
     @Test
     public void MCS() {
-        System.out.println(ClassLayout.parseClass(MCS_WITH_PADDING.QNode.class).toPrintable());
+        System.out.println(ClassLayout.parseClass(MCSWithPad.QNode.class).toPrintable());
     }
 
 //    @Test
@@ -34,5 +34,11 @@ public class FalseSharingTest {
     public void CnaNodeWithPaddingTest() {
         System.out.println(ClassLayout.parseClass(CNANodeWithPadding.class).toPrintable());
         Assertions.assertEquals(ClassLayout.parseClass(CNANodeWithPadding.class).instanceSize(), 128);
+    }
+
+    @Test
+    public void MCSNodeWithPaddingTest() {
+        System.out.println(ClassLayout.parseClass(MCSWithPad.QNode.class).toPrintable());
+        Assertions.assertEquals(ClassLayout.parseClass(MCSWithPad.QNode.class).instanceSize(), 128);
     }
 }

@@ -1,19 +1,18 @@
-package ru.ricnorr.numa.locks.hmcs;
+package ru.ricnorr.numa.locks.hmcs.nopad;
 
 import ru.ricnorr.numa.locks.NumaLock;
 import ru.ricnorr.numa.locks.Utils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.Supplier;
 
-import static ru.ricnorr.numa.locks.hmcs.AbstractHmcs.QNode.*;
+import static ru.ricnorr.numa.locks.hmcs.nopad.AbstractHmcs.QNode.*;
 
 public abstract class AbstractHmcs implements NumaLock {
 
-    final List<HNode> leafs = new ArrayList<>();
+    public static final int CCL_SIZE = 4;
+    final HNode[] leafs;
     final ThreadLocal<QNode> localQNode = ThreadLocal.withInitial(QNode::new);
     final ThreadLocal<Integer> carrierClusterId;
 
@@ -21,12 +20,13 @@ public abstract class AbstractHmcs implements NumaLock {
 
     final boolean isLight;
 
-    public AbstractHmcs(boolean overSubscription, boolean isLight, Supplier<Integer> carrierClusterIdSupplier) {
+    public AbstractHmcs(boolean overSubscription, boolean isLight, Supplier<Integer> carrierClusterIdSupplier, int leafsCnt) {
         if (isLight) {
             this.overSubscription = false;
         } else {
             this.overSubscription = overSubscription;
         }
+        this.leafs = new HNode[leafsCnt];
         this.carrierClusterId = ThreadLocal.withInitial(carrierClusterIdSupplier);
         this.isLight = isLight;
     }
@@ -35,20 +35,20 @@ public abstract class AbstractHmcs implements NumaLock {
     public Object lock() {
         if (isLight) {
             var node = new QNode();
-            lockH(node, leafs.get(Utils.getByThreadFromThreadLocal(carrierClusterId, Utils.getCurrentCarrierThread())));
+            lockH(node, leafs[Utils.getByThreadFromThreadLocal(carrierClusterId, Utils.getCurrentCarrierThread())]);
             return node;
         } else {
-            lockH(localQNode.get(), leafs.get(carrierClusterId.get()));
+            lockH(localQNode.get(), leafs[carrierClusterId.get()]);
             return null;
         }
     }
-    
+
     @Override
     public void unlock(Object obj) {
         if (isLight) {
-            unlockH(leafs.get(Utils.getByThreadFromThreadLocal(carrierClusterId, Utils.getCurrentCarrierThread())), (QNode) obj);
+            unlockH(leafs[Utils.getByThreadFromThreadLocal(carrierClusterId, Utils.getCurrentCarrierThread())], (QNode) obj);
         } else {
-            unlockH(leafs.get(carrierClusterId.get()), localQNode.get());
+            unlockH(leafs[carrierClusterId.get()], localQNode.get());
         }
     }
 
@@ -154,11 +154,11 @@ public abstract class AbstractHmcs implements NumaLock {
     }
 
     public static class QNode {
-        static int WAIT = Integer.MAX_VALUE;
-        static int ACQUIRE_PARENT = Integer.MAX_VALUE - 1;
-        static int UNLOCKED = 0x0;
-        static int LOCKED = 0x1;
-        static int COHORT_START = 0x1;
+        public static int WAIT = Integer.MAX_VALUE;
+        public static int ACQUIRE_PARENT = Integer.MAX_VALUE - 1;
+        public static int UNLOCKED = 0x0;
+        public static int LOCKED = 0x1;
+        public static int COHORT_START = 0x1;
 
         private volatile QNode next = null;
         private volatile int status = WAIT;
