@@ -4,19 +4,31 @@ import ru.ricnorr.benchmarks.LockType;
 
 public abstract class BenchmarkParameters {
     public int threads;
-    public String lockSpec;
+    public final String lockSpec;
 
-    public LockType lockType;
+    public final LockType lockType;
 
-    public int actionsPerThread;
-    public boolean isLightThread;
+    public final int actionsPerThread;
+    public final boolean isLightThread;
 
-    public BenchmarkParameters(int threads, LockType lockType, int actionsPerThread, String lockSpec, boolean isLightThread) {
+    public final int warmupIterations;
+
+    public final int measurementIterations;
+
+    public final int forks;
+
+    public BenchmarkParameters(
+            int threads, LockType lockType, int actionsPerThread,
+            String lockSpec, boolean isLightThread, int warmupIterations,
+            int measurementIterations, int forks) {
         this.threads = threads;
         this.lockType = lockType;
         this.lockSpec = lockSpec;
         this.actionsPerThread = actionsPerThread;
         this.isLightThread = isLightThread;
+        this.warmupIterations = warmupIterations;
+        this.measurementIterations = measurementIterations;
+        this.forks = forks;
     }
 
     public abstract String getBenchmarkName();

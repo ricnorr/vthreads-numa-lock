@@ -10,25 +10,7 @@
       "name": "CNA_NUMA"
     },
     {
-      "name": "CNA_CCL"
-    },
-    {
-      "name": "CNA_CCL_PAD"
-    },
-    {
       "name": "CNA_NUMA_PAD"
-    },
-    {
-      "name": "HCLH_CCL"
-    },
-    {
-      "name": "HCLH_NUMA"
-    },
-    {
-      "name": "HCLH_CCL_PAD"
-    },
-    {
-      "name": "HCLH_NUMA_PAD"
     },
     {
       "name": "HMCS_CCL_NUMA"
@@ -37,35 +19,57 @@
       "name": "HMCS_CCL_NUMA_PAD"
     },
     {
-      "name": "HMCS_CCL"
+      "name": "HCLH_NUMA"
     },
     {
-      "name": "HMCS_CCL_PAD"
-    },
-    {
-      "name": "HMCS_NUMA"
-    },
-    {
-      "name": "HMCS_NUMA_PAD"
+      "name": "HCLH_NUMA_PAD"
     }
   ],
-  "actionsCount": 110592,
-  "warmupIterations": 0,
-  "iterations": 3,
-  "type": "jmh",
-  "threads": [
-    48,
-    72,
-    96,
-    120,
-    128,
-    136
-  ],
+  "actionsCount": 147456,
   "benches": [
     {
       "name": "consumeCpu",
       "before": 0,
-      "in": 3000,
+      "in": 100,
+      "warmupIterations": 10,
+      "measurementIterations": 10,
+      "forks": 1,
+      "threads": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        24,
+        32,
+        48,
+        64,
+        96,
+        128
+      ],
+      "light": true,
+      "skip": false
+    },
+    {
+      "name": "consumeCpu",
+      "before": 0,
+      "in": 1000,
+      "warmupIterations": 10,
+      "measurementIterations": 10,
+      "forks": 1,
+      "threads": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        24,
+        32,
+        48,
+        64,
+        96,
+        128
+      ],
       "light": true,
       "skip": false
     }

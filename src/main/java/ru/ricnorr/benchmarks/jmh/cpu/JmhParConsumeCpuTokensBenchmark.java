@@ -43,7 +43,11 @@ public class JmhParConsumeCpuTokensBenchmark {
 
     NumaLock lock;
 
-    @Setup
+    CyclicBarrier ready;
+
+    List<Thread> threadList = new ArrayList<>();
+
+    @Setup(Level.Trial)
     public void init() {
         if (!System.getProperty("os.name").toLowerCase().contains("mac")) {
             List<Integer> processors = getProcessorsNumbersInNumaNodeOrder();
@@ -53,16 +57,10 @@ public class JmhParConsumeCpuTokensBenchmark {
         lock = Main.initLock(LockType.valueOf(lockType), lockSpec, threads > Runtime.getRuntime().availableProcessors(), isLightThread);
     }
 
-
-    @Benchmark
-    @Fork(1)
-    @Warmup(iterations = 20)
-    @Measurement(iterations = 20)
-    @BenchmarkMode({Mode.SingleShotTime})
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    public void bench() {
-        final CyclicBarrier ready = new CyclicBarrier(threads);
-        List<Thread> threadList = new ArrayList<>();
+    @Setup(Level.Invocation)
+    public void prepare() {
+        ready = new CyclicBarrier(threads);
+        threadList = new ArrayList<>();
         Runnable runnable = () -> {
             try {
                 ready.await();
@@ -83,6 +81,16 @@ public class JmhParConsumeCpuTokensBenchmark {
                 threadList.add(Thread.ofPlatform().factory().newThread(runnable));
             }
         }
+    }
+
+
+    @Benchmark
+    @Fork(1)
+    @Warmup(iterations = 20)
+    @Measurement(iterations = 20)
+    @BenchmarkMode({Mode.SingleShotTime})
+    @OutputTimeUnit(TimeUnit.NANOSECONDS)
+    public void bench() {
         for (int i = 0; i < threads; i++) {
             threadList.get(i).start();
         }

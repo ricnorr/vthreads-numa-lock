@@ -17,9 +17,12 @@ public class ConsumeCpuBenchmarkParameters extends BenchmarkParameters {
 
     public double highContentionWithoutLockNanos;
 
-    public ConsumeCpuBenchmarkParameters(int threads, LockType lockType, String lockSpec, boolean isLightThread, long beforeCpuTokens, long inCpuTokens, int actionsPerThread,
-                                         double beforeConsumeCpuTokensTimeNanos, double inConsumeCpuTokensTimeNanos, double highContentionWithoutLockNanos) {
-        super(threads, lockType, actionsPerThread, lockSpec, isLightThread);
+    public ConsumeCpuBenchmarkParameters(int threads, LockType lockType, String lockSpec,
+                                         boolean isLightThread, long beforeCpuTokens, long inCpuTokens,
+                                         int actionsPerThread, double beforeConsumeCpuTokensTimeNanos,
+                                         double inConsumeCpuTokensTimeNanos, double highContentionWithoutLockNanos,
+                                         int warmupIterations, int measurementIterations, int forks) {
+        super(threads, lockType, actionsPerThread, lockSpec, isLightThread, warmupIterations, measurementIterations, forks);
         this.beforeCpuTokens = beforeCpuTokens;
         this.inCpuTokens = inCpuTokens;
         this.beforeConsumeCpuTokensTimeNanos = beforeConsumeCpuTokensTimeNanos;
@@ -31,18 +34,14 @@ public class ConsumeCpuBenchmarkParameters extends BenchmarkParameters {
     @Override
     public String getBenchmarkName() {
         return String.format(
-                "%d, %s contention. Consume CPU. %s threads.",
+                "measurement %d, forks %d, warmup %d, %d, %s contention. Consume CPU. %s threads.",
+                measurementIterations,
+                forks,
+                warmupIterations,
                 inCpuTokens,
                 isHighContention ? "High" : "Low",
                 isLightThread ? "Virtual" : "Platform"
         );
-//        return String.format(
-//                "Consume cpu tokens. %s threads. Before crit.section: %d tokens. In crit.section: %d tokens (%s)",
-//                isLightThread ? "Light" : "Hard",
-//                beforeCpuTokens,
-//                inCpuTokens,
-//                isHighContention ? "High contention" : "Low contention"
-//        );
     }
 
     public String logBegin() {
