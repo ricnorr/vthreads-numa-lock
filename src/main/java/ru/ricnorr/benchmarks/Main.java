@@ -48,7 +48,7 @@ import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
 
 public class Main {
 
-    private static final List<String> RESULTS_HEADERS = List.of("name", "lock", "threads", "Maximum_overhead_(microsec)", "Minimum_overhead_(microsec)", "Median_overhead_(microsec)", "Maximum_throughout_(ops_microsec)", "Minimum_throughput_(ops_microsec)", "Median_throughput_(ops_microsec)");
+    private static final List<String> RESULTS_HEADERS = List.of("name", "lock", "threads", "Maximum_overhead_(millisec)", "Minimum_overhead_(millisec)", "Median_overhead_(millisec)", "Maximum_throughout_(ops_millisec)", "Minimum_throughput_(ops_millisec)", "Median_throughput_(ops_millisec)");
 
     public static NumaLock initLock(LockType lockType, String lockSpec, boolean overSubscription, boolean isLight) {
         switch (lockType) {
@@ -140,10 +140,6 @@ public class Main {
         }
     }
 
-    public static NumaLock initLock(LockType lockType, String lockSpec, boolean isLight) {
-        return initLock(lockType, lockSpec, false, isLight);
-    }
-
     public static List<Integer> getProcessorsNumbersInNumaNodeOrder() {
         SystemInfo si = new SystemInfo();
         var logicalProcessors = si.getHardware().getProcessor().getLogicalProcessors();
@@ -163,12 +159,12 @@ public class Main {
                                 it.name(),
                                 it.lock(),
                                 it.threads(),
-                                it.overheadNanosMax() / 1000,
-                                it.overheadNanosMin() / 1000,
-                                it.overheadNanosMedian() / 1000,
-                                it.throughputNanosMax() * 1000,
-                                it.throughputNanosMin() * 1000,
-                                it.throughputNanosMedian() * 1000
+                                it.overheadNanosMax() / 1000 / 1000,
+                                it.overheadNanosMin() / 1000 / 1000,
+                                it.overheadNanosMedian() / 1000 / 1000,
+                                it.throughputNanosMax() * 1000 * 1000,
+                                it.throughputNanosMin() * 1000 * 1000,
+                                it.throughputNanosMedian() * 1000 * 1000
                         );
                     } catch (IOException e) {
                         throw new BenchmarkException("Cannot write record to file with benchmarks results", e);
@@ -180,7 +176,7 @@ public class Main {
         }
     }
 
-    private static List<Integer> autoThreadsInit() {
+    public static List<Integer> autoThreadsInit() {
         int cpuCount = Runtime.getRuntime().availableProcessors();
         List<Integer> threads = new ArrayList<>();
         for (int i = 0; i < 16; i++) {
@@ -286,13 +282,6 @@ public class Main {
             estimateJniCall();
             return;
         }
-        if (args.length != 0 && args[0].equals("get-carrier")) {
-            //Utils.currentCarrierMH.invoke();
-            var y = new ThreadLocal<>();
-            y.set(1);
-            var x = Utils.getByThreadFromThreadLocal(y, Thread.currentThread());
-            return;
-        }
         // Read benchmark parameters
         String s;
 
@@ -302,35 +291,11 @@ public class Main {
             throw new BenchmarkException("Cannot read input file", e);
         }
         JSONObject obj = (JSONObject) JSONValue.parse(s);
-        int warmupIterations = (int) ((long) obj.get("warmupIterations"));
-        int iterations = (int) ((long) obj.get("iterations"));
         int actionsCount = (int) ((long) obj.get("actionsCount"));
-        String type = (String) obj.get("type");
-        System.out.printf(
-                "benchmark params: warmupIterations=%d, iterations=%d, type=%s%n",
-                warmupIterations,
-                iterations,
-                type
-        );
-
-        JSONArray array = (JSONArray) obj.get("threads");
-        List<Integer> threadsList = new ArrayList<>();
-        if (array != null) {
-            for (Object value : array) {
-                threadsList.add((int) ((long) value));
-            }
-        } else {
-            threadsList = autoThreadsInit();
-        }
 
         var locks = (JSONArray) obj.get("locks");
         var benches = (JSONArray) obj.get("benches");
-        List<BenchmarkParameters> benchmarkParametersList;
-        if (type.equals("jmh")) {
-            benchmarkParametersList = JmhBenchmarkRunner.fillBenchmarkParameters(threadsList, locks, benches, actionsCount);
-        } else {
-            throw new BenchmarkException("Illegal benchmark type");
-        }
+        List<BenchmarkParameters> benchmarkParametersList = JmhBenchmarkRunner.fillBenchmarkParameters(locks, benches, actionsCount);
 
         // Run benches and collect results
         List<BenchmarkResultsCsv> resultCsv = new ArrayList<>();
@@ -341,11 +306,7 @@ public class Main {
         );
 
         for (BenchmarkParameters param : benchmarkParametersList) {
-            if (type.equals("jmh")) {
-                resultCsv.add(JmhBenchmarkRunner.runBenchmark(iterations, warmupIterations, param));
-            } else {
-                throw new RuntimeException("Type not found");
-            }
+            resultCsv.add(JmhBenchmarkRunner.runBenchmark(param));
 
         }
 
