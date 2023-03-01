@@ -15,6 +15,8 @@ public class Utils {
 
     public static final MethodHandle GET_CARRIER_THREAD_METHOD_HANDLE;
     public static final MethodHandle GET_BY_THREAD_FROM_THREAD_LOCAL_METHOD_HANDLE;
+
+    public static final MethodHandle SET_BY_THREAD_TO_THREAD_LOCAL_METHOD_HANDLE;
     private final static int GET_CPU_ARM_SYSCALL = 168;
     private final static int GET_CPU_x86_SYSCALL = 309;
     public static int WAIT_THRESHOLD = 4096;
@@ -47,8 +49,22 @@ public class Utils {
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+
+
+        Method setByThreadToThreadLocalMethod;
+        try {
+            setByThreadToThreadLocalMethod = ThreadLocal.class.getDeclaredMethod("set", Thread.class, Object.class);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+        setByThreadToThreadLocalMethod.setAccessible(true);
+        try {
+            SET_BY_THREAD_TO_THREAD_LOCAL_METHOD_HANDLE = lookup.unreflect(setByThreadToThreadLocalMethod);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
-    
+
     public static int getClusterID() {
         int res;
         final IntByReference numaNode = new IntByReference();
@@ -123,6 +139,15 @@ public class Utils {
     public static <T> T getByThreadFromThreadLocal(ThreadLocal<T> tl, Thread thread) {
         try {
             return (T) GET_BY_THREAD_FROM_THREAD_LOCAL_METHOD_HANDLE.invoke(tl, thread);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> void setByThreadToThreadLocal(ThreadLocal<T> tl, Thread thread, Object obj) {
+        try {
+            SET_BY_THREAD_TO_THREAD_LOCAL_METHOD_HANDLE.invoke(tl, thread, obj);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }

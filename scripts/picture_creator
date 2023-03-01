@@ -29,10 +29,8 @@ def draw_by_bench_and_mode(df, bench, mode, threads, suffix):
         ind = 0
         markevery = [1,2]
         for lock in locks:
-            if not 'HMCS_CCL_NUMA' in lock:
+            if lock == 'HMCS_CCL' or lock == 'HMCS_NUMA' or lock == 'CNA_NUMA' or lock == 'HCLH_NUMA' or lock == 'HCLH_CCL' or lock == 'HCLH_CCL_PAD' or lock == 'HMCS_CCL_NUMA' or lock == 'HMCS_CCL_NUMA' or lock == 'HMCS_CCL_NUMA_PAD':
                 continue
-            #if lock == 'TEST_TEST_SET_{}' or lock == 'TEST_SET_{}' or lock == 'TICKET_{}' or lock == 'CLH_{}' or lock == 'MCS_{}':
-            #    continue
             cur_df = df[(df['name'] == bench) & (df['lock'] == lock) & (df['threads'].isin(threads))].copy()
             cur_df['plot_threads'] = cur_df['threads'].map(str)
             cur_df.sort_values(by=['threads']).plot(ax=ax, x='plot_threads', y=mode, label=lock, style=[styles[ind % len(styles)]], marker='o')
@@ -49,7 +47,7 @@ def draw_by_bench_and_mode(df, bench, mode, threads, suffix):
         plt.close()
 
 for bench in bench_names:
-    for mode in ['Median_overhead_(microsec)','Median_throughput_(ops_microsec)', 'Maximum_overhead_(microsec)']:
+    for mode in ['Median_overhead_(millisec)','Median_throughput_(ops_millisec)']:
         x = sorted(set(df['threads']))
         y = x[1:-1]
         draw_by_bench_and_mode(df, bench, mode, x, '_all')

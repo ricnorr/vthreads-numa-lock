@@ -34,6 +34,7 @@ import ru.ricnorr.numa.locks.hmcs.pad.HmcsCclPlusNumaPlusSupernumaHierarchyPad;
 import ru.ricnorr.numa.locks.hmcs.pad.HmcsOnlyCclHierarchyPad;
 import ru.ricnorr.numa.locks.hmcs.pad.HmcsOnlyNumaHierarchyPad;
 import ru.ricnorr.numa.locks.reentrant.NumaReentrantLock;
+import ru.ricnorr.numa.locks.tas_cna.TtasCclAndCnaNuma;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -135,6 +136,9 @@ public class Main {
             }
             case HMCS_NUMA_PAD -> {
                 return new HmcsOnlyNumaHierarchyPad(overSubscription, isLight);
+            }
+            case TTAS_CCL_PLUS_CNA_NUMA -> {
+                return new TtasCclAndCnaNuma(isLight);
             }
             default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
         }
