@@ -21,6 +21,7 @@ import ru.ricnorr.numa.locks.cna.nopad.CnaCcl;
 import ru.ricnorr.numa.locks.cna.nopad.CnaNuma;
 import ru.ricnorr.numa.locks.cna.pad.CnaCclWithContendedPadding;
 import ru.ricnorr.numa.locks.cna.pad.CnaNumaWithContendedPadding;
+import ru.ricnorr.numa.locks.cna_ccl_mcs_numa.CnaCclMcsNuma;
 import ru.ricnorr.numa.locks.hclh.nopad.HCLHNuma;
 import ru.ricnorr.numa.locks.hclh.nopad.HclhCcl;
 import ru.ricnorr.numa.locks.hclh.pad.HCLHNumaPad;
@@ -139,6 +140,9 @@ public class Main {
             }
             case TTAS_CCL_PLUS_CNA_NUMA -> {
                 return new TtasCclAndCnaNuma(isLight);
+            }
+            case CNA_CCL_MCS_NUMA -> {
+                return new CnaCclMcsNuma(isLight);
             }
             default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
         }

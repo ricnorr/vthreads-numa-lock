@@ -152,4 +152,13 @@ public class Utils {
             throw new RuntimeException(e);
         }
     }
+
+    public static int getNumaNodesCnt() {
+        int availableProcessors = Runtime.getRuntime().availableProcessors();
+        if (availableProcessors == 96 || availableProcessors == 128) {
+            return 4;
+        } else {
+            return 2;
+        }
+    }
 }

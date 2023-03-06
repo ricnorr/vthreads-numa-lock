@@ -1,55 +1,100 @@
 {
   "locks": [
     {
-      "name": "FAIR_REENTRANT"
+      "name": "TAS",
+      "skip": false
     },
     {
-      "name": "UNFAIR_REENTRANT"
+      "name": "TTAS",
+      "skip": false
     },
     {
-      "name": "CNA_NUMA"
+      "name": "MCS",
+      "skip": false
     },
     {
-      "name": "CNA_NUMA_PAD"
+      "name": "FAIR_REENTRANT",
+      "skip": false
     },
     {
-      "name": "HMCS_CCL_NUMA"
+      "name": "UNFAIR_REENTRANT",
+      "skip": false
     },
     {
-      "name": "HMCS_CCL_NUMA_PAD"
+      "name": "CNA_NUMA",
+      "skip": false
     },
     {
-      "name": "HCLH_NUMA"
+      "name": "CNA_NUMA_PAD",
+      "skip": false
     },
     {
-      "name": "HCLH_NUMA_PAD"
+      "name": "CNA_CCL",
+      "skip": false
+    },
+    {
+      "name": "CNA_CCL_PAD",
+      "skip": false
+    },
+    {
+      "name": "HCLH_CCL",
+      "skip": false
+    },
+    {
+      "name": "HCLH_NUMA",
+      "skip": false
+    },
+    {
+      "name": "HCLH_CCL_PAD",
+      "skip": false
+    },
+    {
+      "name": "HCLH_NUMA_PAD",
+      "skip": false
+    },
+    {
+      "name": "HMCS_CCL_NUMA",
+      "skip": false
+    },
+    {
+      "name": "HMCS_CCL_NUMA_PAD",
+      "skip": false
+    },
+    {
+      "name": "HMCS_CCL_NUMA_SUPERNUMA",
+      "skip": false
+    },
+    {
+      "name": "HMCS_CCL_NUMA_SUPERNUMA_PAD",
+      "skip": false
+    },
+    {
+      "name": "HMCS_CCL",
+      "skip": false
+    },
+    {
+      "name": "HMCS_CCL_PAD",
+      "skip": false
+    },
+    {
+      "name": "HMCS_NUMA",
+      "skip": false
+    },
+    {
+      "name": "HMCS_NUMA_PAD",
+      "skip": false
+    },
+    {
+      "name": "TTAS_CCL_PLUS_CNA_NUMA",
+      "skip": true
+    },
+    {
+      "name": "CNA_CCL_MCS_NUMA",
+      "skip": true
     }
   ],
   "actionsCount": 147456,
   "benches": [
-    {
-      "name": "consumeCpu",
-      "before": 0,
-      "in": 100,
-      "warmupIterations": 10,
-      "measurementIterations": 10,
-      "forks": 1,
-      "threads": [
-        1,
-        2,
-        4,
-        8,
-        16,
-        24,
-        32,
-        48,
-        64,
-        96,
-        128
-      ],
-      "light": true,
-      "skip": false
-    },
     {
       "name": "consumeCpu",
       "before": 0,
@@ -68,7 +113,9 @@
         48,
         64,
         96,
-        128
+        128,
+        144,
+        192
       ],
       "light": true,
       "skip": false
