@@ -41,6 +41,10 @@ public class AbstractCna implements NumaLock {
         }
     }
 
+    public boolean hasNext(CNANode me) {
+        return me.next != null || me.spin != CNALockCore.TRUE_VALUE;
+    }
+
     public static class CNALockCore {
 
         public static CNANode TRUE_VALUE = new CNANode(-1);
