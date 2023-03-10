@@ -2,6 +2,8 @@ package ru.ricnorr.numa.locks;
 
 import com.sun.jna.Platform;
 import com.sun.jna.ptr.IntByReference;
+import oshi.SystemInfo;
+import oshi.hardware.CentralProcessor;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -10,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Utils {
 
@@ -19,53 +22,32 @@ public class Utils {
     public static final MethodHandle SET_BY_THREAD_TO_THREAD_LOCAL_METHOD_HANDLE;
     private final static int GET_CPU_ARM_SYSCALL = 168;
     private final static int GET_CPU_x86_SYSCALL = 309;
-    public static int WAIT_THRESHOLD = 4096;
+
+    public static int CCL_SIZE = 4;
 
     static {
-        Method currentCarrierThreadMethod;
+        GET_CARRIER_THREAD_METHOD_HANDLE = getMethodHandle(Thread.class, "currentCarrierThread");
+        GET_BY_THREAD_FROM_THREAD_LOCAL_METHOD_HANDLE = getMethodHandle(ThreadLocal.class, "get", Thread.class);
+        SET_BY_THREAD_TO_THREAD_LOCAL_METHOD_HANDLE = getMethodHandle(ThreadLocal.class, "set", Thread.class, Object.class);
+    }
 
-        try {
-            currentCarrierThreadMethod = Thread.class.getDeclaredMethod("currentCarrierThread");
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
+    private static MethodHandle getMethodHandle(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
+        Method method;
         MethodHandles.Lookup lookup = MethodHandles.lookup();
-        currentCarrierThreadMethod.setAccessible(true);
         try {
-            GET_CARRIER_THREAD_METHOD_HANDLE = lookup.unreflect(currentCarrierThreadMethod);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-
-        Method getByThreadFromThreadLocalMethod;
-        try {
-            getByThreadFromThreadLocalMethod = ThreadLocal.class.getDeclaredMethod("get", Thread.class);
+            method = clazz.getDeclaredMethod(methodName, parameterTypes);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
-        getByThreadFromThreadLocalMethod.setAccessible(true);
+        method.setAccessible(true);
         try {
-            GET_BY_THREAD_FROM_THREAD_LOCAL_METHOD_HANDLE = lookup.unreflect(getByThreadFromThreadLocalMethod);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-
-
-        Method setByThreadToThreadLocalMethod;
-        try {
-            setByThreadToThreadLocalMethod = ThreadLocal.class.getDeclaredMethod("set", Thread.class, Object.class);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
-        setByThreadToThreadLocalMethod.setAccessible(true);
-        try {
-            SET_BY_THREAD_TO_THREAD_LOCAL_METHOD_HANDLE = lookup.unreflect(setByThreadToThreadLocalMethod);
+            return lookup.unreflect(method);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static int getClusterID() {
+    public static int getNumaNodeId() {
         int res;
         final IntByReference numaNode = new IntByReference();
         final IntByReference cpu = new IntByReference();
@@ -80,7 +62,7 @@ public class Utils {
         return numaNode.getValue();
     }
 
-    public static int getCpuID() {
+    public static int getCpuId() {
         int res;
         final IntByReference numaNode = new IntByReference();
         final IntByReference cpu = new IntByReference();
@@ -95,22 +77,10 @@ public class Utils {
         return cpu.getValue();
     }
 
-    public static int kungpengGetClusterID() {
-        int cpuId = getCpuID();
-        return cpuId / 4;
+    public static int getKunpengCCLId() {
+        int cpuId = getCpuId();
+        return cpuId / CCL_SIZE;
     }
-
-    public static int spinWaitYield(int spinCounter) {
-        for (int i = 0; i < spinCounter; i++) {
-        }
-        if (spinCounter > WAIT_THRESHOLD) {
-            Thread.yield();
-            return 1;
-        }
-        spinCounter *= 2;
-        return spinCounter;
-    }
-
 
     public static double median(Collection<Double> numbers) {
         if (numbers.isEmpty()) {
@@ -154,11 +124,8 @@ public class Utils {
     }
 
     public static int getNumaNodesCnt() {
-        int availableProcessors = Runtime.getRuntime().availableProcessors();
-        if (availableProcessors == 96 || availableProcessors == 128) {
-            return 4;
-        } else {
-            return 2;
-        }
+        return new SystemInfo().getHardware().getProcessor().getLogicalProcessors()
+                .stream().map(CentralProcessor.LogicalProcessor::getNumaNode)
+                .collect(Collectors.toSet()).size();
     }
 }

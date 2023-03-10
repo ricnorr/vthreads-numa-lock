@@ -14,7 +14,7 @@ public class JmhJniCallBenchmark {
     @BenchmarkMode({Mode.AverageTime})
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     public int bench() {
-        return Utils.getClusterID();
+        return Utils.getNumaNodeId();
     }
 
 }

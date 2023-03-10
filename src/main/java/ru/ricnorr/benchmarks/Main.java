@@ -17,10 +17,10 @@ import ru.ricnorr.benchmarks.params.BenchmarkParameters;
 import ru.ricnorr.numa.locks.NumaLock;
 import ru.ricnorr.numa.locks.Utils;
 import ru.ricnorr.numa.locks.basic.*;
-import ru.ricnorr.numa.locks.cna.nopad.CnaCcl;
-import ru.ricnorr.numa.locks.cna.nopad.CnaNuma;
-import ru.ricnorr.numa.locks.cna.pad.CnaCclWithContendedPadding;
-import ru.ricnorr.numa.locks.cna.pad.CnaNumaWithContendedPadding;
+import ru.ricnorr.numa.locks.cna.CnaCclNoPad;
+import ru.ricnorr.numa.locks.cna.CnaCclWithPad;
+import ru.ricnorr.numa.locks.cna.CnaNumaNoPad;
+import ru.ricnorr.numa.locks.cna.CnaNumaWithPad;
 import ru.ricnorr.numa.locks.cna_ccl_mcs_numa.CnaCclMcsNuma;
 import ru.ricnorr.numa.locks.hclh.nopad.HCLHNuma;
 import ru.ricnorr.numa.locks.hclh.nopad.HclhCcl;
@@ -85,16 +85,16 @@ public class Main {
              * CNA
              */
             case CNA_NUMA -> {
-                return new CnaNuma(isLight);
+                return new CnaNumaNoPad();
             }
             case CNA_CCL -> {
-                return new CnaCcl(isLight);
+                return new CnaCclNoPad();
             }
             case CNA_CCL_PAD -> {
-                return new CnaCclWithContendedPadding(isLight);
+                return new CnaCclWithPad();
             }
             case CNA_NUMA_PAD -> {
-                return new CnaNumaWithContendedPadding(isLight);
+                return new CnaNumaWithPad();
             }
             /**
              * HCLH
@@ -247,8 +247,8 @@ public class Main {
         }
         for (int i = 0; i < Runtime.getRuntime().availableProcessors() * 2; i++) {
             threads.add(new Thread(() -> {
-                numaNodes.add(Utils.getClusterID());
-                cpuIds.add(Utils.getCpuID());
+                numaNodes.add(Utils.getNumaNodeId());
+                cpuIds.add(Utils.getCpuId());
             }));
         }
         for (Thread thread : threads) {
