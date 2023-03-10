@@ -25,8 +25,9 @@ public class AbstractHCLHLock<NodeType extends HCLHNodeInterface> extends Abstra
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void unlock(Object t) {
-        lockCore.unlock((HCLHNodeNoPad) t);
+        lockCore.unlock((NodeType) t);
     }
 
     public static class HCLHLockCore<Node extends HCLHNodeInterface> {
@@ -72,7 +73,7 @@ public class AbstractHCLHLock<NodeType extends HCLHNodeInterface> extends Abstra
             return myPred;
         }
 
-        public void unlock(HCLHNodeNoPad myNode) {
+        public void unlock(Node myNode) {
             myNode.setSuccessorMustWait(false);
         }
     }

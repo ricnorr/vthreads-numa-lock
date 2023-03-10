@@ -4,7 +4,7 @@ import ru.ricnorr.numa.locks.Utils;
 
 public class HclhCclWithPad extends AbstractHCLHLock<HCLHNodeWithPad> {
     public HclhCclWithPad() {
-        super(HCLHNodeWithPad::new, Utils::getNumaNodeId);
+        super(HCLHNodeWithPad::new, Utils::getKunpengCCLId);
     }
 }
 
