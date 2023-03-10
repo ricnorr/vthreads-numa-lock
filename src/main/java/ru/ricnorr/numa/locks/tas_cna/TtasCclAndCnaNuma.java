@@ -4,7 +4,7 @@ import ru.ricnorr.numa.locks.NumaLock;
 import ru.ricnorr.numa.locks.Utils;
 import ru.ricnorr.numa.locks.basic.TestTestAndSetLock;
 import ru.ricnorr.numa.locks.cna.CNANodeNoPad;
-import ru.ricnorr.numa.locks.cna.CnaNumaNoPad;
+import ru.ricnorr.numa.locks.cna.CNANumaNoPad;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -15,7 +15,7 @@ public class TtasCclAndCnaNuma implements NumaLock {
 
     final TestTestAndSetLock[] ttasLocksForCcl;
 
-    final CnaNumaNoPad cnaNumaNoPad;
+    final CNANumaNoPad cnaNumaNoPad;
 
     final boolean isLight;
 
@@ -27,7 +27,7 @@ public class TtasCclAndCnaNuma implements NumaLock {
         for (int i = 0; i < ttasLocksForCcl.length; i++) {
             ttasLocksForCcl[i] = new TestTestAndSetLock();
         }
-        cnaNumaNoPad = new CnaNumaNoPad();
+        cnaNumaNoPad = new CNANumaNoPad();
     }
 
     @Override
