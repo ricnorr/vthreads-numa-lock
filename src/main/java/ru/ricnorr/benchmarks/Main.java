@@ -22,10 +22,10 @@ import ru.ricnorr.numa.locks.cna.CnaCclWithPad;
 import ru.ricnorr.numa.locks.cna.CnaNumaNoPad;
 import ru.ricnorr.numa.locks.cna.CnaNumaWithPad;
 import ru.ricnorr.numa.locks.cna_ccl_mcs_numa.CnaCclMcsNuma;
-import ru.ricnorr.numa.locks.hclh.nopad.HCLHNuma;
-import ru.ricnorr.numa.locks.hclh.nopad.HclhCcl;
-import ru.ricnorr.numa.locks.hclh.pad.HCLHNumaPad;
-import ru.ricnorr.numa.locks.hclh.pad.HclhCclPad;
+import ru.ricnorr.numa.locks.hclh.HCLHNumaNoPad;
+import ru.ricnorr.numa.locks.hclh.HCLHNumaWithPad;
+import ru.ricnorr.numa.locks.hclh.HclhCclNoPad;
+import ru.ricnorr.numa.locks.hclh.HclhCclWithPad;
 import ru.ricnorr.numa.locks.hmcs.nopad.HmcsCclPlusNumaHierarchy;
 import ru.ricnorr.numa.locks.hmcs.nopad.HmcsCclPlusNumaPlusSupernumaHierarchy;
 import ru.ricnorr.numa.locks.hmcs.nopad.HmcsOnlyCclHierarchy;
@@ -66,9 +66,6 @@ public class Main {
             case MCS -> {
                 return new MCS();
             }
-            case MCS_PAD -> {
-                return new MCSWithPad();
-            }
             case TAS -> {
                 return new TestAndSetLock();
             }
@@ -100,16 +97,16 @@ public class Main {
              * HCLH
              */
             case HCLH_CCL -> {
-                return new HclhCcl(isLight);
+                return new HclhCclNoPad();
             }
             case HCLH_NUMA -> {
-                return new HCLHNuma(isLight);
+                return new HCLHNumaNoPad();
             }
             case HCLH_CCL_PAD -> {
-                return new HclhCclPad(isLight);
+                return new HclhCclWithPad();
             }
             case HCLH_NUMA_PAD -> {
-                return new HCLHNumaPad(isLight);
+                return new HCLHNumaWithPad();
             }
             /**
              * HMCS
@@ -151,10 +148,7 @@ public class Main {
     public static List<Integer> getProcessorsNumbersInNumaNodeOrder() {
         SystemInfo si = new SystemInfo();
         var logicalProcessors = si.getHardware().getProcessor().getLogicalProcessors();
-        return logicalProcessors.stream().sorted(
-                Comparator.comparing(CentralProcessor.LogicalProcessor::getNumaNode)
-                        .thenComparing(CentralProcessor.LogicalProcessor::getProcessorNumber)
-        ).map(CentralProcessor.LogicalProcessor::getProcessorNumber).collect(Collectors.toList());
+        return logicalProcessors.stream().sorted(Comparator.comparing(CentralProcessor.LogicalProcessor::getNumaNode).thenComparing(CentralProcessor.LogicalProcessor::getProcessorNumber)).map(CentralProcessor.LogicalProcessor::getProcessorNumber).collect(Collectors.toList());
     }
 
     private static void writeResultsToCSVfile(String filename, List<BenchmarkResultsCsv> results) {
@@ -163,17 +157,7 @@ public class Main {
                 printer.printRecord(RESULTS_HEADERS);
                 results.forEach(it -> {
                     try {
-                        printer.printRecord(
-                                it.name(),
-                                it.lock(),
-                                it.threads(),
-                                it.overheadNanosMax() / 1000 / 1000,
-                                it.overheadNanosMin() / 1000 / 1000,
-                                it.overheadNanosMedian() / 1000 / 1000,
-                                it.throughputNanosMax() * 1000 * 1000,
-                                it.throughputNanosMin() * 1000 * 1000,
-                                it.throughputNanosMedian() * 1000 * 1000
-                        );
+                        printer.printRecord(it.name(), it.lock(), it.threads(), it.overheadNanosMax() / 1000 / 1000, it.overheadNanosMin() / 1000 / 1000, it.overheadNanosMedian() / 1000 / 1000, it.throughputNanosMax() * 1000 * 1000, it.throughputNanosMin() * 1000 * 1000, it.throughputNanosMedian() * 1000 * 1000);
                     } catch (IOException e) {
                         throw new BenchmarkException("Cannot write record to file with benchmarks results", e);
                     }
@@ -208,8 +192,7 @@ public class Main {
 
             StringBuilder output = new StringBuilder();
 
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream()));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
             String line;
             while ((line = reader.readLine()) != null) {
@@ -237,13 +220,7 @@ public class Main {
         SystemInfo si = new SystemInfo();
         var logicalProcessors = si.getHardware().getProcessor().getLogicalProcessors();
         for (CentralProcessor.LogicalProcessor logicalProcessor : logicalProcessors) {
-            System.out.printf("Proc number: %d, Proc physical number: %d, Proc numa node: %d, Proc group: %d, Proc phys package: %d%n",
-                    logicalProcessor.getProcessorNumber(),
-                    logicalProcessor.getPhysicalProcessorNumber(),
-                    logicalProcessor.getNumaNode(),
-                    logicalProcessor.getProcessorGroup(),
-                    logicalProcessor.getPhysicalPackageNumber()
-            );
+            System.out.printf("Proc number: %d, Proc physical number: %d, Proc numa node: %d, Proc group: %d, Proc phys package: %d%n", logicalProcessor.getProcessorNumber(), logicalProcessor.getPhysicalProcessorNumber(), logicalProcessor.getNumaNode(), logicalProcessor.getProcessorGroup(), logicalProcessor.getPhysicalPackageNumber());
         }
         for (int i = 0; i < Runtime.getRuntime().availableProcessors() * 2; i++) {
             threads.add(new Thread(() -> {
@@ -266,14 +243,7 @@ public class Main {
     }
 
     public static void estimateJniCall() {
-        var optionsBuilder = new OptionsBuilder()
-                .include(JmhJniCallBenchmark.class.getSimpleName())
-                .operationsPerInvocation(1)
-                .warmupIterations(1)
-                .forks(1)
-                .measurementTime(TimeValue.seconds(5))
-                .measurementIterations(1)
-                .verbosity(NORMAL);
+        var optionsBuilder = new OptionsBuilder().include(JmhJniCallBenchmark.class.getSimpleName()).operationsPerInvocation(1).warmupIterations(1).forks(1).measurementTime(TimeValue.seconds(5)).measurementIterations(1).verbosity(NORMAL);
         try {
             new Runner(optionsBuilder.build()).run();
         } catch (Exception e) {
@@ -309,9 +279,7 @@ public class Main {
         List<BenchmarkResultsCsv> resultCsv = new ArrayList<>();
 
         List<Integer> processors = getProcessorsNumbersInNumaNodeOrder();
-        System.out.println(processors.stream().map(Object::toString).collect(
-                Collectors.joining(",", "Processors ordered by NUMA node\n", "\n"))
-        );
+        System.out.println(processors.stream().map(Object::toString).collect(Collectors.joining(",", "Processors ordered by NUMA node\n", "\n")));
 
         for (BenchmarkParameters param : benchmarkParametersList) {
             resultCsv.add(JmhBenchmarkRunner.runBenchmark(param));

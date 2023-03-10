@@ -2,23 +2,23 @@
   "locks": [
     {
       "name": "TAS",
-      "skip": false
+      "skip": true
     },
     {
       "name": "TTAS",
-      "skip": false
+      "skip": true
     },
     {
       "name": "MCS",
-      "skip": false
+      "skip": true
     },
     {
       "name": "FAIR_REENTRANT",
-      "skip": false
+      "skip": true
     },
     {
       "name": "UNFAIR_REENTRANT",
-      "skip": false
+      "skip": true
     },
     {
       "name": "CNA_NUMA",
@@ -38,51 +38,51 @@
     },
     {
       "name": "HCLH_CCL",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HCLH_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HCLH_CCL_PAD",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HCLH_NUMA_PAD",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_CCL_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_CCL_NUMA_PAD",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_CCL_NUMA_SUPERNUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_CCL_NUMA_SUPERNUMA_PAD",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_CCL",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_CCL_PAD",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_NUMA_PAD",
-      "skip": false
+      "skip": true
     },
     {
       "name": "TTAS_CCL_PLUS_CNA_NUMA",
@@ -112,10 +112,7 @@
         32,
         48,
         64,
-        96,
-        128,
-        144,
-        192
+        96
       ],
       "light": true,
       "skip": false

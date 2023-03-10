@@ -6,15 +6,15 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class AbstractCna<CnaNodeType extends CNANodeInterface> extends AbstractNumaLock {
+public class AbstractCna<Node extends CNANodeInterface> extends AbstractNumaLock {
 
     ThreadLocal<Integer> clusterIdThreadLocal;
 
-    CNALockCore<CnaNodeType> cnaLockCore = new CNALockCore<>();
+    CNALockCore<Node> cnaLockCore = new CNALockCore<>();
 
-    Function<Integer, CnaNodeType> cnaNodeFactory;
+    Function<Integer, Node> cnaNodeFactory;
 
-    public AbstractCna(Supplier<Integer> clusterSupplier, Function<Integer, CnaNodeType> cnaNodeFactory) {
+    public AbstractCna(Supplier<Integer> clusterSupplier, Function<Integer, Node> cnaNodeFactory) {
         super(clusterSupplier);
         this.clusterIdThreadLocal = ThreadLocal.withInitial(clusterSupplier);
         this.cnaNodeFactory = cnaNodeFactory;
@@ -30,7 +30,7 @@ public class AbstractCna<CnaNodeType extends CNANodeInterface> extends AbstractN
 
     @Override
     public void unlock(Object t) {
-        cnaLockCore.unlock((CnaNodeType) t);
+        cnaLockCore.unlock((Node) t);
     }
 
     public boolean hasNext(CNANodeNoPad me) {
