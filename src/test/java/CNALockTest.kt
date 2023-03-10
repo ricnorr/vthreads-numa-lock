@@ -4,13 +4,13 @@ import org.jetbrains.kotlinx.lincheck.annotations.Param
 import org.jetbrains.kotlinx.lincheck.check
 import org.jetbrains.kotlinx.lincheck.paramgen.IntGen
 import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.ModelCheckingOptions
-import ru.ricnorr.numa.locks.cna.AbstractCna
+import ru.ricnorr.numa.locks.cna.AbstractCNA
 import ru.ricnorr.numa.locks.cna.CNANodeNoPad
 
 @Param(name = "clusterID", gen = IntGen::class, conf = "0:1")
 class CNALockTest {
 
-    private val lock = AbstractCna.CNALockCore<CNANodeNoPad>()
+    private val lock = AbstractCNA.CNALockCore<CNANodeNoPad>()
 
     private var counter: Long = 0
 

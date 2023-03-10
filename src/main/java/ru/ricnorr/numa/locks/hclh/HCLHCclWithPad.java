@@ -2,8 +2,8 @@ package ru.ricnorr.numa.locks.hclh;
 
 import ru.ricnorr.numa.locks.Utils;
 
-public class HclhCclWithPad extends AbstractHCLHLock<HCLHNodeWithPad> {
-    public HclhCclWithPad() {
+public class HCLHCclWithPad extends AbstractHCLHLock<HCLHNodeWithPad> {
+    public HCLHCclWithPad() {
         super(HCLHNodeWithPad::new, Utils::getKunpengCCLId);
     }
 }

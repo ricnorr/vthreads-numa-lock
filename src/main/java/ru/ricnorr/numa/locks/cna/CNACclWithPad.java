@@ -2,8 +2,8 @@ package ru.ricnorr.numa.locks.cna;
 
 import ru.ricnorr.numa.locks.Utils;
 
-public class CnaCclWithPad extends AbstractCna<CNANodeWithPad> {
-    public CnaCclWithPad() {
+public class CNACclWithPad extends AbstractCNA<CNANodeWithPad> {
+    public CNACclWithPad() {
         super(Utils::getKunpengCCLId, CNANodeWithPad::new);
     }
 }

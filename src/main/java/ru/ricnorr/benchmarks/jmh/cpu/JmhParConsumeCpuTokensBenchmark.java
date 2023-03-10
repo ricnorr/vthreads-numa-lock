@@ -54,7 +54,7 @@ public class JmhParConsumeCpuTokensBenchmark {
             setAffinity(threads, ProcessHandle.current().pid(), processors);
         }
 
-        lock = Main.initLock(LockType.valueOf(lockType), lockSpec, threads > Runtime.getRuntime().availableProcessors(), isLightThread);
+        lock = Main.initLock(LockType.valueOf(lockType), isLightThread);
     }
 
     @Setup(Level.Invocation)

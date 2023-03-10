@@ -1,4 +1,4 @@
-package ru.ricnorr.numa.locks.hmcs.nopad;
+package ru.ricnorr.numa.locks.hmcs;
 
 
 import ru.ricnorr.numa.locks.Utils;

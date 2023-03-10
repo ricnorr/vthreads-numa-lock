@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class AbstractCna<Node extends CNANodeInterface> extends AbstractNumaLock {
+public class AbstractCNA<Node extends CNANodeInterface> extends AbstractNumaLock {
 
     ThreadLocal<Integer> clusterIdThreadLocal;
 
@@ -14,7 +14,7 @@ public class AbstractCna<Node extends CNANodeInterface> extends AbstractNumaLock
 
     Function<Integer, Node> cnaNodeFactory;
 
-    public AbstractCna(Supplier<Integer> clusterSupplier, Function<Integer, Node> cnaNodeFactory) {
+    public AbstractCNA(Supplier<Integer> clusterSupplier, Function<Integer, Node> cnaNodeFactory) {
         super(clusterSupplier);
         this.clusterIdThreadLocal = ThreadLocal.withInitial(clusterSupplier);
         this.cnaNodeFactory = cnaNodeFactory;
@@ -29,6 +29,7 @@ public class AbstractCna<Node extends CNANodeInterface> extends AbstractNumaLock
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void unlock(Object t) {
         cnaLockCore.unlock((Node) t);
     }

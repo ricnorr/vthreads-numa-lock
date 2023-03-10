@@ -17,23 +17,16 @@ import ru.ricnorr.benchmarks.params.BenchmarkParameters;
 import ru.ricnorr.numa.locks.NumaLock;
 import ru.ricnorr.numa.locks.Utils;
 import ru.ricnorr.numa.locks.basic.*;
-import ru.ricnorr.numa.locks.cna.CnaCclNoPad;
-import ru.ricnorr.numa.locks.cna.CnaCclWithPad;
-import ru.ricnorr.numa.locks.cna.CnaNumaNoPad;
-import ru.ricnorr.numa.locks.cna.CnaNumaWithPad;
+import ru.ricnorr.numa.locks.cna.CNACclNoPad;
+import ru.ricnorr.numa.locks.cna.CNACclWithPad;
+import ru.ricnorr.numa.locks.cna.CNANumaNoPad;
+import ru.ricnorr.numa.locks.cna.CNANumaWithPad;
 import ru.ricnorr.numa.locks.cna_ccl_mcs_numa.CnaCclMcsNuma;
+import ru.ricnorr.numa.locks.hclh.HCLHCclNoPad;
+import ru.ricnorr.numa.locks.hclh.HCLHCclWithPad;
 import ru.ricnorr.numa.locks.hclh.HCLHNumaNoPad;
 import ru.ricnorr.numa.locks.hclh.HCLHNumaWithPad;
-import ru.ricnorr.numa.locks.hclh.HclhCclNoPad;
-import ru.ricnorr.numa.locks.hclh.HclhCclWithPad;
-import ru.ricnorr.numa.locks.hmcs.nopad.HmcsCclPlusNumaHierarchy;
-import ru.ricnorr.numa.locks.hmcs.nopad.HmcsCclPlusNumaPlusSupernumaHierarchy;
-import ru.ricnorr.numa.locks.hmcs.nopad.HmcsOnlyCclHierarchy;
-import ru.ricnorr.numa.locks.hmcs.nopad.HmcsOnlyNumaHierarchy;
-import ru.ricnorr.numa.locks.hmcs.pad.HmcsCclPlusNumaHierarchyPad;
-import ru.ricnorr.numa.locks.hmcs.pad.HmcsCclPlusNumaPlusSupernumaHierarchyPad;
-import ru.ricnorr.numa.locks.hmcs.pad.HmcsOnlyCclHierarchyPad;
-import ru.ricnorr.numa.locks.hmcs.pad.HmcsOnlyNumaHierarchyPad;
+import ru.ricnorr.numa.locks.hmcs.*;
 import ru.ricnorr.numa.locks.reentrant.NumaReentrantLock;
 import ru.ricnorr.numa.locks.tas_cna.TtasCclAndCnaNuma;
 
@@ -52,7 +45,7 @@ public class Main {
 
     private static final List<String> RESULTS_HEADERS = List.of("name", "lock", "threads", "Maximum_overhead_(millisec)", "Minimum_overhead_(millisec)", "Median_overhead_(millisec)", "Maximum_throughout_(ops_millisec)", "Minimum_throughput_(ops_millisec)", "Median_throughput_(ops_millisec)");
 
-    public static NumaLock initLock(LockType lockType, String lockSpec, boolean overSubscription, boolean isLight) {
+    public static NumaLock initLock(LockType lockType, boolean isLight) {
         switch (lockType) {
             case UNFAIR_REENTRANT -> {
                 return new NumaReentrantLock(false);
@@ -82,28 +75,28 @@ public class Main {
              * CNA
              */
             case CNA_NUMA -> {
-                return new CnaNumaNoPad();
+                return new CNANumaNoPad();
             }
             case CNA_CCL -> {
-                return new CnaCclNoPad();
+                return new CNACclNoPad();
             }
             case CNA_CCL_PAD -> {
-                return new CnaCclWithPad();
+                return new CNACclWithPad();
             }
             case CNA_NUMA_PAD -> {
-                return new CnaNumaWithPad();
+                return new CNANumaWithPad();
             }
             /**
              * HCLH
              */
             case HCLH_CCL -> {
-                return new HclhCclNoPad();
+                return new HCLHCclNoPad();
             }
             case HCLH_NUMA -> {
                 return new HCLHNumaNoPad();
             }
             case HCLH_CCL_PAD -> {
-                return new HclhCclWithPad();
+                return new HCLHCclWithPad();
             }
             case HCLH_NUMA_PAD -> {
                 return new HCLHNumaWithPad();
@@ -112,28 +105,28 @@ public class Main {
              * HMCS
              */
             case HMCS_CCL_NUMA -> {
-                return new HmcsCclPlusNumaHierarchy(overSubscription, isLight);
+                return new HMCSCclNumaNoPad();
             }
             case HMCS_CCL_NUMA_PAD -> {
-                return new HmcsCclPlusNumaHierarchyPad(overSubscription, isLight);
+                return new HMCSCclNumaWithPad();
             }
             case HMCS_CCL_NUMA_SUPERNUMA -> {
-                return new HmcsCclPlusNumaPlusSupernumaHierarchy(overSubscription, isLight);
+                return new HMCSCclNumaSupernumaNoPad();
             }
             case HMCS_CCL_NUMA_SUPERNUMA_PAD -> {
-                return new HmcsCclPlusNumaPlusSupernumaHierarchyPad(overSubscription, isLight);
+                return new HMCSCclNumaSupernumaWithPad();
             }
             case HMCS_CCL -> {
-                return new HmcsOnlyCclHierarchy(overSubscription, isLight);
+                return new HMCSCclNoPad();
             }
             case HMCS_CCL_PAD -> {
-                return new HmcsOnlyCclHierarchyPad(overSubscription, isLight);
+                return new HMCSCclWithPad();
             }
             case HMCS_NUMA -> {
-                return new HmcsOnlyNumaHierarchy(overSubscription, isLight);
+                return new HMCSNumaNoPad();
             }
             case HMCS_NUMA_PAD -> {
-                return new HmcsOnlyNumaHierarchyPad(overSubscription, isLight);
+                return new HMCSNumaWithPad();
             }
             case TTAS_CCL_PLUS_CNA_NUMA -> {
                 return new TtasCclAndCnaNuma(isLight);

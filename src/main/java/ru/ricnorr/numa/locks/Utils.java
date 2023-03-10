@@ -25,6 +25,10 @@ public class Utils {
 
     public static int CCL_SIZE = 4;
 
+    public static int NUMA_NODES_CNT = getNumaNodesCnt();
+
+    public static int CCL_CNT = Runtime.getRuntime().availableProcessors() / CCL_SIZE;
+
     static {
         GET_CARRIER_THREAD_METHOD_HANDLE = getMethodHandle(Thread.class, "currentCarrierThread");
         GET_BY_THREAD_FROM_THREAD_LOCAL_METHOD_HANDLE = getMethodHandle(ThreadLocal.class, "get", Thread.class);

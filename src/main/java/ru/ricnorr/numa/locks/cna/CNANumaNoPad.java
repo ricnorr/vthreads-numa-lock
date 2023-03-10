@@ -3,9 +3,9 @@ package ru.ricnorr.numa.locks.cna;
 import ru.ricnorr.numa.locks.Utils;
 
 
-public class CnaNumaNoPad extends AbstractCna<CNANodeNoPad> {
+public class CNANumaNoPad extends AbstractCNA<CNANodeNoPad> {
 
-    public CnaNumaNoPad() {
+    public CNANumaNoPad() {
         super(Utils::getNumaNodeId, CNANodeNoPad::new);
     }
 }

@@ -4,8 +4,8 @@ import jdk.internal.vm.annotation.Contended;
 import kotlin.Pair;
 import ru.ricnorr.numa.locks.NumaLock;
 import ru.ricnorr.numa.locks.Utils;
+import ru.ricnorr.numa.locks.cna.CNACclNoPad;
 import ru.ricnorr.numa.locks.cna.CNANodeNoPad;
-import ru.ricnorr.numa.locks.cna.CnaCclNoPad;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -17,7 +17,7 @@ import static ru.ricnorr.numa.locks.cna_ccl_mcs_numa.CnaCclMcsNuma.QNode.NOT_OWN
  */
 public class CnaCclMcsNuma implements NumaLock {
 
-    final CnaCclNoPad[] cnaArray = new CnaCclNoPad[Utils.getNumaNodesCnt()];
+    final CNACclNoPad[] cnaArray = new CNACclNoPad[Utils.getNumaNodesCnt()];
     final QNode[] qnodeArray = new QNode[Utils.getNumaNodesCnt()];
 
     AtomicReference<QNode> mcsTailAtomRef = new AtomicReference<>(null);
@@ -26,7 +26,7 @@ public class CnaCclMcsNuma implements NumaLock {
 
     public CnaCclMcsNuma(boolean isLight) {
         for (int i = 0; i < cnaArray.length; i++) {
-            cnaArray[i] = new CnaCclNoPad();
+            cnaArray[i] = new CNACclNoPad();
             qnodeArray[i] = new QNode();
         }
     }

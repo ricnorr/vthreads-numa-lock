@@ -1,4 +1,4 @@
-package ru.ricnorr.numa.locks.hmcs.nopad;
+package ru.ricnorr.numa.locks.hmcs;
 
 import kotlin.Pair;
 import ru.ricnorr.numa.locks.AbstractNumaLock;
@@ -7,7 +7,7 @@ import java.lang.reflect.Array;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
-import static ru.ricnorr.numa.locks.hmcs.nopad.HMCSQNodeInterface.*;
+import static ru.ricnorr.numa.locks.hmcs.HMCSQNodeInterface.*;
 
 public abstract class AbstractHMCS<QNode extends HMCSQNodeInterface> extends AbstractNumaLock {
 
