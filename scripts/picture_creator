@@ -4,6 +4,7 @@ import os
 import glob
 import re
 import numpy as np
+import sys
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.ticker as ticker
 
@@ -14,9 +15,8 @@ styles = ['--']
 paths = []
 
 
-def draw_by_bench_and_mode(df, bench, mode, threads, suffix):
+def draw_by_bench_and_mode(df, bench, mode, threads, suffix, filterLocks):
         ax = plt.axes(title = bench + '\n mode=' + mode)
-
 
         #ax.set_xticks(np.linspace(0, 256, 8))
         #ax.set_xscale("log", base=2)
@@ -29,8 +29,9 @@ def draw_by_bench_and_mode(df, bench, mode, threads, suffix):
         ind = 0
         markevery = [1,2]
         for lock in locks:
-            if lock == 'HMCS_CCL' or lock == 'HMCS_NUMA' or lock == 'CNA_NUMA' or lock == 'HCLH_NUMA' or lock == 'HCLH_CCL' or lock == 'HCLH_CCL_PAD' or lock == 'HMCS_CCL_NUMA' or lock == 'HMCS_CCL_NUMA' or lock == 'HMCS_CCL_NUMA_PAD':
-                continue
+            if len(filterLocks) != 1:
+                if lock not in filterLocks:
+                    continue
             cur_df = df[(df['name'] == bench) & (df['lock'] == lock) & (df['threads'].isin(threads))].copy()
             cur_df['plot_threads'] = cur_df['threads'].map(str)
             cur_df.sort_values(by=['threads']).plot(ax=ax, x='plot_threads', y=mode, label=lock, style=[styles[ind % len(styles)]], marker='o')
@@ -43,6 +44,7 @@ def draw_by_bench_and_mode(df, bench, mode, threads, suffix):
 
         name = '../results/pictures/' + bench + '_' + mode  + suffix + '.png'
         paths.append(name)
+
         plt.savefig(name, bbox_inches="tight")
         plt.close()
 
@@ -50,8 +52,8 @@ for bench in bench_names:
     for mode in ['Median_overhead_(millisec)','Median_throughput_(ops_millisec)']:
         x = sorted(set(df['threads']))
         y = x[1:-1]
-        draw_by_bench_and_mode(df, bench, mode, x, '_all')
-        draw_by_bench_and_mode(df, bench, mode, y, '_zoomed')
+        draw_by_bench_and_mode(df, bench, mode, x, '_all', sys.argv)
+        draw_by_bench_and_mode(df, bench, mode, y, '_zoomed', sys.argv)
 
 from PIL import Image
 
@@ -59,4 +61,6 @@ im1 = Image.open(paths[0]).convert('RGB')
 images = []
 for i in range(1, len(paths)):
     images.append(Image.open(paths[i]).convert('RGB'))
+
+
 im1.save(r'../results/result.pdf', save_all=True, append_images=images, dpi=(200, 200))

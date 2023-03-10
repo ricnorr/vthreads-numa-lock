@@ -6,5 +6,5 @@ CONDA_PROFILE=$DIR/etc/profile.d/conda.sh
 source "$CONDA_PROFILE"
 conda activate pip3
 cd scripts
-python3 picture_creator
+python3 picture_creator "$@"
 cd ..
