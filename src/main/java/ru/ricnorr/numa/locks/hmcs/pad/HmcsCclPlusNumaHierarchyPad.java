@@ -12,7 +12,7 @@ import java.util.List;
 public class HmcsCclPlusNumaHierarchyPad extends AbstractHmcsPad {
 
     public HmcsCclPlusNumaHierarchyPad(boolean overSubscription, boolean isLight) {
-        super(overSubscription, isLight, Utils::kungpengGetClusterID, Runtime.getRuntime().availableProcessors() / CCL_SIZE);
+        super(overSubscription, isLight, Utils::getKunpengCCLId, Runtime.getRuntime().availableProcessors() / CCL_SIZE);
         int availableProcessors = Runtime.getRuntime().availableProcessors();
         int numaNodesCount;
         if (availableProcessors == 128 || availableProcessors == 96) {

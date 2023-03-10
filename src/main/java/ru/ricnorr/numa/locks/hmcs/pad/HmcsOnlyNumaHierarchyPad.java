@@ -7,7 +7,7 @@ public class HmcsOnlyNumaHierarchyPad extends AbstractHmcsPad {
 
 
     public HmcsOnlyNumaHierarchyPad(boolean overSubscription, boolean isLight) {
-        super(overSubscription, isLight, Utils::getClusterID, getNumaNodesCnt());
+        super(overSubscription, isLight, Utils::getNumaNodeId, getNumaNodesCnt());
         var root = new HNode(null);
         for (int i = 0; i < getNumaNodesCnt(); i++) {
             leafs[i] = new HNode(root);

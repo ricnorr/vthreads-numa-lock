@@ -4,8 +4,8 @@ import jdk.internal.vm.annotation.Contended;
 import kotlin.Pair;
 import ru.ricnorr.numa.locks.NumaLock;
 import ru.ricnorr.numa.locks.Utils;
-import ru.ricnorr.numa.locks.cna.nopad.CNANode;
-import ru.ricnorr.numa.locks.cna.nopad.CnaCcl;
+import ru.ricnorr.numa.locks.cna.CNANodeNoPad;
+import ru.ricnorr.numa.locks.cna.CnaCclNoPad;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -17,16 +17,16 @@ import static ru.ricnorr.numa.locks.cna_ccl_mcs_numa.CnaCclMcsNuma.QNode.NOT_OWN
  */
 public class CnaCclMcsNuma implements NumaLock {
 
-    final CnaCcl[] cnaArray = new CnaCcl[Utils.getNumaNodesCnt()];
+    final CnaCclNoPad[] cnaArray = new CnaCclNoPad[Utils.getNumaNodesCnt()];
     final QNode[] qnodeArray = new QNode[Utils.getNumaNodesCnt()];
 
     AtomicReference<QNode> mcsTailAtomRef = new AtomicReference<>(null);
 
-    ThreadLocal<Integer> numaNodeThreadLocal = ThreadLocal.withInitial(Utils::getClusterID);
+    ThreadLocal<Integer> numaNodeThreadLocal = ThreadLocal.withInitial(Utils::getNumaNodeId);
 
     public CnaCclMcsNuma(boolean isLight) {
         for (int i = 0; i < cnaArray.length; i++) {
-            cnaArray[i] = new CnaCcl(isLight);
+            cnaArray[i] = new CnaCclNoPad();
             qnodeArray[i] = new QNode();
         }
     }
@@ -50,13 +50,13 @@ public class CnaCclMcsNuma implements NumaLock {
                 qnode.status = LOCK_OWNER;
             }
         }
-        return new Pair<>(numaNode, (CNANode) cnaNode);
+        return new Pair<>(numaNode, (CNANodeNoPad) cnaNode);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void unlock(Object obj) {
-        var p = (Pair<Integer, CNANode>) obj;
+        var p = (Pair<Integer, CNANodeNoPad>) obj;
         var numaNode = p.component1();
         var cnaNode = p.component2();
         var qnode = qnodeArray[numaNode];

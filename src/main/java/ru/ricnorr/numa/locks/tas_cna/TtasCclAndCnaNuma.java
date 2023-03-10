@@ -3,8 +3,8 @@ package ru.ricnorr.numa.locks.tas_cna;
 import ru.ricnorr.numa.locks.NumaLock;
 import ru.ricnorr.numa.locks.Utils;
 import ru.ricnorr.numa.locks.basic.TestTestAndSetLock;
-import ru.ricnorr.numa.locks.cna.nopad.CNANode;
-import ru.ricnorr.numa.locks.cna.nopad.CnaNuma;
+import ru.ricnorr.numa.locks.cna.CNANodeNoPad;
+import ru.ricnorr.numa.locks.cna.CnaNumaNoPad;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -15,11 +15,11 @@ public class TtasCclAndCnaNuma implements NumaLock {
 
     final TestTestAndSetLock[] ttasLocksForCcl;
 
-    final CnaNuma cnaNuma;
+    final CnaNumaNoPad cnaNumaNoPad;
 
     final boolean isLight;
 
-    ThreadLocal<Integer> cclIdThreadLocal = ThreadLocal.withInitial(Utils::kungpengGetClusterID);
+    ThreadLocal<Integer> cclIdThreadLocal = ThreadLocal.withInitial(Utils::getKunpengCCLId);
 
     public TtasCclAndCnaNuma(boolean useLightThreads) {
         ttasLocksForCcl = new TestTestAndSetLock[Runtime.getRuntime().availableProcessors() / 4];
@@ -27,35 +27,35 @@ public class TtasCclAndCnaNuma implements NumaLock {
         for (int i = 0; i < ttasLocksForCcl.length; i++) {
             ttasLocksForCcl[i] = new TestTestAndSetLock();
         }
-        cnaNuma = new CnaNuma(useLightThreads);
+        cnaNumaNoPad = new CnaNumaNoPad();
     }
 
     @Override
     public Object lock() {
         var carrierThread = Utils.getCurrentCarrierThread();
         if (ThreadLocalRandom.current().nextInt() % 5431 == 0) {
-            Utils.setByThreadToThreadLocal(cclIdThreadLocal, carrierThread, Utils.kungpengGetClusterID());
+            Utils.setByThreadToThreadLocal(cclIdThreadLocal, carrierThread, Utils.getKunpengCCLId());
         }
         var cclId = Utils.getByThreadFromThreadLocal(cclIdThreadLocal, carrierThread);
         ttasLocksForCcl[cclId].lock();
-        var node = cnaNuma.lock();
-        return new Pair((CNANode) node, cclId);
+        var node = cnaNumaNoPad.lock();
+        return new Pair((CNANodeNoPad) node, cclId);
     }
 
     @Override
     public void unlock(Object obj) {
         var pair = (Pair) obj;
         ttasLocksForCcl[pair.cclId].unlock(null);
-        cnaNuma.unlock(pair.cnaNode);
+        cnaNumaNoPad.unlock(pair.cnaNodeNoPad);
     }
 
     private class Pair {
-        final CNANode cnaNode;
+        final CNANodeNoPad cnaNodeNoPad;
 
         final int cclId;
 
-        public Pair(CNANode cnaNode, int cclId) {
-            this.cnaNode = cnaNode;
+        public Pair(CNANodeNoPad cnaNodeNoPad, int cclId) {
+            this.cnaNodeNoPad = cnaNodeNoPad;
             this.cclId = cclId;
         }
     }

@@ -8,7 +8,7 @@ import ru.ricnorr.numa.locks.Utils;
 public class HmcsOnlyCclHierarchyPad extends AbstractHmcsPad {
 
     public HmcsOnlyCclHierarchyPad(boolean overSubscription, boolean isLight) {
-        super(overSubscription, isLight, Utils::kungpengGetClusterID, Runtime.getRuntime().availableProcessors() / CCL_SIZE);
+        super(overSubscription, isLight, Utils::getKunpengCCLId, Runtime.getRuntime().availableProcessors() / CCL_SIZE);
         int availableProcessors = Runtime.getRuntime().availableProcessors();
         var root = new HNode(null);
         for (int i = 0; i < availableProcessors / CCL_SIZE; i++) {
