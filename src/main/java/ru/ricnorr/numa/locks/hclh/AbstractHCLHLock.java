@@ -17,10 +17,18 @@ public class AbstractHCLHLock<NodeType extends HCLHNodeInterface> extends Abstra
     }
 
     @Override
-    public Object lock() {
+    @SuppressWarnings("unchecked")
+    public Object lock(Object obj) {
         int clusterId = getClusterId();
-        var node = nodeFactory.get();
-        var myPred = lockCore.lock(node, clusterId);
+
+        NodeType node;
+        if (obj != null) {
+            node = (NodeType) obj;
+        } else {
+            node = nodeFactory.get();
+        }
+
+        NodeType myPred = lockCore.lock(node, clusterId);
         return node;
     }
 
@@ -30,6 +38,16 @@ public class AbstractHCLHLock<NodeType extends HCLHNodeInterface> extends Abstra
         lockCore.unlock((NodeType) t);
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean hasNext(Object obj) {
+        NodeType node = (NodeType) obj;
+        int clusterId = node.getClusterID();
+        NodeType localQueueTail = lockCore.localQueues.get(clusterId);
+        NodeType globalQueueTail = lockCore.globalQueue.get();
+        return (localQueueTail != null && localQueueTail != node) || (globalQueueTail != null && globalQueueTail != node);
+    }
+
     public static class HCLHLockCore<Node extends HCLHNodeInterface> {
         static final int MAX_CLUSTERS = 35;
         final AtomicReferenceArray<Node> localQueues;
@@ -37,7 +55,7 @@ public class AbstractHCLHLock<NodeType extends HCLHNodeInterface> extends Abstra
 
         public HCLHLockCore(Supplier<Node> nodeSupplier) {
             localQueues = new AtomicReferenceArray<>(MAX_CLUSTERS);
-            Node head = nodeSupplier.get(); //new HCLHNodeNoPad();
+            Node head = nodeSupplier.get(); // new HCLHNodeNoPad();
             globalQueue = new AtomicReference<>(head);
         }
 

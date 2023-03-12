@@ -9,7 +9,7 @@ public class TestTestAndSetLock implements NumaLock {
     private final AtomicBoolean flag = new AtomicBoolean(false);
 
     @Override
-    public Object lock() {
+    public Object lock(Object obj) {
         while (true) {
             if (!flag.get() && flag.compareAndSet(false, true)) {
                 return null;
@@ -22,5 +22,9 @@ public class TestTestAndSetLock implements NumaLock {
         flag.set(false);
     }
 
+    @Override
+    public boolean hasNext(Object obj) {
+        throw new IllegalStateException("Not implemented");
+    }
 }
 

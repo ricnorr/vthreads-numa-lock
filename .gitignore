@@ -34,7 +34,6 @@ pyvenv.cfg
 fatjar/light/result.pdf
 .DS_Store
 .ipynb_checkpoints/
-fatjar/
 results/result.pdf
 venv/
 results/empty

@@ -30,10 +30,4 @@ public abstract class AbstractNumaLock implements NumaLock {
         Utils.setByThreadToThreadLocal(lockAcquiresThreadLocal, carrierThread, lockAcquires);
         return clusterId;
     }
-
-    @Override
-    public abstract Object lock();
-
-    @Override
-    public abstract void unlock(Object obj);
 }

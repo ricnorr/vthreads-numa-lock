@@ -15,7 +15,7 @@ public class CLHLock implements NumaLock {
     }
 
     @Override
-    public Object lock() {
+    public Object lock(Object obj) {
         QNodeCLH node = curNode.get();
         node.locked.set(true);
         QNodeCLH prev = tail.getAndSet(node);
@@ -31,5 +31,10 @@ public class CLHLock implements NumaLock {
         QNodeCLH qNode = curNode.get();
         qNode.locked.set(false);
         curNode.set(prevNode.get());
+    }
+
+    @Override
+    public boolean hasNext(Object obj) {
+        throw new IllegalStateException("Not implemented");
     }
 }

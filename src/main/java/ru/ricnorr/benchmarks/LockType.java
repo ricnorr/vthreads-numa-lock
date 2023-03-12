@@ -7,10 +7,6 @@ public enum LockType {
 
     MCS,
 
-    MCS_PAD,
-
-    MCS_SIMPLE_PAD,
-
     TAS,
 
     TTAS,
@@ -64,5 +60,7 @@ public enum LockType {
      */
     TTAS_CCL_PLUS_CNA_NUMA,
 
-    CNA_CCL_MCS_NUMA,
+    COMB_CNA_CCL_MCS_NUMA,
+
+    COMB_HCLH_CCL_MCS_NUMA,
 }

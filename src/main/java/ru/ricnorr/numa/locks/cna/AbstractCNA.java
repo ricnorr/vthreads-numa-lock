@@ -21,9 +21,16 @@ public class AbstractCNA<Node extends CNANodeInterface> extends AbstractNumaLock
     }
 
     @Override
-    public Object lock() {
+    @SuppressWarnings("unchecked")
+    public Object lock(Object obj) {
         int clusterId = getClusterId();
-        var node = cnaNodeFactory.apply(clusterId);
+        Node node;
+        if (obj != null) {
+            node = (Node) obj;
+            node.setSocketAtomically(clusterId);
+        } else {
+            node = cnaNodeFactory.apply(clusterId);
+        }
         cnaLockCore.lock(node);
         return node;
     }
@@ -34,11 +41,14 @@ public class AbstractCNA<Node extends CNANodeInterface> extends AbstractNumaLock
         cnaLockCore.unlock((Node) t);
     }
 
-    public boolean hasNext(CNANodeNoPad me) {
-        return me.getNext() != null || me.getSpin() != CNALockCore.TRUE_VALUE;
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean hasNext(Object obj) {
+        Node node = (Node) obj;
+        return node.getNext() != null || node.getSpin() != CNALockCore.TRUE_VALUE;
     }
-
-    public static class CNALockCore<T extends CNANodeInterface> {
+    
+    public static class CNALockCore<Node extends CNANodeInterface> {
 
         public static CNANodeInterface TRUE_VALUE = new CNANodeNoPad(-1);
 
@@ -48,7 +58,7 @@ public class AbstractCNA<Node extends CNANodeInterface> extends AbstractNumaLock
             tail = new AtomicReference<>(null);
         }
 
-        public void lock(T me) {
+        public void lock(Node me) {
             me.setNextAtomically(null);
             me.setSpinAtomically(null); //me.spin = null;
             me.setSecTailAtomically(null);
@@ -66,7 +76,7 @@ public class AbstractCNA<Node extends CNANodeInterface> extends AbstractNumaLock
             }
         }
 
-        public void unlock(T me) {
+        public void unlock(Node me) {
             if (me.getNext() == null) {
                 if (me.getSpin() == TRUE_VALUE) {
                     if (tail.compareAndSet(me, null)) {
