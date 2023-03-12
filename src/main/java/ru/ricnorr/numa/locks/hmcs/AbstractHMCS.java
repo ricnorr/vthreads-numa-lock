@@ -11,9 +11,9 @@ import static ru.ricnorr.numa.locks.hmcs.HMCSQNodeInterface.*;
 
 public abstract class AbstractHMCS<QNode extends HMCSQNodeInterface> extends AbstractNumaLock {
 
-    final HNode[] leafs;
+    protected final HNode[] leafs;
 
-    final Supplier<QNode> qNodeSupplier;
+    private final Supplier<QNode> qNodeSupplier;
 
     @SuppressWarnings("unchecked")
     public AbstractHMCS(Supplier<QNode> qNodeSupplier, Supplier<Integer> clusterIdSupplier, int leafsCnt) {
@@ -23,8 +23,14 @@ public abstract class AbstractHMCS<QNode extends HMCSQNodeInterface> extends Abs
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Object lock(Object obj) {
-        QNode node = qNodeSupplier.get();
+        QNode node;
+        if (obj != null) {
+            node = ((Pair<QNode, Integer>) obj).component1();
+        } else {
+            node = qNodeSupplier.get();
+        }
         int clusterId = getClusterId();
         lockH(node, leafs[clusterId]);
         return new Pair<>(node, clusterId);
@@ -35,6 +41,11 @@ public abstract class AbstractHMCS<QNode extends HMCSQNodeInterface> extends Abs
     public void unlock(Object obj) {
         Pair<QNode, Integer> qnodeAndClusterId = (Pair<QNode, Integer>) obj;
         unlockH(leafs[qnodeAndClusterId.component2()], qnodeAndClusterId.component1());
+    }
+
+    @Override
+    public boolean canUseNodeFromPreviousLocking() {
+        return true;
     }
 
     @Override

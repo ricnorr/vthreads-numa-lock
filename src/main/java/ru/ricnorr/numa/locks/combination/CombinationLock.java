@@ -13,7 +13,7 @@ import static ru.ricnorr.numa.locks.combination.CombinationLock.HNode.NO_LOCK;
 
 public class CombinationLock extends AbstractNumaLock {
     final HNode[] leafs;
-    
+
     public CombinationLock(List<CombinationLockLevelDescription> levelToDescription, Supplier<Integer> lastLvlClusterIdSupplier) {
         super(lastLvlClusterIdSupplier);
         CombinationLockLevelDescription curDescription = levelToDescription.get(0);
@@ -23,7 +23,7 @@ public class CombinationLock extends AbstractNumaLock {
             List<HNode> nodesOnNextLvl = new ArrayList<>();
             for (HNode nodeFromCurLvl : curLvlNodes) {
                 for (int j = 0; j < curDescription.childrenOnNextLevel; j++) {
-                    nodesOnNextLvl.add(new HNode(nodeFromCurLvl, Utils.initLock(curDescription.lockType)));
+                    nodesOnNextLvl.add(new HNode(nodeFromCurLvl, Utils.initLock(nextDescription.lockType)));
                 }
             }
             curLvlNodes = nodesOnNextLvl;
@@ -33,15 +33,15 @@ public class CombinationLock extends AbstractNumaLock {
     }
 
     @Override
-    public Object lock(Object obj) {
+    public Object lock(Object objForLock) {
         int clusterId = getClusterId();
         lockH(leafs[clusterId]);
         return clusterId;
     }
 
     @Override
-    public void unlock(Object obj) {
-        int clusterId = (int) obj;
+    public void unlock(Object objForUnlock) {
+        int clusterId = (int) (objForUnlock);
         unlockH(leafs[clusterId]);
     }
 
@@ -51,7 +51,7 @@ public class CombinationLock extends AbstractNumaLock {
     }
 
     private void lockH(HNode hNode) {
-        hNode.nodeForUnlock = hNode.numaLock.lock(null);
+        hNode.objForUnlock = hNode.numaLock.lock(null);
         int status = hNode.status;
         if (hNode.parent == null) {
             return;
@@ -62,8 +62,7 @@ public class CombinationLock extends AbstractNumaLock {
     }
 
     private void unlockH(HNode hNode) {
-        Object nodeForUnlock = hNode.nodeForUnlock;
-        boolean hasNext = hNode.numaLock.hasNext(nodeForUnlock);
+        boolean hasNext = hNode.numaLock.hasNext(hNode.objForUnlock);
         int status = hNode.status;
         if (hasNext && status < 10000) {
             hNode.status = status + 1;
@@ -73,7 +72,7 @@ public class CombinationLock extends AbstractNumaLock {
                 unlockH(hNode.parent);
             }
         }
-        hNode.numaLock.unlock(nodeForUnlock);
+        hNode.numaLock.unlock(hNode.objForUnlock);
     }
 
     public static class HNode {
@@ -84,13 +83,16 @@ public class CombinationLock extends AbstractNumaLock {
         private final NumaLock numaLock;
 
         private final HNode parent;
-        private volatile Object nodeForUnlock = null;
+        private volatile Object objForUnlock = null;
 
         private volatile int status = NO_LOCK;
 
         public HNode(HNode parent, NumaLock numaLock) {
             this.parent = parent;
             this.numaLock = numaLock;
+            if (numaLock.canUseNodeFromPreviousLocking()) {
+                this.objForUnlock = numaLock.supplyNode();
+            }
         }
     }
 

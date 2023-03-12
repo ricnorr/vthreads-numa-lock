@@ -255,7 +255,7 @@ public class Utils {
                                         Utils.NUMA_NODES_CNT
                                 ),
                                 new CombinationLock.CombinationLockLevelDescription(
-                                        LockType.HCLH_CCL_NOPAD,
+                                        LockType.HCLH_CCL,
                                         0
                                 )
 

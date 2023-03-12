@@ -7,4 +7,11 @@ public interface NumaLock {
 
     boolean hasNext(Object obj);
 
+    default boolean canUseNodeFromPreviousLocking() {
+        return false;
+    }
+
+    default Object supplyNode() {
+        throw new IllegalStateException("Not supported");
+    }
 }
