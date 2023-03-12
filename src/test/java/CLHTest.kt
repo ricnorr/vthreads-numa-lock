@@ -5,28 +5,28 @@ import org.jetbrains.kotlinx.lincheck.check
 import org.jetbrains.kotlinx.lincheck.paramgen.IntGen
 import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.ModelCheckingOptions
 import org.junit.Test
-import ru.ricnorr.numa.locks.basic.CLHLock
+import ru.ricnorr.numa.locks.basic.CLH
 
 @Param(name = "clusterID", gen = IntGen::class, conf = "0:2")
-class CLHLockTest {
+class CLHTest {
 
-    private val lock = CLHLock()
+    private val lock = CLH()
 
     private var counter: Long = 0
 
     @Operation
     fun add() {
-        lock.lock()
+        val obj = lock.lock(null)
         counter++
-//        lock.unlock()
+        lock.unlock(obj)
     }
 
     @Operation
     fun get(): Long {
         val value: Long
-        lock.lock()
+        val obj = lock.lock(null)
         value = counter
-//        lock.unlock()
+        lock.unlock(obj)
         return value
     }
 

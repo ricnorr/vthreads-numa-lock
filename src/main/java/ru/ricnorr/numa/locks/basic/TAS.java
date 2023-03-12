@@ -4,11 +4,11 @@ import ru.ricnorr.numa.locks.NumaLock;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class TestAndSetLock implements NumaLock {
+public class TAS implements NumaLock {
 
     private final AtomicBoolean flag;
 
-    public TestAndSetLock() {
+    public TAS() {
         flag = new AtomicBoolean(false);
     }
 

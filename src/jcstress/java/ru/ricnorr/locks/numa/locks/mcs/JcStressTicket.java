@@ -3,10 +3,10 @@ package ru.ricnorr.locks.numa.locks.mcs;
 import org.openjdk.jcstress.annotations.Actor;
 import org.openjdk.jcstress.infra.results.III_Result;
 import ru.ricnorr.numa.locks.NumaLock;
-import ru.ricnorr.numa.locks.basic.TicketLock;
+import ru.ricnorr.numa.locks.basic.Ticket;
 
 public class JcStressTicket {
-    private final NumaLock lock = new TicketLock();
+    private final NumaLock lock = new Ticket();
     private int v;
 
     @Actor

@@ -5,18 +5,18 @@ import org.jetbrains.kotlinx.lincheck.check
 import org.jetbrains.kotlinx.lincheck.paramgen.IntGen
 import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.ModelCheckingOptions
 import ru.ricnorr.numa.locks.cna.AbstractCNA
-import ru.ricnorr.numa.locks.cna.CNANodeNoPad
+import ru.ricnorr.numa.locks.cna.CNANode
 
 @Param(name = "clusterID", gen = IntGen::class, conf = "0:1")
 class CNALockTest {
 
-    private val lock = AbstractCNA.CNALockCore<CNANodeNoPad>()
+    private val lock = AbstractCNA.CNALockCore<CNANode>()
 
     private var counter: Long = 0
 
     @Operation
     fun add(@Param(name = "clusterID") clusterID: Int) {
-        val me = CNANodeNoPad(clusterID)
+        val me = CNANode(clusterID)
         lock.lock(me)
         counter++
         lock.unlock(me)
@@ -25,7 +25,7 @@ class CNALockTest {
     @Operation
     fun get(@Param(name = "clusterID") clusterID: Int): Long {
         val value: Long
-        val me = CNANodeNoPad(clusterID)
+        val me = CNANode(clusterID)
         lock.lock(me)
         value = counter
         lock.unlock(me)

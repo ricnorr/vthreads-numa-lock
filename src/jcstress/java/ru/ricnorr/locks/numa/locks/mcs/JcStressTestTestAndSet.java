@@ -5,7 +5,7 @@ import org.openjdk.jcstress.annotations.JCStressTest;
 import org.openjdk.jcstress.annotations.Outcome;
 import org.openjdk.jcstress.annotations.State;
 import org.openjdk.jcstress.infra.results.III_Result;
-import ru.ricnorr.numa.locks.basic.TestTestAndSetLock;
+import ru.ricnorr.numa.locks.basic.TTAS;
 
 import java.util.concurrent.locks.Lock;
 
@@ -16,7 +16,7 @@ import static org.openjdk.jcstress.annotations.Expect.ACCEPTABLE;
 @State
 public class JcStressTestTestAndSet {
 
-    private final Lock lock = new TestTestAndSetLock();
+    private final Lock lock = new TTAS();
     private int v;
 
     @Actor

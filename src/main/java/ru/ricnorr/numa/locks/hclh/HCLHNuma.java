@@ -2,8 +2,8 @@ package ru.ricnorr.numa.locks.hclh;
 
 import ru.ricnorr.numa.locks.Utils;
 
-public class HCLHNumaWithPad extends AbstractHCLHLock<HCLHNodeWithPad> {
-    public HCLHNumaWithPad() {
+public class HCLHNuma extends AbstractHCLHLock<HCLHNodeWithPad> {
+    public HCLHNuma() {
         super(HCLHNodeWithPad::new, Utils::getNumaNodeId);
     }
 }
