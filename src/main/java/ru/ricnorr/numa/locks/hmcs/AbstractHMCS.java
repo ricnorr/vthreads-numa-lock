@@ -23,7 +23,7 @@ public abstract class AbstractHMCS<QNode extends HMCSQNodeInterface> extends Abs
     }
 
     @Override
-    public Object lock() {
+    public Object lock(Object obj) {
         QNode node = qNodeSupplier.get();
         int clusterId = getClusterId();
         lockH(node, leafs[clusterId]);
@@ -35,6 +35,11 @@ public abstract class AbstractHMCS<QNode extends HMCSQNodeInterface> extends Abs
     public void unlock(Object obj) {
         Pair<QNode, Integer> qnodeAndClusterId = (Pair<QNode, Integer>) obj;
         unlockH(leafs[qnodeAndClusterId.component2()], qnodeAndClusterId.component1());
+    }
+
+    @Override
+    public boolean hasNext(Object obj) {
+        throw new IllegalStateException("Not implemented");
     }
 
     private void lockH(QNode qNode, HNode hNode) {

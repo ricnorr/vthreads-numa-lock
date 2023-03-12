@@ -14,21 +14,7 @@ import oshi.hardware.CentralProcessor;
 import ru.ricnorr.benchmarks.jmh.JmhBenchmarkRunner;
 import ru.ricnorr.benchmarks.jmh.cpu.JmhJniCallBenchmark;
 import ru.ricnorr.benchmarks.params.BenchmarkParameters;
-import ru.ricnorr.numa.locks.NumaLock;
 import ru.ricnorr.numa.locks.Utils;
-import ru.ricnorr.numa.locks.basic.*;
-import ru.ricnorr.numa.locks.cna.CNACclNoPad;
-import ru.ricnorr.numa.locks.cna.CNACclWithPad;
-import ru.ricnorr.numa.locks.cna.CNANumaNoPad;
-import ru.ricnorr.numa.locks.cna.CNANumaWithPad;
-import ru.ricnorr.numa.locks.cna_ccl_mcs_numa.CnaCclMcsNuma;
-import ru.ricnorr.numa.locks.hclh.HCLHCclNoPad;
-import ru.ricnorr.numa.locks.hclh.HCLHCclWithPad;
-import ru.ricnorr.numa.locks.hclh.HCLHNumaNoPad;
-import ru.ricnorr.numa.locks.hclh.HCLHNumaWithPad;
-import ru.ricnorr.numa.locks.hmcs.*;
-import ru.ricnorr.numa.locks.reentrant.NumaReentrantLock;
-import ru.ricnorr.numa.locks.tas_cna.TtasCclAndCnaNuma;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -44,99 +30,6 @@ import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
 public class Main {
 
     private static final List<String> RESULTS_HEADERS = List.of("name", "lock", "threads", "Maximum_overhead_(millisec)", "Minimum_overhead_(millisec)", "Median_overhead_(millisec)", "Maximum_throughout_(ops_millisec)", "Minimum_throughput_(ops_millisec)", "Median_throughput_(ops_millisec)");
-
-    public static NumaLock initLock(LockType lockType, boolean isLight) {
-        switch (lockType) {
-            case UNFAIR_REENTRANT -> {
-                return new NumaReentrantLock(false);
-            }
-            case FAIR_REENTRANT -> {
-                return new NumaReentrantLock(true);
-            }
-            /**
-             * MCS
-             */
-            case MCS -> {
-                return new MCS();
-            }
-            case TAS -> {
-                return new TestAndSetLock();
-            }
-            case TTAS -> {
-                return new TestTestAndSetLock();
-            }
-            case TICKET -> {
-                return new TicketLock();
-            }
-            case CLH -> {
-                return new CLHLock();
-            }
-            /**
-             * CNA
-             */
-            case CNA_NUMA -> {
-                return new CNANumaNoPad();
-            }
-            case CNA_CCL -> {
-                return new CNACclNoPad();
-            }
-            case CNA_CCL_PAD -> {
-                return new CNACclWithPad();
-            }
-            case CNA_NUMA_PAD -> {
-                return new CNANumaWithPad();
-            }
-            /**
-             * HCLH
-             */
-            case HCLH_CCL -> {
-                return new HCLHCclNoPad();
-            }
-            case HCLH_NUMA -> {
-                return new HCLHNumaNoPad();
-            }
-            case HCLH_CCL_PAD -> {
-                return new HCLHCclWithPad();
-            }
-            case HCLH_NUMA_PAD -> {
-                return new HCLHNumaWithPad();
-            }
-            /**
-             * HMCS
-             */
-            case HMCS_CCL_NUMA -> {
-                return new HMCSCclNumaNoPad();
-            }
-            case HMCS_CCL_NUMA_PAD -> {
-                return new HMCSCclNumaWithPad();
-            }
-            case HMCS_CCL_NUMA_SUPERNUMA -> {
-                return new HMCSCclNumaSupernumaNoPad();
-            }
-            case HMCS_CCL_NUMA_SUPERNUMA_PAD -> {
-                return new HMCSCclNumaSupernumaWithPad();
-            }
-            case HMCS_CCL -> {
-                return new HMCSCclNoPad();
-            }
-            case HMCS_CCL_PAD -> {
-                return new HMCSCclWithPad();
-            }
-            case HMCS_NUMA -> {
-                return new HMCSNumaNoPad();
-            }
-            case HMCS_NUMA_PAD -> {
-                return new HMCSNumaWithPad();
-            }
-            case TTAS_CCL_PLUS_CNA_NUMA -> {
-                return new TtasCclAndCnaNuma(isLight);
-            }
-            case CNA_CCL_MCS_NUMA -> {
-                return new CnaCclMcsNuma(isLight);
-            }
-            default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
-        }
-    }
 
     public static List<Integer> getProcessorsNumbersInNumaNodeOrder() {
         SystemInfo si = new SystemInfo();

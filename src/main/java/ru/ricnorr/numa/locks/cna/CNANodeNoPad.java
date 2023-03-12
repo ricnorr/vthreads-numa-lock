@@ -3,7 +3,7 @@ package ru.ricnorr.numa.locks.cna;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class CNANodeNoPad implements CNANodeInterface {
-    public final int socket;
+    public volatile int socket;
     private final AtomicReference<CNANodeInterface> secTail;
     private volatile CNANodeInterface spin;
     private volatile CNANodeInterface next;
@@ -29,6 +29,11 @@ public class CNANodeNoPad implements CNANodeInterface {
     @Override
     public void setSecTailAtomically(CNANodeInterface cnaNode) {
         secTail.set(cnaNode);
+    }
+
+    @Override
+    public void setSocketAtomically(int socketId) {
+        this.socket = socketId;
     }
 
     @Override

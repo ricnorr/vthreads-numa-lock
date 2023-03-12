@@ -24,7 +24,7 @@ public class CnaCclMcsNuma implements NumaLock {
 
     ThreadLocal<Integer> numaNodeThreadLocal = ThreadLocal.withInitial(Utils::getNumaNodeId);
 
-    public CnaCclMcsNuma(boolean isLight) {
+    public CnaCclMcsNuma() {
         for (int i = 0; i < cnaArray.length; i++) {
             cnaArray[i] = new CNACclNoPad();
             qnodeArray[i] = new QNode();
@@ -32,10 +32,10 @@ public class CnaCclMcsNuma implements NumaLock {
     }
 
     @Override
-    public Object lock() {
+    public Object lock(Object obj) {
         var carrierThread = Utils.getCurrentCarrierThread();
         var numaNode = Utils.getByThreadFromThreadLocal(numaNodeThreadLocal, carrierThread);
-        var cnaNode = cnaArray[numaNode].lock();
+        var cnaNode = cnaArray[numaNode].lock(null);
 
         var qnode = qnodeArray[numaNode];
         if (qnode.status == NOT_OWNER) {
@@ -83,6 +83,11 @@ public class CnaCclMcsNuma implements NumaLock {
         }
 
         cnaArray[numaNode].unlock(cnaNode);
+    }
+
+    @Override
+    public boolean hasNext(Object obj) {
+        throw new IllegalStateException("Not implemented");
     }
 
     @Contended

@@ -1,5 +1,6 @@
 package ru.ricnorr.numa.locks.basic;
 
+import jdk.internal.vm.annotation.Contended;
 import ru.ricnorr.numa.locks.NumaLock;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -10,41 +11,52 @@ import java.util.concurrent.atomic.AtomicReference;
 public class MCS implements NumaLock {
 
     private final AtomicReference<QNode> tail = new AtomicReference<>(null);
-    private final ThreadLocal<QNode> node = ThreadLocal.withInitial(QNode::new);
 
     @Override
-    public Object lock() {
-        QNode qnode = node.get();
+    public Object lock(Object obj) {
+
+        QNode qnode;
+        if (obj != null) {
+            qnode = (QNode) obj;
+        } else {
+            qnode = new QNode();
+        }
         qnode.spin = true;
         qnode.next.set(null);
 
         QNode pred = tail.getAndSet(qnode);
         if (pred != null) {
             pred.next.set(qnode);
-            int spinCounter = 1;
             while (qnode.spin) {
                 Thread.onSpinWait();
             }
         }
-        return null;
+        return qnode;
     }
 
 
     @Override
     public void unlock(Object object) {
-        QNode headNode = node.get();
-        if (headNode.next.get() == null) {
-            if (tail.compareAndSet(headNode, null)) {
+        QNode node = (QNode) object;
+        if (node.next.get() == null) {
+            if (tail.compareAndSet(node, null)) {
                 return;
             }
-            while (headNode.next.get() == null) {
+            while (node.next.get() == null) {
                 Thread.onSpinWait();
                 // WAIT when next чthread set headNode.next
             }
         }
-        headNode.next.get().spin = false;
+        node.next.get().spin = false;
     }
 
+    @Override
+    public boolean hasNext(Object obj) {
+        QNode node = (QNode) obj;
+        return node.next.get() != null;
+    }
+
+    @Contended
     public static class QNode {
         private final AtomicReference<QNode> next = new AtomicReference<>(null);
         private volatile boolean spin = true;

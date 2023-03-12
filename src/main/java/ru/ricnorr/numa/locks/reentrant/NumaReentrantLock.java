@@ -14,7 +14,7 @@ public class NumaReentrantLock implements NumaLock {
     }
 
     @Override
-    public Object lock() {
+    public Object lock(Object obj) {
         lock.lock();
         return null;
     }
@@ -22,5 +22,10 @@ public class NumaReentrantLock implements NumaLock {
     @Override
     public void unlock(Object obj) {
         lock.unlock();
+    }
+
+    @Override
+    public boolean hasNext(Object obj) {
+        throw new IllegalStateException("Not implemented error");
     }
 }

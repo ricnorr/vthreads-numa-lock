@@ -4,8 +4,8 @@ import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import ru.ricnorr.benchmarks.BenchmarkException;
 import ru.ricnorr.benchmarks.LockType;
-import ru.ricnorr.benchmarks.Main;
 import ru.ricnorr.numa.locks.NumaLock;
+import ru.ricnorr.numa.locks.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +54,7 @@ public class JmhParConsumeCpuTokensBenchmark {
             setAffinity(threads, ProcessHandle.current().pid(), processors);
         }
 
-        lock = Main.initLock(LockType.valueOf(lockType), isLightThread);
+        lock = Utils.initLock(LockType.valueOf(lockType));
     }
 
     @Setup(Level.Invocation)
@@ -69,7 +69,7 @@ public class JmhParConsumeCpuTokensBenchmark {
             }
             for (int i1 = 0; i1 < actionsPerThread; i1++) {
                 Blackhole.consumeCPU(beforeCpuTokens);
-                var obj = lock.lock();
+                var obj = lock.lock(null);
                 Blackhole.consumeCPU(inCpuTokens);
                 lock.unlock(obj);
             }

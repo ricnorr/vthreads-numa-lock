@@ -17,13 +17,10 @@ public class TtasCclAndCnaNuma implements NumaLock {
 
     final CNANumaNoPad cnaNumaNoPad;
 
-    final boolean isLight;
-
     ThreadLocal<Integer> cclIdThreadLocal = ThreadLocal.withInitial(Utils::getKunpengCCLId);
 
-    public TtasCclAndCnaNuma(boolean useLightThreads) {
+    public TtasCclAndCnaNuma() {
         ttasLocksForCcl = new TestTestAndSetLock[Runtime.getRuntime().availableProcessors() / 4];
-        isLight = useLightThreads;
         for (int i = 0; i < ttasLocksForCcl.length; i++) {
             ttasLocksForCcl[i] = new TestTestAndSetLock();
         }
@@ -31,14 +28,14 @@ public class TtasCclAndCnaNuma implements NumaLock {
     }
 
     @Override
-    public Object lock() {
+    public Object lock(Object obj) {
         var carrierThread = Utils.getCurrentCarrierThread();
         if (ThreadLocalRandom.current().nextInt() % 5431 == 0) {
             Utils.setByThreadToThreadLocal(cclIdThreadLocal, carrierThread, Utils.getKunpengCCLId());
         }
         var cclId = Utils.getByThreadFromThreadLocal(cclIdThreadLocal, carrierThread);
-        ttasLocksForCcl[cclId].lock();
-        var node = cnaNumaNoPad.lock();
+        ttasLocksForCcl[cclId].lock(null);
+        var node = cnaNumaNoPad.lock(null);
         return new Pair((CNANodeNoPad) node, cclId);
     }
 
@@ -47,6 +44,11 @@ public class TtasCclAndCnaNuma implements NumaLock {
         var pair = (Pair) obj;
         ttasLocksForCcl[pair.cclId].unlock(null);
         cnaNumaNoPad.unlock(pair.cnaNodeNoPad);
+    }
+
+    @Override
+    public boolean hasNext(Object obj) {
+        throw new IllegalStateException("Not implemented");
     }
 
     private class Pair {

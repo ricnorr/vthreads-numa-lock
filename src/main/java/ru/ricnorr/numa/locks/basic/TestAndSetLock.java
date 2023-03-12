@@ -13,7 +13,7 @@ public class TestAndSetLock implements NumaLock {
     }
 
     @Override
-    public Object lock() {
+    public Object lock(Object obj) {
         while (true) {
             if (flag.compareAndSet(false, true)) {
                 return null;
@@ -24,5 +24,10 @@ public class TestAndSetLock implements NumaLock {
     @Override
     public void unlock(Object t) {
         flag.set(false);
+    }
+
+    @Override
+    public boolean hasNext(Object obj) {
+        throw new IllegalStateException("Not implemented");
     }
 }

@@ -7,6 +7,8 @@ public interface CNANodeInterface {
 
     void setSecTailAtomically(CNANodeInterface cnaNode);
 
+    void setSocketAtomically(int socketId);
+
     CNANodeInterface getSpin();
 
     CNANodeInterface getNext();

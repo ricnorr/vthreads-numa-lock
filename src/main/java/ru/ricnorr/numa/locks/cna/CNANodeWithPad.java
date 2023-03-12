@@ -6,8 +6,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Contended
 public class CNANodeWithPad implements CNANodeInterface {
-    public final int socket;
     public final AtomicReference<CNANodeInterface> secTail;
+    public volatile int socket;
     public volatile CNANodeInterface spin;
     public volatile CNANodeInterface next;
 
@@ -32,6 +32,11 @@ public class CNANodeWithPad implements CNANodeInterface {
     @Override
     public void setSecTailAtomically(CNANodeInterface cnaNode) {
         secTail.set(cnaNode);
+    }
+
+    @Override
+    public void setSocketAtomically(int socketId) {
+        this.socket = socketId;
     }
 
     @Override

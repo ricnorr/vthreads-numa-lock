@@ -10,10 +10,9 @@ public class TicketLock implements NumaLock {
     private final AtomicInteger nextTicket = new AtomicInteger(Integer.MIN_VALUE);
 
     @Override
-    public Object lock() {
-        int my_ticket = nextTicket.getAndIncrement();
-        int spinCounter = 1;
-        while (my_ticket != nowServing.get()) {
+    public Object lock(Object obj) {
+        int myTicket = nextTicket.getAndIncrement();
+        while (myTicket != nowServing.get()) {
             Thread.onSpinWait();
         }
         return null;
@@ -22,5 +21,10 @@ public class TicketLock implements NumaLock {
     @Override
     public void unlock(Object t) {
         nowServing.getAndIncrement();
+    }
+
+    @Override
+    public boolean hasNext(Object obj) {
+        return nextTicket.get() > nowServing.get() + 1;
     }
 }
