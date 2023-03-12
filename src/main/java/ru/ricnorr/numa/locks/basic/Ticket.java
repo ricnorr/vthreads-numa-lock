@@ -4,7 +4,7 @@ import ru.ricnorr.numa.locks.NumaLock;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TicketLock implements NumaLock {
+public class Ticket implements NumaLock {
 
     private final AtomicInteger nowServing = new AtomicInteger(Integer.MIN_VALUE);
     private final AtomicInteger nextTicket = new AtomicInteger(Integer.MIN_VALUE);

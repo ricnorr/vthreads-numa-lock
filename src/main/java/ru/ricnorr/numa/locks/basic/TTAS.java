@@ -4,7 +4,7 @@ import ru.ricnorr.numa.locks.NumaLock;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class TestTestAndSetLock implements NumaLock {
+public class TTAS implements NumaLock {
 
     private final AtomicBoolean flag = new AtomicBoolean(false);
 

@@ -5,9 +5,7 @@ import ru.ricnorr.numa.locks.NumaLock;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class CLHLock implements NumaLock {
-    private final ThreadLocal<QNodeCLH> prevNode = ThreadLocal.withInitial(() -> null);
-    private final ThreadLocal<QNodeCLH> curNode = ThreadLocal.withInitial(QNodeCLH::new);
+public class CLH implements NumaLock {
     private final AtomicReference<QNodeCLH> tail = new AtomicReference<>(new QNodeCLH());
 
     private static class QNodeCLH {
@@ -16,25 +14,28 @@ public class CLHLock implements NumaLock {
 
     @Override
     public Object lock(Object obj) {
-        QNodeCLH node = curNode.get();
+        QNodeCLH node;
+        if (obj == null) {
+            node = new QNodeCLH();
+        } else {
+            node = (QNodeCLH) obj;
+        }
         node.locked.set(true);
         QNodeCLH prev = tail.getAndSet(node);
-        prevNode.set(prev);
         while (prev.locked.get()) {
             Thread.onSpinWait();
         }
-        return null;
+        return node;
     }
 
     @Override
     public void unlock(Object obj) {
-        QNodeCLH qNode = curNode.get();
+        QNodeCLH qNode = (QNodeCLH) obj;
         qNode.locked.set(false);
-        curNode.set(prevNode.get());
     }
 
     @Override
     public boolean hasNext(Object obj) {
-        throw new IllegalStateException("Not implemented");
+        return tail.get() != obj;
     }
 }

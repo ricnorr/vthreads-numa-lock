@@ -1,6 +1,7 @@
-package ru.ricnorr.numa.locks.cna;
+package ru.ricnorr.numa.locks.cna.pad;
 
 import jdk.internal.vm.annotation.Contended;
+import ru.ricnorr.numa.locks.cna.CNANodeInterface;
 
 import java.util.concurrent.atomic.AtomicReference;
 

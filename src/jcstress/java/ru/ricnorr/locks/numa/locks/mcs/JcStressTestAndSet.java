@@ -6,7 +6,7 @@ import org.openjdk.jcstress.annotations.Outcome;
 import org.openjdk.jcstress.annotations.State;
 import org.openjdk.jcstress.infra.results.III_Result;
 import ru.ricnorr.numa.locks.NumaLock;
-import ru.ricnorr.numa.locks.basic.TestAndSetLock;
+import ru.ricnorr.numa.locks.basic.TAS;
 
 import static org.openjdk.jcstress.annotations.Expect.ACCEPTABLE;
 
@@ -15,7 +15,7 @@ import static org.openjdk.jcstress.annotations.Expect.ACCEPTABLE;
 @State
 public class JcStressTestAndSet {
 
-    private final NumaLock lock = new TestAndSetLock();
+    private final NumaLock lock = new TAS();
     private int v;
 
     @Actor

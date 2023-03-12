@@ -1,7 +1,13 @@
 package ru.ricnorr.numa.locks.hmcs;
 
-public class HMCSQNodeNoPad implements HMCSQNodeInterface {
+import jdk.internal.vm.annotation.Contended;
+
+public class HMCSQNode implements HMCSQNodeInterface {
+
+    @Contended("gr1")
     private volatile HMCSQNodeInterface next = null;
+
+    @Contended("gr1")
     private volatile int status = WAIT;
 
     @Override

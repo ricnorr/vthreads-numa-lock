@@ -13,8 +13,7 @@ import static ru.ricnorr.numa.locks.combination.CombinationLock.HNode.NO_LOCK;
 
 public class CombinationLock extends AbstractNumaLock {
     final HNode[] leafs;
-
-
+    
     public CombinationLock(List<CombinationLockLevelDescription> levelToDescription, Supplier<Integer> lastLvlClusterIdSupplier) {
         super(lastLvlClusterIdSupplier);
         CombinationLockLevelDescription curDescription = levelToDescription.get(0);

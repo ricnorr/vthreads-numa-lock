@@ -5,6 +5,7 @@ import ru.ricnorr.numa.locks.NumaLock;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+
 /**
  * MCS lock with active spin
  */

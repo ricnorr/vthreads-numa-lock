@@ -47,10 +47,10 @@ public class AbstractCNA<Node extends CNANodeInterface> extends AbstractNumaLock
         Node node = (Node) obj;
         return node.getNext() != null || node.getSpin() != CNALockCore.TRUE_VALUE;
     }
-    
+
     public static class CNALockCore<Node extends CNANodeInterface> {
 
-        public static CNANodeInterface TRUE_VALUE = new CNANodeNoPad(-1);
+        public static CNANodeInterface TRUE_VALUE = new CNANode(-1);
 
         private final AtomicReference<CNANodeInterface> tail;
 
@@ -60,7 +60,7 @@ public class AbstractCNA<Node extends CNANodeInterface> extends AbstractNumaLock
 
         public void lock(Node me) {
             me.setNextAtomically(null);
-            me.setSpinAtomically(null); //me.spin = null;
+            me.setSpinAtomically(null);
             me.setSecTailAtomically(null);
 
             CNANodeInterface prevTail = tail.getAndSet(me);

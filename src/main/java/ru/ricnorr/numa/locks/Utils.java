@@ -7,18 +7,24 @@ import oshi.hardware.CentralProcessor;
 import ru.ricnorr.benchmarks.BenchmarkException;
 import ru.ricnorr.benchmarks.LockType;
 import ru.ricnorr.numa.locks.basic.*;
-import ru.ricnorr.numa.locks.cna.CNACclNoPad;
-import ru.ricnorr.numa.locks.cna.CNACclWithPad;
-import ru.ricnorr.numa.locks.cna.CNANumaNoPad;
-import ru.ricnorr.numa.locks.cna.CNANumaWithPad;
+import ru.ricnorr.numa.locks.cna.CNACcl;
+import ru.ricnorr.numa.locks.cna.CNANuma;
+import ru.ricnorr.numa.locks.cna.pad.CNACclWithPad;
+import ru.ricnorr.numa.locks.cna.pad.CNANumaWithPad;
 import ru.ricnorr.numa.locks.combination.CombinationLock;
+import ru.ricnorr.numa.locks.hclh.HCLHCcl;
 import ru.ricnorr.numa.locks.hclh.HCLHCclNoPad;
-import ru.ricnorr.numa.locks.hclh.HCLHCclWithPad;
+import ru.ricnorr.numa.locks.hclh.HCLHNuma;
 import ru.ricnorr.numa.locks.hclh.HCLHNumaNoPad;
-import ru.ricnorr.numa.locks.hclh.HCLHNumaWithPad;
-import ru.ricnorr.numa.locks.hmcs.*;
+import ru.ricnorr.numa.locks.hmcs.HMCSCcl;
+import ru.ricnorr.numa.locks.hmcs.HMCSCclNuma;
+import ru.ricnorr.numa.locks.hmcs.HMCSCclNumaSupernuma;
+import ru.ricnorr.numa.locks.hmcs.HMCSNuma;
+import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNoPad;
+import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNumaNoPad;
+import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNumaSupernumaNoPad;
+import ru.ricnorr.numa.locks.hmcs.nopad.HMCSNumaNoPad;
 import ru.ricnorr.numa.locks.reentrant.NumaReentrantLock;
-import ru.ricnorr.numa.locks.tas_cna.TtasCclAndCnaNuma;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -150,89 +156,81 @@ public class Utils {
 
     public static NumaLock initLock(LockType lockType) {
         switch (lockType) {
+            // Standard locks
             case UNFAIR_REENTRANT -> {
                 return new NumaReentrantLock(false);
             }
             case FAIR_REENTRANT -> {
                 return new NumaReentrantLock(true);
             }
-            /**
-             * MCS
-             */
             case MCS -> {
                 return new MCS();
             }
             case TAS -> {
-                return new TestAndSetLock();
+                return new TAS();
             }
             case TTAS -> {
-                return new TestTestAndSetLock();
+                return new TTAS();
             }
             case TICKET -> {
-                return new TicketLock();
+                return new Ticket();
             }
             case CLH -> {
-                return new CLHLock();
+                return new CLH();
             }
-            /**
-             * CNA
-             */
+            // CNA
             case CNA_NUMA -> {
-                return new CNANumaNoPad();
+                return new CNANuma();
             }
             case CNA_CCL -> {
-                return new CNACclNoPad();
+                return new CNACcl();
             }
+            // CNA PAD
             case CNA_CCL_PAD -> {
                 return new CNACclWithPad();
             }
             case CNA_NUMA_PAD -> {
                 return new CNANumaWithPad();
             }
-            /**
-             * HCLH
-             */
+            // HCLH
             case HCLH_CCL -> {
-                return new HCLHCclNoPad();
+                return new HCLHCcl();
             }
             case HCLH_NUMA -> {
+                return new HCLHNuma();
+            }
+            // HCLH NO PAD
+            case HCLH_CCL_NOPAD -> {
+                return new HCLHCclNoPad();
+            }
+            case HCLH_NUMA_NOPAD -> {
                 return new HCLHNumaNoPad();
             }
-            case HCLH_CCL_PAD -> {
-                return new HCLHCclWithPad();
-            }
-            case HCLH_NUMA_PAD -> {
-                return new HCLHNumaWithPad();
-            }
-            /**
-             * HMCS
-             */
+            // HMCS
             case HMCS_CCL_NUMA -> {
-                return new HMCSCclNumaNoPad();
-            }
-            case HMCS_CCL_NUMA_PAD -> {
-                return new HMCSCclNumaWithPad();
+                return new HMCSCclNuma();
             }
             case HMCS_CCL_NUMA_SUPERNUMA -> {
-                return new HMCSCclNumaSupernumaNoPad();
-            }
-            case HMCS_CCL_NUMA_SUPERNUMA_PAD -> {
-                return new HMCSCclNumaSupernumaWithPad();
+                return new HMCSCclNumaSupernuma();
             }
             case HMCS_CCL -> {
-                return new HMCSCclNoPad();
-            }
-            case HMCS_CCL_PAD -> {
-                return new HMCSCclWithPad();
+                return new HMCSCcl();
             }
             case HMCS_NUMA -> {
+                return new HMCSNuma();
+            }
+            // HMCS NO PAD
+            case HMCS_CCL_NUMA_UNPAD -> {
+                return new HMCSCclNumaNoPad();
+            }
+            case HMCS_CCL_NUMA_SUPERNUMA_UNPAD -> {
+                return new HMCSCclNumaSupernumaNoPad();
+            }
+            case HMCS_CCL_UNPAD -> {
+                return new HMCSCclNoPad();
+            }
+            case HMCS_NUMA_UNPAD -> {
                 return new HMCSNumaNoPad();
-            }
-            case HMCS_NUMA_PAD -> {
-                return new HMCSNumaWithPad();
-            }
-            case TTAS_CCL_PLUS_CNA_NUMA -> {
-                return new TtasCclAndCnaNuma();
             }
             case COMB_CNA_CCL_MCS_NUMA -> {
                 return new CombinationLock(
@@ -257,7 +255,7 @@ public class Utils {
                                         Utils.NUMA_NODES_CNT
                                 ),
                                 new CombinationLock.CombinationLockLevelDescription(
-                                        LockType.HCLH_CCL,
+                                        LockType.HCLH_CCL_NOPAD,
                                         0
                                 )
 
