@@ -45,7 +45,6 @@ public class MCS implements NumaLock {
             }
             while (node.next.get() == null) {
                 Thread.onSpinWait();
-                // WAIT when next чthread set headNode.next
             }
         }
         node.next.get().spin = false;
@@ -55,6 +54,16 @@ public class MCS implements NumaLock {
     public boolean hasNext(Object obj) {
         QNode node = (QNode) obj;
         return node.next.get() != null;
+    }
+
+    @Override
+    public boolean canUseNodeFromPreviousLocking() {
+        return true;
+    }
+
+    @Override
+    public Object supplyNode() {
+        return new QNode();
     }
 
     @Contended

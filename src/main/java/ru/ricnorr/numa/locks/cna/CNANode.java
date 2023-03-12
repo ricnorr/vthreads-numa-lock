@@ -3,18 +3,11 @@ package ru.ricnorr.numa.locks.cna;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class CNANode implements CNANodeInterface {
-    public volatile int socket;
-    private final AtomicReference<CNANodeInterface> secTail;
-    private volatile CNANodeInterface spin;
-    private volatile CNANodeInterface next;
-
-
-    public CNANode(int clusterID) {
-        spin = null;
-        socket = clusterID;
-        secTail = new AtomicReference<>(null);
-        next = null;
-    }
+    public volatile int socket = 0;
+    private final AtomicReference<CNANodeInterface> secTail = new AtomicReference<>(null);
+    private volatile CNANodeInterface spin = null;
+    private volatile CNANodeInterface next = null;
+    
 
     @Override
     public void setSpinAtomically(CNANodeInterface cnaNode) {

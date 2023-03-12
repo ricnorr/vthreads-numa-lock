@@ -16,7 +16,8 @@ class CNALockTest {
 
     @Operation
     fun add(@Param(name = "clusterID") clusterID: Int) {
-        val me = CNANode(clusterID)
+        val me = CNANode()
+        me.setSocketAtomically(clusterID)
         lock.lock(me)
         counter++
         lock.unlock(me)
@@ -25,7 +26,8 @@ class CNALockTest {
     @Operation
     fun get(@Param(name = "clusterID") clusterID: Int): Long {
         val value: Long
-        val me = CNANode(clusterID)
+        val me = CNANode()
+        me.setSocketAtomically(clusterID)
         lock.lock(me)
         value = counter
         lock.unlock(me)

@@ -67,11 +67,16 @@ public class JmhParConsumeCpuTokensBenchmark {
             } catch (InterruptedException | BrokenBarrierException e) {
                 throw new BenchmarkException("Fail waiting barrier", e);
             }
+            Object nodeForLock = null;
             for (int i1 = 0; i1 < actionsPerThread; i1++) {
                 Blackhole.consumeCPU(beforeCpuTokens);
-                var obj = lock.lock(null);
+                if (lock.canUseNodeFromPreviousLocking()) {
+                    nodeForLock = lock.lock(nodeForLock);
+                } else {
+                    nodeForLock = lock.lock(null);
+                }
                 Blackhole.consumeCPU(inCpuTokens);
-                lock.unlock(obj);
+                lock.unlock(nodeForLock);
             }
         };
         for (int i = 0; i < threads; i++) {

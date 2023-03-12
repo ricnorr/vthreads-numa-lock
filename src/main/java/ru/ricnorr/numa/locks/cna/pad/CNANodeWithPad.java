@@ -7,18 +7,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Contended
 public class CNANodeWithPad implements CNANodeInterface {
-    public final AtomicReference<CNANodeInterface> secTail;
-    public volatile int socket;
-    public volatile CNANodeInterface spin;
-    public volatile CNANodeInterface next;
-
-
-    public CNANodeWithPad(int clusterID) {
-        spin = null;
-        socket = clusterID;
-        secTail = new AtomicReference<>(null);
-        next = null;
-    }
+    public final AtomicReference<CNANodeInterface> secTail = new AtomicReference<>(null);
+    public volatile int socket = 0;
+    public volatile CNANodeInterface spin = null;
+    public volatile CNANodeInterface next = null;
 
     @Override
     public void setSpinAtomically(CNANodeInterface cnaNode) {

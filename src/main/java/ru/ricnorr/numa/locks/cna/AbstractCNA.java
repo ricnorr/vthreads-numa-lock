@@ -3,7 +3,6 @@ package ru.ricnorr.numa.locks.cna;
 import ru.ricnorr.numa.locks.AbstractNumaLock;
 
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class AbstractCNA<Node extends CNANodeInterface> extends AbstractNumaLock {
@@ -12,9 +11,9 @@ public class AbstractCNA<Node extends CNANodeInterface> extends AbstractNumaLock
 
     CNALockCore<Node> cnaLockCore = new CNALockCore<>();
 
-    Function<Integer, Node> cnaNodeFactory;
+    Supplier<Node> cnaNodeFactory;
 
-    public AbstractCNA(Supplier<Integer> clusterSupplier, Function<Integer, Node> cnaNodeFactory) {
+    public AbstractCNA(Supplier<Integer> clusterSupplier, Supplier<Node> cnaNodeFactory) {
         super(clusterSupplier);
         this.clusterIdThreadLocal = ThreadLocal.withInitial(clusterSupplier);
         this.cnaNodeFactory = cnaNodeFactory;
@@ -29,7 +28,8 @@ public class AbstractCNA<Node extends CNANodeInterface> extends AbstractNumaLock
             node = (Node) obj;
             node.setSocketAtomically(clusterId);
         } else {
-            node = cnaNodeFactory.apply(clusterId);
+            node = cnaNodeFactory.get();
+            node.setSocketAtomically(clusterId);
         }
         cnaLockCore.lock(node);
         return node;
@@ -48,9 +48,19 @@ public class AbstractCNA<Node extends CNANodeInterface> extends AbstractNumaLock
         return node.getNext() != null || node.getSpin() != CNALockCore.TRUE_VALUE;
     }
 
+    @Override
+    public boolean canUseNodeFromPreviousLocking() {
+        return false;
+    }
+
+    @Override
+    public Object supplyNode() {
+        return cnaNodeFactory.get();
+    }
+
     public static class CNALockCore<Node extends CNANodeInterface> {
 
-        public static CNANodeInterface TRUE_VALUE = new CNANode(-1);
+        public static CNANodeInterface TRUE_VALUE = new CNANode();
 
         private final AtomicReference<CNANodeInterface> tail;
 
