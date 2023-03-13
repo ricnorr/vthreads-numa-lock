@@ -41,7 +41,7 @@ public class JmhBenchmarkRunner {
         return new Pair<>(lockName, lockSpecString);
     }
 
-    public static List<BenchmarkParameters> fillBenchmarkParameters(JSONArray locks, JSONArray array, int actionsCount) throws RunnerException {
+    public static List<BenchmarkParameters> fillBenchmarkParameters(JSONArray locks, JSONArray array) throws RunnerException {
         List<BenchmarkParameters> paramList = new ArrayList<>();
         for (Object o : array) {
             JSONObject obj = (JSONObject) o;
@@ -50,6 +50,7 @@ public class JmhBenchmarkRunner {
             }
             String name = (String) obj.get("name");
             JSONArray threadsArray = (JSONArray) obj.get("threads");
+            int actionsCount = (int) ((long) obj.get("actionsCount"));
             List<Integer> threads = new ArrayList<>();
             if (threadsArray != null) {
                 for (Object value : threadsArray) {
@@ -122,8 +123,7 @@ public class JmhBenchmarkRunner {
                 if (param.isHighContention) {
                     withoutLocksNanos = param.beforeConsumeCpuTokensTimeNanos;
                 } else {
-                    throw new RunnerException("No low contention supported");
-                    //withoutLocksNanos = runBenchmarkNano(JmhSeqConsumeCpuTokensBenchmarkLowContention.class, iterations, warmupIterations, Map.of("beforeCpuTokens", Long.toString(param.beforeCpuTokens), "inCpuTokens", Long.toString(param.inCpuTokens), "actionsPerThread", Integer.toString(param.actionsPerThread))).stream().findFirst().get();
+                    withoutLocksNanos = 0;
                 }
                 double overheadNanosMin = withLockNanosMin - withoutLocksNanos;
                 double overheadNanosMax = withLockNanosMax - withoutLocksNanos;

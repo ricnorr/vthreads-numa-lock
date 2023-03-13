@@ -12,7 +12,7 @@ public class HMCSCcl extends AbstractHMCS<HMCSQNode> {
         super(HMCSQNode::new, Utils::getKunpengCCLId, Utils.CCL_CNT);
         var root = new HNode(null, new HMCSQNode());
         for (int i = 0; i < Utils.CCL_CNT; i++) {
-            leafs[i] = new HNode(root, null);
+            leafs[i] = new HNode(root, new HMCSQNode());
         }
     }
 }
