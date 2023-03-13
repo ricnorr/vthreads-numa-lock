@@ -2,55 +2,55 @@
   "locks": [
     {
       "name": "TAS",
-      "skip": true
+      "skip": false
     },
     {
       "name": "TTAS",
-      "skip": true
+      "skip": false
     },
     {
       "name": "MCS",
-      "skip": true
+      "skip": false
     },
     {
       "name": "FAIR_REENTRANT",
-      "skip": true
+      "skip": false
     },
     {
       "name": "UNFAIR_REENTRANT",
-      "skip": true
+      "skip": false
     },
     {
       "name": "CNA_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "CNA_CCL",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HCLH_CCL",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HCLH_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_CCL_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_CCL_NUMA_SUPERNUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_CCL",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "COMB_HCLH_CCL_MCS_NUMA",
@@ -61,10 +61,10 @@
       "skip": false
     }
   ],
-  "actionsCount": 147456,
   "benches": [
     {
       "name": "consumeCpu",
+      "actionsCount": 147456,
       "before": 0,
       "in": 1000,
       "warmupIterations": 6,
@@ -80,7 +80,38 @@
         32,
         48,
         64,
-        96
+        96,
+        128,
+        144,
+        160,
+        176
+      ],
+      "light": true,
+      "skip": true
+    },
+    {
+      "name": "consumeCpu",
+      "before": 18000,
+      "in": 100,
+      "actionsCount": 36864,
+      "warmupIterations": 10,
+      "measurementIterations": 10,
+      "forks": 3,
+      "threads": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        24,
+        32,
+        48,
+        64,
+        96,
+        128,
+        144,
+        160,
+        176
       ],
       "light": true,
       "skip": false

@@ -138,6 +138,7 @@ public class Main {
     }
 
     public static void main(String[] args) throws Throwable {
+        Utils.initLock(LockType.HCLH_CCL).lock(null);
         if (args.length != 0 && args[0].equals("print-clusters")) {
             printClusters();
             return;
@@ -155,11 +156,10 @@ public class Main {
             throw new BenchmarkException("Cannot read input file", e);
         }
         JSONObject obj = (JSONObject) JSONValue.parse(s);
-        int actionsCount = (int) ((long) obj.get("actionsCount"));
 
         var locks = (JSONArray) obj.get("locks");
         var benches = (JSONArray) obj.get("benches");
-        List<BenchmarkParameters> benchmarkParametersList = JmhBenchmarkRunner.fillBenchmarkParameters(locks, benches, actionsCount);
+        List<BenchmarkParameters> benchmarkParametersList = JmhBenchmarkRunner.fillBenchmarkParameters(locks, benches);
 
         // Run benches and collect results
         List<BenchmarkResultsCsv> resultCsv = new ArrayList<>();

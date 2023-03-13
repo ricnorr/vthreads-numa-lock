@@ -16,6 +16,8 @@ paths = []
 
 
 def draw_by_bench_and_mode(df, bench, mode, threads, suffix, filterLocks):
+        if 'Low' in bench and 'overhead' in mode:
+            return
         ax = plt.axes(title = bench + '\n mode=' + mode)
 
         #ax.set_xticks(np.linspace(0, 256, 8))
@@ -23,7 +25,6 @@ def draw_by_bench_and_mode(df, bench, mode, threads, suffix, filterLocks):
         #ax.xaxis.set_major_formatter(ticker.ScalarFormatter())
         #ax.set_xticks(threads)
         #ax.set_xticklabels(list(map(lambda x : str(x), threads)))
-
 
         plt.gcf().set_size_inches(7, 7)
         ind = 0
