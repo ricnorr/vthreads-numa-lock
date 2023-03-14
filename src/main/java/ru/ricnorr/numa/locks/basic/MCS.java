@@ -66,9 +66,12 @@ public class MCS implements NumaLock {
         return new QNode();
     }
 
-    @Contended
     public static class QNode {
+
+        @Contended
         private final AtomicReference<QNode> next = new AtomicReference<>(null);
+
+        @Contended
         private volatile boolean spin = true;
 
     }

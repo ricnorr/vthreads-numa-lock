@@ -1,16 +1,18 @@
+import org.jetbrains.kotlinx.lincheck.LinChecker
 import org.jetbrains.kotlinx.lincheck.LoggingLevel
 import org.jetbrains.kotlinx.lincheck.annotations.Operation
 import org.jetbrains.kotlinx.lincheck.annotations.Param
-import org.jetbrains.kotlinx.lincheck.check
 import org.jetbrains.kotlinx.lincheck.paramgen.IntGen
-import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.ModelCheckingOptions
-import ru.ricnorr.numa.locks.cna.AbstractCNA
+import org.jetbrains.kotlinx.lincheck.strategy.stress.StressCTest
+import org.jetbrains.kotlinx.lincheck.strategy.stress.StressOptions
+import org.jetbrains.kotlinx.lincheck.verifier.VerifierState
+import ru.ricnorr.numa.locks.cna.AbstractCNA.CNALockCore
 import ru.ricnorr.numa.locks.cna.CNANode
 
-@Param(name = "clusterID", gen = IntGen::class, conf = "0:1")
-class CNALockTest {
-
-    private val lock = AbstractCNA.CNALockCore<CNANode>()
+@Param(name = "clusterID", gen = IntGen::class, conf = "0:2")
+@StressCTest
+class CNALockStressTest : VerifierState() {
+    private val lock = CNALockCore<CNANode>()
 
     private var counter: Long = 0
 
@@ -34,9 +36,16 @@ class CNALockTest {
         return value
     }
 
+    override fun extractState(): Any {
+        return counter
+    }
+
     @org.junit.Test
-    fun modelCheckingTest() =
-        ModelCheckingOptions().sequentialSpecification(LockStateWithClusters::class.java).invocationsPerIteration(10000)
-            .actorsPerThread(4).actorsBefore(3).actorsAfter(3).iterations(100).logLevel(LoggingLevel.INFO).threads(4)
-            .check(this::class.java)
+    fun test() {
+        val opts = StressOptions()
+            .iterations(100)
+            .threads(3)
+            .logLevel(LoggingLevel.INFO)
+        LinChecker.check(CNALockStressTest::class.java, opts)
+    }
 }
