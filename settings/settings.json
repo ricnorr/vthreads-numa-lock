@@ -2,7 +2,7 @@
   "locks": [
     {
       "name": "TAS",
-      "skip": false
+      "skip": true
     },
     {
       "name": "TTAS",
@@ -10,55 +10,55 @@
     },
     {
       "name": "MCS",
-      "skip": false
+      "skip": true
     },
     {
       "name": "FAIR_REENTRANT",
-      "skip": false
+      "skip": true
     },
     {
       "name": "UNFAIR_REENTRANT",
-      "skip": false
+      "skip": true
     },
     {
       "name": "CNA_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "CNA_CCL",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HCLH_CCL",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HCLH_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_CCL_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_CCL_NUMA_SUPERNUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_CCL",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "COMB_HCLH_CCL_MCS_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "COMB_CNA_CCL_MCS_NUMA",
-      "skip": false
+      "skip": true
     }
   ],
   "benches": [
@@ -70,24 +70,18 @@
       "warmupIterations": 6,
       "measurementIterations": 6,
       "forks": 3,
+      "profiler": [
+        {
+          "name": "async",
+          "param": "smth"
+        }
+      ],
       "threads": [
         1,
-        2,
-        4,
-        8,
-        16,
-        24,
-        32,
-        48,
-        64,
-        96,
-        128,
-        144,
-        160,
-        176
+        2
       ],
       "light": true,
-      "skip": true
+      "skip": false
     },
     {
       "name": "consumeCpu",
@@ -98,23 +92,10 @@
       "measurementIterations": 10,
       "forks": 3,
       "threads": [
-        1,
-        2,
-        4,
-        8,
-        16,
-        24,
-        32,
-        48,
-        64,
-        96,
-        128,
-        144,
-        160,
-        176
+        1
       ],
       "light": true,
-      "skip": false
+      "skip": true
     }
   ]
 }
