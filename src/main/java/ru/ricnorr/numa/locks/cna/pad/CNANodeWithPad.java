@@ -5,11 +5,17 @@ import ru.ricnorr.numa.locks.cna.CNANodeInterface;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-@Contended
 public class CNANodeWithPad implements CNANodeInterface {
+    @Contended
     public final AtomicReference<CNANodeInterface> secTail = new AtomicReference<>(null);
+
+    @Contended
     public volatile int socket = 0;
+    
+    @Contended
     public volatile CNANodeInterface spin = null;
+
+    @Contended
     public volatile CNANodeInterface next = null;
 
     @Override

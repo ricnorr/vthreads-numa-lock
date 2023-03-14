@@ -73,6 +73,8 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
     implementation("com.github.oshi:oshi-dist:6.4.0")
     implementation("org.openjdk.jmh:jmh-core:1.35")
+    testImplementation("org.testng:testng:7.1.0")
+    testImplementation("org.testng:testng:7.1.0")
     annotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:1.35")
     implementation("org.openjdk.jol:jol-core:0.9")
 }
@@ -86,5 +88,8 @@ tasks.test {
         "java.base/jdk.internal.loader=ALL-UNNAMED",
         "--add-exports",
         "java.base/jdk.internal.util=ALL-UNNAMED",
+        "--add-opens",
+        "java.base/java.lang=ALL-UNNAMED",
+        "-XX:-RestrictContended",
     )
 }

@@ -2,7 +2,6 @@ package ru.ricnorr.numa.locks.hclh;
 
 import jdk.internal.vm.annotation.Contended;
 
-@Contended
 public class HCLHNodeWithPad implements HCLHNodeInterface {
     private static final int TWS_MASK = 0x80000000;
     //10000000000000000000000000000000
@@ -15,6 +14,7 @@ public class HCLHNodeWithPad implements HCLHNodeInterface {
     private static final int CLUSTER_MASK = 0x3FFFFFFF;
     //00111111111111111111111111111111
 
+    @Contended
     volatile int state;
 
     public HCLHNodeWithPad() {
