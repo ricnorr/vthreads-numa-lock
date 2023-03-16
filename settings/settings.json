@@ -94,8 +94,8 @@
       "before": 18000,
       "in": 100,
       "actionsCount": 36864,
-      "warmupIterations": 10,
-      "measurementIterations": 10,
+      "warmupIterations": 6,
+      "measurementIterations": 6,
       "forks": 3,
       "threads": [
         1,
