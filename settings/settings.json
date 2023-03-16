@@ -70,12 +70,7 @@
       "warmupIterations": 6,
       "measurementIterations": 6,
       "forks": 3,
-      "profiler": [
-        {
-          "name": "async",
-          "param": "smth"
-        }
-      ],
+      "profiler": [],
       "threads": [
         1,
         2
@@ -89,6 +84,7 @@
       "in": 100,
       "actionsCount": 36864,
       "warmupIterations": 10,
+      "profiler": [],
       "measurementIterations": 10,
       "forks": 3,
       "threads": [

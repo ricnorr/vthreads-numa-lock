@@ -3,10 +3,12 @@ package ru.ricnorr.benchmarks.jmh;
 import kotlin.Pair;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.openjdk.jmh.profile.AsyncProfiler;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.ChainedOptionsBuilder;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
+import org.openjdk.jmh.runner.options.TimeValue;
 import ru.ricnorr.benchmarks.BenchmarkException;
 import ru.ricnorr.benchmarks.BenchmarkResultsCsv;
 import ru.ricnorr.benchmarks.LockType;
@@ -17,6 +19,7 @@ import ru.ricnorr.benchmarks.params.ConsumeCpuBenchmarkParameters;
 import ru.ricnorr.numa.locks.Utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +44,18 @@ public class JmhBenchmarkRunner {
         return new Pair<>(lockName, lockSpecString);
     }
 
+    private static Map<String, String> parseProfilerSpec(JSONArray profilerSpec) {
+        Map<String, String> profilerMap = new HashMap<>();
+        if (profilerSpec == null) {
+            return profilerMap;
+        }
+        for (Object obj : profilerSpec) {
+            JSONObject jsonObj = (JSONObject) obj;
+            profilerMap.put((String) jsonObj.get("name"), (String) jsonObj.get("spec"));
+        }
+        return profilerMap;
+    }
+
     public static List<BenchmarkParameters> fillBenchmarkParameters(JSONArray locks, JSONArray array) throws RunnerException {
         List<BenchmarkParameters> paramList = new ArrayList<>();
         for (Object o : array) {
@@ -62,6 +77,7 @@ public class JmhBenchmarkRunner {
             int warmupIterations = (int) ((long) obj.get("warmupIterations"));
             int measurementIterations = (int) ((long) obj.get("measurementIterations"));
             int forks = (int) ((long) obj.get("forks"));
+            Map<String, String> profilerSpec = parseProfilerSpec((JSONArray) obj.get("profiler"));
             if (name.equals("consumeCpu")) {
                 long before = ((long) obj.get("before"));
                 long in = ((long) obj.get("in"));
@@ -80,7 +96,8 @@ public class JmhBenchmarkRunner {
                                             before, in, actionsCount / thread,
                                             beforeConsumeCpuTokensTimeNanos, inConsumeCpuTokensTimeNanos,
                                             highContentionWithoutLocksNanos, warmupIterations, measurementIterations,
-                                            forks
+                                            forks,
+                                            profilerSpec
                                     )
                             );
                         }
@@ -114,7 +131,13 @@ public class JmhBenchmarkRunner {
                         .forks(2)
                         .measurementIterations(param.measurementIterations)
                         .forks(param.forks)
+                        .timeout(TimeValue.valueOf("1m"))
                         .verbosity(NORMAL);
+                String asyncProfilerParams = parameters.profilerParams.get("async");
+                if (asyncProfilerParams != null) {
+                    System.out.println("Async profiler detected!");
+                    options.addProfiler(AsyncProfiler.class, asyncProfilerParams);
+                }
                 List<Double> withLocksNanos = runBenchmarkNano(options, Map.of("isLightThread", Boolean.toString(param.isLightThread), "beforeCpuTokens", Long.toString(param.beforeCpuTokens), "inCpuTokens", Long.toString(param.inCpuTokens), "threads", Integer.toString(param.threads), "actionsPerThread", Integer.toString(param.actionsPerThread), "lockType", param.lockType.toString(), "lockSpec", param.lockSpec));
                 double withLockNanosMin = withLocksNanos.stream().min(Double::compare).get();
                 double withLockNanosMax = withLocksNanos.stream().max(Double::compare).get();

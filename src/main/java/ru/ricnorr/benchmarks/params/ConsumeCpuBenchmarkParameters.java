@@ -2,6 +2,8 @@ package ru.ricnorr.benchmarks.params;
 
 import ru.ricnorr.benchmarks.LockType;
 
+import java.util.Map;
+
 public class ConsumeCpuBenchmarkParameters extends BenchmarkParameters {
 
     public long beforeCpuTokens;
@@ -21,8 +23,8 @@ public class ConsumeCpuBenchmarkParameters extends BenchmarkParameters {
                                          boolean isLightThread, long beforeCpuTokens, long inCpuTokens,
                                          int actionsPerThread, double beforeConsumeCpuTokensTimeNanos,
                                          double inConsumeCpuTokensTimeNanos, double highContentionWithoutLockNanos,
-                                         int warmupIterations, int measurementIterations, int forks) {
-        super(threads, lockType, actionsPerThread, lockSpec, isLightThread, warmupIterations, measurementIterations, forks);
+                                         int warmupIterations, int measurementIterations, int forks, Map<String, String> profilerParams) {
+        super(threads, lockType, actionsPerThread, lockSpec, isLightThread, warmupIterations, measurementIterations, forks, profilerParams);
         this.beforeCpuTokens = beforeCpuTokens;
         this.inCpuTokens = inCpuTokens;
         this.beforeConsumeCpuTokensTimeNanos = beforeConsumeCpuTokensTimeNanos;
@@ -34,11 +36,7 @@ public class ConsumeCpuBenchmarkParameters extends BenchmarkParameters {
     @Override
     public String getBenchmarkName() {
         return String.format(
-                "measurement %d, forks %d, warmup %d, %d, %s contention. Consume CPU. %s threads.",
-                measurementIterations,
-                forks,
-                warmupIterations,
-                inCpuTokens,
+                "%s contention. Consume CPU. %s threads.",
                 isHighContention ? "High" : "Low",
                 isLightThread ? "Virtual" : "Platform"
         );
