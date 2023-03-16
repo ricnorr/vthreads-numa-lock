@@ -2,7 +2,7 @@
   "locks": [
     {
       "name": "TAS",
-      "skip": true
+      "skip": false
     },
     {
       "name": "TTAS",
@@ -10,55 +10,55 @@
     },
     {
       "name": "MCS",
-      "skip": true
+      "skip": false
     },
     {
       "name": "FAIR_REENTRANT",
-      "skip": true
+      "skip": false
     },
     {
       "name": "UNFAIR_REENTRANT",
-      "skip": true
+      "skip": false
     },
     {
       "name": "CNA_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "CNA_CCL",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HCLH_CCL",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HCLH_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_CCL_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_CCL_NUMA_SUPERNUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_CCL",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "COMB_HCLH_CCL_MCS_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "COMB_CNA_CCL_MCS_NUMA",
-      "skip": true
+      "skip": false
     }
   ],
   "benches": [
@@ -70,18 +70,24 @@
       "warmupIterations": 6,
       "measurementIterations": 6,
       "forks": 3,
-      "profiler": [
-        {
-          "name": "async",
-          "param": "smth"
-        }
-      ],
       "threads": [
         1,
-        2
+        2,
+        4,
+        8,
+        16,
+        24,
+        32,
+        48,
+        64,
+        96,
+        128,
+        144,
+        160,
+        176
       ],
       "light": true,
-      "skip": false
+      "skip": true
     },
     {
       "name": "consumeCpu",
@@ -92,10 +98,23 @@
       "measurementIterations": 10,
       "forks": 3,
       "threads": [
-        1
+        1,
+        2,
+        4,
+        8,
+        16,
+        24,
+        32,
+        48,
+        64,
+        96,
+        128,
+        144,
+        160,
+        176
       ],
       "light": true,
-      "skip": true
+      "skip": false
     }
   ]
 }
