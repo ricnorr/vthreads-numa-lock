@@ -87,7 +87,7 @@
         176
       ],
       "light": true,
-      "skip": true
+      "skip": false
     },
     {
       "name": "consumeCpu",
@@ -114,7 +114,7 @@
         176
       ],
       "light": true,
-      "skip": false
+      "skip": true
     }
   ]
 }
