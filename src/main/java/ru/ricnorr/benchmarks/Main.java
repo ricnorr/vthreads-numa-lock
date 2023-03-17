@@ -13,6 +13,7 @@ import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import ru.ricnorr.benchmarks.jmh.JmhBenchmarkRunner;
 import ru.ricnorr.benchmarks.jmh.cpu.JmhJniCallBenchmark;
+import ru.ricnorr.benchmarks.jmh.trash.WeakCASBenchmark;
 import ru.ricnorr.benchmarks.params.BenchmarkParameters;
 import ru.ricnorr.numa.locks.Utils;
 
@@ -137,6 +138,15 @@ public class Main {
         }
     }
 
+    public static void compareStrongWeakCas() {
+        var optionsBuilder = new OptionsBuilder().include(WeakCASBenchmark.class.getSimpleName());
+        try {
+            new Runner(optionsBuilder.build()).run();
+        } catch (Exception e) {
+            throw new BenchmarkException("Can't get jmh benchmark result");
+        }
+    }
+
     public static void main(String[] args) throws Throwable {
         if (args.length != 0 && args[0].equals("print-clusters")) {
             printClusters();
@@ -144,6 +154,10 @@ public class Main {
         }
         if (args.length != 0 && args[0].equals("check-jni-call")) {
             estimateJniCall();
+            return;
+        }
+        if (args.length != 0 && args[0].equals("cmt-strong-weak-cas")) {
+            compareStrongWeakCas();
             return;
         }
         // Read benchmark parameters
