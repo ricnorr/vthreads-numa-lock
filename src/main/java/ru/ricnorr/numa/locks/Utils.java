@@ -16,10 +16,8 @@ import ru.ricnorr.numa.locks.hclh.HCLHCcl;
 import ru.ricnorr.numa.locks.hclh.HCLHCclNoPad;
 import ru.ricnorr.numa.locks.hclh.HCLHNuma;
 import ru.ricnorr.numa.locks.hclh.HCLHNumaNoPad;
-import ru.ricnorr.numa.locks.hmcs.HMCSCcl;
-import ru.ricnorr.numa.locks.hmcs.HMCSCclNuma;
-import ru.ricnorr.numa.locks.hmcs.HMCSCclNumaSupernuma;
-import ru.ricnorr.numa.locks.hmcs.HMCSNuma;
+import ru.ricnorr.numa.locks.hclh_with_sleep.HCLHNumaWithSleep;
+import ru.ricnorr.numa.locks.hmcs.*;
 import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNoPad;
 import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNumaNoPad;
 import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNumaSupernumaNoPad;
@@ -199,6 +197,9 @@ public class Utils {
             case HCLH_NUMA -> {
                 return new HCLHNuma();
             }
+            case HCLH_NUMA_SLEEP -> {
+                return new HCLHNumaWithSleep();
+            }
             // HCLH NO PAD
             case HCLH_CCL_NOPAD -> {
                 return new HCLHCclNoPad();
@@ -218,6 +219,9 @@ public class Utils {
             }
             case HMCS_NUMA -> {
                 return new HMCSNuma();
+            }
+            case HMCS_NUMA_SUPERNUMA -> {
+                return new HMCSNumaSupernuma();
             }
             // HMCS NO PAD
             case HMCS_CCL_NUMA_UNPAD -> {
@@ -263,6 +267,52 @@ public class Utils {
                         Utils::getNumaNodeId
                 );
             }
+            case COMB_TTAS_CCL_HCLH_NUMA -> {
+                return new CombinationLock(
+                    List.of(
+                            new CombinationLock.CombinationLockLevelDescription(
+                                    LockType.HCLH_NUMA,
+                                    Utils.CCL_CNT
+                            ),
+                            new CombinationLock.CombinationLockLevelDescription(
+                                    LockType.TTAS,
+                                    0
+                            )
+                    ),
+                    Utils::getKunpengCCLId
+                );
+            }
+            case COMB_TTAS_CCL_CNA_NUMA -> {
+                return new CombinationLock(
+                        List.of(
+                                new CombinationLock.CombinationLockLevelDescription(
+                                        LockType.CNA_NUMA,
+                                        Utils.CCL_CNT
+                                ),
+                                new CombinationLock.CombinationLockLevelDescription(
+                                        LockType.TTAS,
+                                        0
+                                )
+                        ),
+                        Utils::getKunpengCCLId
+                );
+            }
+            case COMB_TTAS_NUMA_MCS -> {
+                return new CombinationLock(
+                        List.of(
+                                new CombinationLock.CombinationLockLevelDescription(
+                                        LockType.MCS,
+                                        Utils.NUMA_NODES_CNT
+                                ),
+                                new CombinationLock.CombinationLockLevelDescription(
+                                        LockType.TTAS,
+                                        0
+                                )
+                        ),
+                        Utils::getNumaNodeId
+                );
+            }
+
             default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
         }
     }

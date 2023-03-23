@@ -24,6 +24,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
 
@@ -54,16 +55,15 @@ public class Main {
         }
     }
 
-    public static List<Integer> autoThreadsInit() {
-        int cpuCount = Runtime.getRuntime().availableProcessors();
-        List<Integer> threads = new ArrayList<>();
-        for (int i = 0; i < 16; i++) {
-            threads.add(1 << i);
+    public static List<Integer> autoThreadsInit(boolean isLightThread) {
+        int cores = Runtime.getRuntime().availableProcessors();
+        List<Integer> threadsList = new ArrayList<>(List.of(1, 2, 4, 8, 16, 24, 32, 48, 64, 80, 96, 128)).stream().filter(it -> it < cores).collect(Collectors.toList());
+        if (isLightThread) {
+            threadsList.addAll(List.of(cores - 2, cores - 1, cores, cores + 8, cores + 16, cores + 24));
+        } else {
+            threadsList.add(cores);
         }
-        List<Integer> result = threads.stream().filter(it -> it < cpuCount).collect(Collectors.toList());
-        result.add(cpuCount);
-        // result.add(cpuCount * 2);
-        return result;
+        return threadsList;
     }
 
 

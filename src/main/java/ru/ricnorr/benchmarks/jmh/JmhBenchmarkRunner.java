@@ -67,12 +67,13 @@ public class JmhBenchmarkRunner {
             JSONArray threadsArray = (JSONArray) obj.get("threads");
             int actionsCount = (int) ((long) obj.get("actionsCount"));
             List<Integer> threads = new ArrayList<>();
+            boolean isLightThread = obj.get("light") != null && ((Boolean) obj.get("light"));
             if (threadsArray != null) {
                 for (Object value : threadsArray) {
                     threads.add((int) ((long) value));
                 }
             } else {
-                threads = autoThreadsInit();
+                threads = autoThreadsInit(isLightThread);
             }
             int warmupIterations = (int) ((long) obj.get("warmupIterations"));
             int measurementIterations = (int) ((long) obj.get("measurementIterations"));
@@ -81,7 +82,8 @@ public class JmhBenchmarkRunner {
             if (name.equals("consumeCpu")) {
                 long before = ((long) obj.get("before"));
                 long in = ((long) obj.get("in"));
-                boolean isLightThread = obj.get("light") != null && ((Boolean) obj.get("light"));
+                boolean limitVirtualScheduler = obj.get("limitVirtualScheduler") != null && ((Boolean)obj.get("limitVirtualScheduler"));
+                boolean pinUsingJna = obj.get("pinUsingJna") != null && ((Boolean)obj.get("pinUsingJna"));
                 double beforeConsumeCpuTokensTimeNanos = JmhConsumeCpuTokensUtil.estimateConsumeCpuTokensTimeNanos(before);
                 double inConsumeCpuTokensTimeNanos = JmhConsumeCpuTokensUtil.estimateConsumeCpuTokensTimeNanos(in);
                 double highContentionWithoutLocksNanos = JmhConsumeCpuTokensUtil.estimateHighContentionWithoutLocksTimeNanos(before, in, actionsCount);
@@ -97,7 +99,9 @@ public class JmhBenchmarkRunner {
                                             beforeConsumeCpuTokensTimeNanos, inConsumeCpuTokensTimeNanos,
                                             highContentionWithoutLocksNanos, warmupIterations, measurementIterations,
                                             forks,
-                                            profilerSpec
+                                            profilerSpec,
+                                            limitVirtualScheduler,
+                                            pinUsingJna
                                     )
                             );
                         }
@@ -128,17 +132,33 @@ public class JmhBenchmarkRunner {
                 System.out.println(param.logBegin());
                 var options = new OptionsBuilder().include(JmhParConsumeCpuTokensBenchmark.class.getSimpleName())
                         .warmupIterations(param.warmupIterations)
-                        .forks(2)
                         .measurementIterations(param.measurementIterations)
                         .forks(param.forks)
-                        .timeout(TimeValue.valueOf("1m"))
+                        .timeout(TimeValue.valueOf("2m"))
                         .verbosity(NORMAL);
+                if (param.limitVirtualScheduler) {
+                    options = options.jvmArgsAppend(
+                            "-Djdk.virtualThreadScheduler.parallelism=" + Math.min(Runtime.getRuntime().availableProcessors(), param.threads)
+                            // ,"-Djdk.virtualThreadScheduler.maxPoolSize=" + Math.min(Runtime.getRuntime().availableProcessors(), param.threads)
+                    );
+                }
                 String asyncProfilerParams = parameters.profilerParams.get("async");
                 if (asyncProfilerParams != null) {
                     System.out.println("Async profiler detected!");
                     options.addProfiler(AsyncProfiler.class, asyncProfilerParams);
                 }
-                List<Double> withLocksNanos = runBenchmarkNano(options, Map.of("isLightThread", Boolean.toString(param.isLightThread), "beforeCpuTokens", Long.toString(param.beforeCpuTokens), "inCpuTokens", Long.toString(param.inCpuTokens), "threads", Integer.toString(param.threads), "actionsPerThread", Integer.toString(param.actionsPerThread), "lockType", param.lockType.toString(), "lockSpec", param.lockSpec));
+                List<Double> withLocksNanos = runBenchmarkNano(options,
+                        Map.of(
+                                "isLightThread", Boolean.toString(param.isLightThread),
+                                "beforeCpuTokens", Long.toString(param.beforeCpuTokens),
+                                "inCpuTokens", Long.toString(param.inCpuTokens),
+                                "threads", Integer.toString(param.threads),
+                                "actionsPerThread", Integer.toString(param.actionsPerThread),
+                                "lockType", param.lockType.toString(),
+                                "lockSpec", param.lockSpec,
+                                "pinUsingJna", Boolean.toString(param.pinUsingJNA)
+                        )
+                );
                 double withLockNanosMin = withLocksNanos.stream().min(Double::compare).get();
                 double withLockNanosMax = withLocksNanos.stream().max(Double::compare).get();
                 double withLockNanosMedian = Utils.median(withLocksNanos);

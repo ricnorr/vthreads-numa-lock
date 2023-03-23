@@ -19,11 +19,16 @@ public class ConsumeCpuBenchmarkParameters extends BenchmarkParameters {
 
     public double highContentionWithoutLockNanos;
 
+    public boolean limitVirtualScheduler;
+
+    public boolean pinUsingJNA;
+
     public ConsumeCpuBenchmarkParameters(int threads, LockType lockType, String lockSpec,
                                          boolean isLightThread, long beforeCpuTokens, long inCpuTokens,
                                          int actionsPerThread, double beforeConsumeCpuTokensTimeNanos,
                                          double inConsumeCpuTokensTimeNanos, double highContentionWithoutLockNanos,
-                                         int warmupIterations, int measurementIterations, int forks, Map<String, String> profilerParams) {
+                                         int warmupIterations, int measurementIterations, int forks, Map<String, String> profilerParams,
+                                         boolean limitVirtualScheduler, boolean pinUsingJNA) {
         super(threads, lockType, actionsPerThread, lockSpec, isLightThread, warmupIterations, measurementIterations, forks, profilerParams);
         this.beforeCpuTokens = beforeCpuTokens;
         this.inCpuTokens = inCpuTokens;
@@ -31,6 +36,8 @@ public class ConsumeCpuBenchmarkParameters extends BenchmarkParameters {
         this.inConsumeCpuTokensTimeNanos = inConsumeCpuTokensTimeNanos;
         this.isHighContention = inConsumeCpuTokensTimeNanos * threads > beforeConsumeCpuTokensTimeNanos;
         this.highContentionWithoutLockNanos = highContentionWithoutLockNanos;
+        this.limitVirtualScheduler = limitVirtualScheduler;
+        this.pinUsingJNA = pinUsingJNA;
     }
 
     @Override

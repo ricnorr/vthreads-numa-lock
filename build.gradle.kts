@@ -40,7 +40,7 @@ tasks.withType<JavaCompile>().configureEach {
         "java.base/jdk.internal.util=ALL-UNNAMED",
         "--enable-preview",
         "--add-exports",
-        "java.base/jdk.internal.vm.annotation=ALL-UNNAMED",
+        "java.base/jdk.internal.vm.annotation=ALL-UNNAMED"
     )
 }
 
@@ -52,6 +52,7 @@ tasks.withType<JavaExec>().configureEach {
         "-XX:-RestrictContended",
         "--add-opens",
         "java.base/java.lang=ALL-UNNAMED",
+        "-Djna.library.path=libs/"
     )
 }
 
@@ -74,9 +75,9 @@ dependencies {
     implementation("com.github.oshi:oshi-dist:6.4.0")
     implementation("org.openjdk.jmh:jmh-core:1.35")
     testImplementation("org.testng:testng:7.1.0")
-    testImplementation("org.testng:testng:7.1.0")
     annotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:1.35")
     implementation("org.openjdk.jol:jol-core:0.9")
+    implementation("net.java.dev.jna:jna:4.5.0")
 }
 
 tasks.test {
