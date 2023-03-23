@@ -10,7 +10,7 @@
     },
     {
       "name": "MCS",
-      "skip": true
+      "skip": false
     },
     {
       "name": "MCS_SLEEP",
@@ -18,11 +18,11 @@
     },
     {
       "name": "FAIR_REENTRANT",
-      "skip": true
+      "skip": false
     },
     {
       "name": "UNFAIR_REENTRANT",
-      "skip": true
+      "skip": false
     },
     {
       "name": "CNA_NUMA",
@@ -42,7 +42,7 @@
     },
     {
       "name": "HMCS_CCL_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_CCL_NUMA_SUPERNUMA",
