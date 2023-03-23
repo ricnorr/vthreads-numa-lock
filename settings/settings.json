@@ -2,75 +2,79 @@
   "locks": [
     {
       "name": "TAS",
-      "skip": false
+      "skip": true
     },
     {
       "name": "TTAS",
-      "skip": false
+      "skip": true
     },
     {
       "name": "MCS",
+      "skip": true
+    },
+    {
+      "name": "MCS_SLEEP",
       "skip": false
     },
     {
       "name": "FAIR_REENTRANT",
-      "skip": false
+      "skip": true
     },
     {
       "name": "UNFAIR_REENTRANT",
-      "skip": false
+      "skip": true
     },
     {
       "name": "CNA_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "CNA_CCL",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HCLH_CCL",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HCLH_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_CCL_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_CCL_NUMA_SUPERNUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_CCL",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "COMB_HCLH_CCL_MCS_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "COMB_CNA_CCL_MCS_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "COMB_TTAS_CCL_HCLH_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "COMB_TTAS_CCL_CNA_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "COMB_TTAS_NUMA_MCS",
-      "skip": false
+      "skip": true
     }
   ],
   "benches": [
