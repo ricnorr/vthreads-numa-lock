@@ -16,7 +16,6 @@ import ru.ricnorr.numa.locks.hclh.HCLHCcl;
 import ru.ricnorr.numa.locks.hclh.HCLHCclNoPad;
 import ru.ricnorr.numa.locks.hclh.HCLHNuma;
 import ru.ricnorr.numa.locks.hclh.HCLHNumaNoPad;
-import ru.ricnorr.numa.locks.hclh_with_sleep.HCLHNumaWithSleep;
 import ru.ricnorr.numa.locks.hmcs.*;
 import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNoPad;
 import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNumaNoPad;
@@ -196,9 +195,6 @@ public class Utils {
             }
             case HCLH_NUMA -> {
                 return new HCLHNuma();
-            }
-            case HCLH_NUMA_SLEEP -> {
-                return new HCLHNumaWithSleep();
             }
             // HCLH NO PAD
             case HCLH_CCL_NOPAD -> {
