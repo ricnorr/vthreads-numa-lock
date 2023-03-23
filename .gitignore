@@ -38,3 +38,4 @@ results/result.pdf
 venv/
 results/empty
 Untitled.ipynb
+libs/libaffinity.so

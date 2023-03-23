@@ -52,6 +52,8 @@ public enum LockType {
     HMCS_CCL,
     HMCS_NUMA,
 
+    HMCS_NUMA_SUPERNUMA,
+
     /**
      * HMCS NO PAD
      */
@@ -66,4 +68,11 @@ public enum LockType {
     COMB_CNA_CCL_MCS_NUMA,
 
     COMB_HCLH_CCL_MCS_NUMA,
+
+    COMB_TTAS_CCL_HCLH_NUMA,
+
+    COMB_TTAS_CCL_CNA_NUMA,
+
+    COMB_TTAS_NUMA_MCS,
+
 }

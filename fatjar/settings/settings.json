@@ -1,46 +1,131 @@
 {
   "locks": [
     {
-      "name": "FAIR_REENTRANT"
+      "name": "TAS",
+      "skip": true
     },
     {
-      "name": "UNFAIR_REENTRANT"
+      "name": "TTAS",
+      "skip": true
     },
     {
-      "name": "HMCS_ONLY_CCL_HIERARCHY"
+      "name": "MCS",
+      "skip": true
     },
     {
-      "name": "HMCS_ONLY_NUMA_HIERARCHY"
+      "name": "FAIR_REENTRANT",
+      "skip": true
     },
     {
-      "name": "HMCS_CCL_PLUS_NUMA_HIERARCHY"
+      "name": "UNFAIR_REENTRANT",
+      "skip": true
     },
     {
-      "name": "HMCS_CCL_PLUS_NUMA_PLUS_SUPERNUMA"
+      "name": "CNA_NUMA",
+      "skip": false
+    },
+    {
+      "name": "CNA_CCL",
+      "skip": true
+    },
+    {
+      "name": "HCLH_CCL",
+      "skip": true
+    },
+    {
+      "name": "HCLH_NUMA",
+      "skip": true
+    },
+    {
+      "name": "HMCS_CCL_NUMA",
+      "skip": true
+    },
+    {
+      "name": "HMCS_CCL_NUMA_SUPERNUMA",
+      "skip": true
+    },
+    {
+      "name": "HMCS_CCL",
+      "skip": true
+    },
+    {
+      "name": "HMCS_NUMA",
+      "skip": true
+    },
+    {
+      "name": "COMB_HCLH_CCL_MCS_NUMA",
+      "skip": true
+    },
+    {
+      "name": "COMB_CNA_CCL_MCS_NUMA",
+      "skip": true
+    },
+    {
+      "name": "COMB_TTAS_CCL_HCLH_NUMA",
+      "skip": true
+    },
+    {
+      "name": "COMB_TTAS_CCL_CNA_NUMA",
+      "skip": true
+    },
+    {
+      "name": "COMB_TTAS_NUMA_MCS",
+      "skip": true
     }
   ],
-  "threads": [
-    1,
-    4,
-    8,
-    24,
-    32,
-    48
-  ],
-  "actionsCount": 49152,
-  "warmupIterations": 0,
-  "iterations": 1,
-  "type": "jmh",
   "benches": [
     {
       "name": "consumeCpu",
+      "actionsCount": 442368,
       "before": 0,
-      "in": 40
+      "in": 1000,
+      "warmupIterations": 3,
+      "measurementIterations": 3,
+      "forks": 2,
+      "threads": [1, 2],
+      "limitVirtualScheduler" : true,
+      "pinUsingJna": true,
+      "light": true,
+      "skip": false
     },
     {
       "name": "consumeCpu",
+      "actionsCount": 147456,
       "before": 0,
-      "in": 80
+      "in": 1000,
+      "warmupIterations": 5,
+      "measurementIterations": 5,
+      "forks": 2,
+      "limitVirtualScheduler" : true,
+      "pinUsingJna": true,
+      "light": false,
+      "skip": true
+    },
+    {
+      "name": "consumeCpu",
+      "before": 18000,
+      "in": 100,
+      "actionsCount": 36864,
+      "warmupIterations": 5,
+      "measurementIterations": 5,
+      "limitVirtualScheduler" : true,
+      "pinUsingJna": true,
+      "forks": 2,
+      "light": true,
+      "skip": true
+    },
+    {
+      "name": "consumeCpu",
+      "before": 18000,
+      "in": 100,
+      "actionsCount": 36864,
+      "warmupIterations": 5,
+      "measurementIterations": 5,
+      "limitVirtualScheduler" : true,
+      "pinUsingJna": true,
+      "forks": 2,
+      "light": false,
+      "skip": true
     }
   ]
 }

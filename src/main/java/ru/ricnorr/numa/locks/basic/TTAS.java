@@ -24,7 +24,7 @@ public class TTAS implements NumaLock {
 
     @Override
     public boolean hasNext(Object obj) {
-        throw new IllegalStateException("Not implemented");
+        return false;
     }
 }
 

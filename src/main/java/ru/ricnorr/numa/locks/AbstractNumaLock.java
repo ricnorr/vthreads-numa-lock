@@ -1,8 +1,12 @@
 package ru.ricnorr.numa.locks;
 
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
 public abstract class AbstractNumaLock implements NumaLock {
+
+    static final long MAX_WAIT = 100;
+
     protected final Supplier<Integer> clusterIdSupplier;
 
     protected final ThreadLocal<Integer> clusterIdThreadLocal;
@@ -15,19 +19,22 @@ public abstract class AbstractNumaLock implements NumaLock {
         this.lockAcquiresThreadLocal = ThreadLocal.withInitial(() -> 0);
     }
 
+    public static int spinWait(int counter) {
+        if (counter % 8192 == 0) {
+            try {
+                Thread.sleep(1);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            Thread.onSpinWait();
+        }
+        counter++;
+        return counter;
+    }
+
     protected Integer getClusterId() {
         Thread carrierThread = Utils.getCurrentCarrierThread();
-        int lockAcquires = Utils.getByThreadFromThreadLocal(clusterIdThreadLocal, carrierThread);
-        int clusterId;
-        if (lockAcquires >= 15000) {
-            lockAcquires = 0;
-            clusterId = clusterIdSupplier.get();
-            Utils.setByThreadToThreadLocal(clusterIdThreadLocal, carrierThread, clusterId);
-        } else {
-            clusterId = Utils.getByThreadFromThreadLocal(clusterIdThreadLocal, carrierThread);
-            lockAcquires += 1;
-        }
-        Utils.setByThreadToThreadLocal(lockAcquiresThreadLocal, carrierThread, lockAcquires);
-        return clusterId;
+        return Utils.getByThreadFromThreadLocal(clusterIdThreadLocal, carrierThread);
     }
 }
