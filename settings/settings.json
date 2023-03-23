@@ -85,7 +85,7 @@
       "in": 1000,
       "warmupIterations": 3,
       "measurementIterations": 3,
-      "forks": 2,
+      "forks": 1,
       "threads": [1, 8, 16, 24, 36, 48, 56, 64],
       "limitVirtualScheduler" : true,
       "pinUsingJna": true,
@@ -102,7 +102,7 @@
       "threads": [1, 8, 16, 24, 36, 48, 56, 64],
       "limitVirtualScheduler" : true,
       "pinUsingJna": true,
-      "forks": 2,
+      "forks": 1,
       "light": true,
       "skip": false
     }
