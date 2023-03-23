@@ -89,7 +89,7 @@
     },
     {
       "name": "consumeCpu",
-      "before": 18000,
+      "before": 13000,
       "in": 100,
       "actionsCount": 36864,
       "warmupIterations": 5,
