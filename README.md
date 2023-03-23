@@ -6,6 +6,7 @@ Repository for my bachelor's diploma, implementing and benchmarking NUMA aware l
 * prepare conda and python libraries
   * Run ```activate-conda.sh``` to install miniconda
   * Run ```create-conda-envs.sh``` 
+* compile libraries: scripts/build_libs.sh 
 # How to run benchmarks
 * ```run_bench.sh``` from the project's root
 * Results are saved in ***results/benchmark_results.csv***
