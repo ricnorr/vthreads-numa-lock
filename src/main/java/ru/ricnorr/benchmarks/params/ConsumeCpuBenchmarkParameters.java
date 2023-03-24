@@ -43,7 +43,9 @@ public class ConsumeCpuBenchmarkParameters extends BenchmarkParameters {
     @Override
     public String getBenchmarkName() {
         return String.format(
-                "%s contention. Consume CPU. %s threads.",
+                "In %d. Before %d. %s contention. Consume CPU. %s threads.",
+                inCpuTokens,
+                beforeCpuTokens,
                 isHighContention ? "High" : "Low",
                 isLightThread ? "Virtual" : "Platform"
         );
