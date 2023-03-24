@@ -79,12 +79,25 @@
       "actionsCount": 147456,
       "before": 0,
       "in": 1000,
-      "warmupIterations": 5,
-      "measurementIterations": 5,
-      "forks": 3,
+      "warmupIterations": 3,
+      "measurementIterations": 3,
+      "forks": 2,
       "limitVirtualScheduler" : true,
       "pinUsingJna": true,
       "light": true,
+      "skip": true
+    },
+    {
+      "name": "consumeCpu",
+      "actionsCount": 147456,
+      "before": 0,
+      "in": 9000,
+      "warmupIterations": 3,
+      "measurementIterations": 3,
+      "forks": 2,
+      "limitVirtualScheduler" : true,
+      "pinUsingJna": true,
+      "light": false,
       "skip": false
     },
     {
@@ -97,6 +110,19 @@
       "limitVirtualScheduler" : true,
       "pinUsingJna": true,
       "forks": 3,
+      "light": true,
+      "skip": true
+    },
+    {
+      "name": "consumeCpu",
+      "before": 640000,
+      "in": 5000,
+      "actionsCount": 147456,
+      "warmupIterations": 3,
+      "measurementIterations": 3,
+      "limitVirtualScheduler" : true,
+      "pinUsingJna": true,
+      "forks": 2,
       "light": true,
       "skip": false
     }
