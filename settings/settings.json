@@ -2,22 +2,14 @@
   "locks": [
     {
       "name": "TAS",
-      "skip": true
-    },
-    {
-      "name": "SYNCHRONIZED",
-      "skip": true
-    },
-    {
-      "name": "TTAS",
-      "skip": true
-    },
-    {
-      "name": "MCS",
       "skip": false
     },
     {
-      "name": "MCS_SLEEP",
+      "name": "SYNCHRONIZED",
+      "skip": false
+    },
+    {
+      "name": "TTAS",
       "skip": false
     },
     {
@@ -26,7 +18,7 @@
     },
     {
       "name": "FAIR_REENTRANT",
-      "skip": true
+      "skip": false
     },
     {
       "name": "UNFAIR_REENTRANT",
@@ -34,63 +26,51 @@
     },
     {
       "name": "CNA_NUMA",
-      "skip": true
-    },
-    {
-      "name": "CNA_CCL",
-      "skip": true
-    },
-    {
-      "name": "HCLH_CCL",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HCLH_NUMA",
-      "skip": true
-    },
-    {
-      "name": "HCLH_NUMA_SLEEP",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_CCL_NUMA",
-      "skip": true
-    },
-    {
-      "name": "HMCS_CCL_NUMA_SLEEP",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_CCL_NUMA_SUPERNUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_CCL",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "COMB_HCLH_CCL_MCS_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "COMB_CNA_CCL_MCS_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "COMB_TTAS_CCL_HCLH_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "COMB_TTAS_CCL_CNA_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "COMB_TTAS_NUMA_MCS",
-      "skip": true
+      "skip": false
+    },
+    {
+      "name": "TTAS_CCL_MCS",
+      "skip": false
     }
   ],
   "benches": [
@@ -110,8 +90,8 @@
     {
       "name": "consumeCpu",
       "actionsCount": 36864,
-      "before": 80000,
-      "in": 500,
+      "before": 18000,
+      "in": 100,
       "warmupIterations": 3,
       "measurementIterations": 3,
       "forks": 2,
