@@ -5,6 +5,10 @@
       "skip": true
     },
     {
+      "name": "SYNCHRONIZED",
+      "skip": true
+    },
+    {
       "name": "TTAS",
       "skip": true
     },
@@ -13,16 +17,20 @@
       "skip": true
     },
     {
+      "name": "MCS_SLEEP",
+      "skip": true
+    },
+    {
       "name": "FAIR_REENTRANT",
       "skip": true
     },
     {
       "name": "UNFAIR_REENTRANT",
-      "skip": true
+      "skip": false
     },
     {
       "name": "CNA_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "CNA_CCL",
@@ -37,7 +45,15 @@
       "skip": true
     },
     {
+      "name": "HCLH_NUMA_SLEEP",
+      "skip": true
+    },
+    {
       "name": "HMCS_CCL_NUMA",
+      "skip": true
+    },
+    {
+      "name": "HMCS_CCL_NUMA_SLEEP",
       "skip": true
     },
     {
@@ -76,56 +92,36 @@
   "benches": [
     {
       "name": "consumeCpu",
-      "actionsCount": 442368,
+      "actionsCount": 147456,
       "before": 0,
       "in": 1000,
       "warmupIterations": 3,
       "measurementIterations": 3,
       "forks": 2,
-      "threads": [1, 2],
+      "limitVirtualScheduler" : true,
+      "pinUsingJna": true,
+      "light": true,
+      "skip": true
+    },
+    {
+      "name": "consumeCpu",
+      "actionsCount": 36864,
+      "before": 30000,
+      "in": 500,
+      "warmupIterations": 0,
+      "measurementIterations": 1,
+      "forks": 1,
+      "threads": [11],
+      "profiler": [
+        {
+          "name": "jgr",
+          "spec": "verbose=true;configName=profile-virtual-threads"
+        }
+      ],
       "limitVirtualScheduler" : true,
       "pinUsingJna": true,
       "light": true,
       "skip": false
-    },
-    {
-      "name": "consumeCpu",
-      "actionsCount": 147456,
-      "before": 0,
-      "in": 1000,
-      "warmupIterations": 5,
-      "measurementIterations": 5,
-      "forks": 2,
-      "limitVirtualScheduler" : true,
-      "pinUsingJna": true,
-      "light": false,
-      "skip": true
-    },
-    {
-      "name": "consumeCpu",
-      "before": 18000,
-      "in": 100,
-      "actionsCount": 36864,
-      "warmupIterations": 5,
-      "measurementIterations": 5,
-      "limitVirtualScheduler" : true,
-      "pinUsingJna": true,
-      "forks": 2,
-      "light": true,
-      "skip": true
-    },
-    {
-      "name": "consumeCpu",
-      "before": 18000,
-      "in": 100,
-      "actionsCount": 36864,
-      "warmupIterations": 5,
-      "measurementIterations": 5,
-      "limitVirtualScheduler" : true,
-      "pinUsingJna": true,
-      "forks": 2,
-      "light": false,
-      "skip": true
     }
   ]
 }

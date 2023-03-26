@@ -1,0 +1,102 @@
+395614
+2023-03-25T23:33:03.694680303Z
+19.0.2+7-44
+
+#1 "main"
+      java.base/jdk.internal.misc.Unsafe.park(Native Method)
+      java.base/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:269)
+      java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:1674)
+      java.base/java.util.concurrent.LinkedBlockingQueue.poll(LinkedBlockingQueue.java:460)
+      java.base/java.util.concurrent.ExecutorCompletionService.poll(ExecutorCompletionService.java:211)
+      org.openjdk.jmh.runner.BenchmarkHandler.runIteration(BenchmarkHandler.java:368)
+      org.openjdk.jmh.runner.BaseRunner.runBenchmark(BaseRunner.java:281)
+      org.openjdk.jmh.runner.BaseRunner.runBenchmark(BaseRunner.java:233)
+      org.openjdk.jmh.runner.BaseRunner.doSingle(BaseRunner.java:138)
+      org.openjdk.jmh.runner.BaseRunner.runBenchmarksForked(BaseRunner.java:75)
+      org.openjdk.jmh.runner.ForkedRunner.run(ForkedRunner.java:72)
+      org.openjdk.jmh.runner.ForkedMain.main(ForkedMain.java:86)
+
+#4 "Reference Handler"
+      java.base/java.lang.ref.Reference.waitForReferencePendingList(Native Method)
+      java.base/java.lang.ref.Reference.processPendingReferences(Reference.java:245)
+      java.base/java.lang.ref.Reference$ReferenceHandler.run(Reference.java:207)
+
+#5 "Finalizer"
+      java.base/java.lang.Object.wait0(Native Method)
+      java.base/java.lang.Object.wait(Object.java:366)
+      java.base/java.lang.Object.wait(Object.java:339)
+      java.base/java.lang.ref.NativeReferenceQueue.await(NativeReferenceQueue.java:48)
+      java.base/java.lang.ref.ReferenceQueue.remove0(ReferenceQueue.java:158)
+      java.base/java.lang.ref.NativeReferenceQueue.remove(NativeReferenceQueue.java:89)
+      java.base/java.lang.ref.Finalizer$FinalizerThread.run(Finalizer.java:173)
+
+#6 "Signal Dispatcher"
+
+#14 "Common-Cleaner"
+      java.base/jdk.internal.misc.Unsafe.park(Native Method)
+      java.base/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:269)
+      java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1759)
+      java.base/java.lang.ref.ReferenceQueue.await(ReferenceQueue.java:71)
+      java.base/java.lang.ref.ReferenceQueue.remove0(ReferenceQueue.java:143)
+      java.base/java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:218)
+      java.base/jdk.internal.ref.CleanerImpl.run(CleanerImpl.java:140)
+      java.base/java.lang.Thread.run(Thread.java:1589)
+      java.base/jdk.internal.misc.InnocuousThread.run(InnocuousThread.java:186)
+
+#15 "Notification Thread"
+
+#22 "JNA Cleaner"
+      java.base/jdk.internal.misc.Unsafe.park(Native Method)
+      java.base/java.util.concurrent.locks.LockSupport.park(LockSupport.java:371)
+      java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionNode.block(AbstractQueuedSynchronizer.java:506)
+      java.base/java.util.concurrent.ForkJoinPool.unmanagedBlock(ForkJoinPool.java:3745)
+      java.base/java.util.concurrent.ForkJoinPool.managedBlock(ForkJoinPool.java:3690)
+      java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1625)
+      java.base/java.lang.ref.ReferenceQueue.await(ReferenceQueue.java:67)
+      java.base/java.lang.ref.ReferenceQueue.remove0(ReferenceQueue.java:158)
+      java.base/java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:234)
+      com.sun.jna.internal.Cleaner$1.run(Cleaner.java:58)
+
+#34 "Attach Listener"
+      java.base/java.lang.Thread.getStackTrace(Thread.java:2550)
+      java.base/jdk.internal.vm.ThreadDumper.dumpThread(ThreadDumper.java:162)
+      java.base/jdk.internal.vm.ThreadDumper.lambda$dumpThreads$0(ThreadDumper.java:155)
+      java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:179)
+      java.base/java.util.Spliterators$ArraySpliterator.forEachRemaining(Spliterators.java:1006)
+      java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+      java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+      java.base/java.util.stream.StreamSpliterators$WrappingSpliterator.forEachRemaining(StreamSpliterators.java:310)
+      java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:734)
+      java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:762)
+      java.base/jdk.internal.vm.ThreadDumper.dumpThreads(ThreadDumper.java:155)
+      java.base/jdk.internal.vm.ThreadDumper.dumpThreads(ThreadDumper.java:151)
+      java.base/jdk.internal.vm.ThreadDumper.dumpThreadsToFile(ThreadDumper.java:117)
+      java.base/jdk.internal.vm.ThreadDumper.dumpThreads(ThreadDumper.java:67)
+
+#19 "ru.ricnorr.benchmarks.jmh.cpu.JmhParConsumeCpuTokensBenchmark.bench-jmh-worker-1"
+      org.openjdk.jmh.infra.Blackhole.consumeCPU(Blackhole.java:560)
+      ru.ricnorr.benchmarks.jmh.cpu.JmhParConsumeCpuTokensBenchmark.prepare(JmhParConsumeCpuTokensBenchmark.java:171)
+      ru.ricnorr.benchmarks.jmh.cpu.jmh_generated.JmhParConsumeCpuTokensBenchmark_bench_jmhTest.bench_ss_jmhStub(JmhParConsumeCpuTokensBenchmark_bench_jmhTest.java:755)
+      ru.ricnorr.benchmarks.jmh.cpu.jmh_generated.JmhParConsumeCpuTokensBenchmark_bench_jmhTest.bench_SingleShotTime(JmhParConsumeCpuTokensBenchmark_bench_jmhTest.java:707)
+      java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+      java.base/java.lang.reflect.Method.invoke(Method.java:578)
+      org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call(BenchmarkHandler.java:475)
+      org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call(BenchmarkHandler.java:458)
+      java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+      java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:577)
+      java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+      java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+      java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+      java.base/java.lang.Thread.run(Thread.java:1589)
+
+#21 "process reaper"
+      java.base/jdk.internal.misc.Unsafe.park(Native Method)
+      java.base/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:269)
+      java.base/java.util.concurrent.SynchronousQueue$TransferStack.transfer(SynchronousQueue.java:401)
+      java.base/java.util.concurrent.SynchronousQueue.poll(SynchronousQueue.java:903)
+      java.base/java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1069)
+      java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1130)
+      java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+      java.base/java.lang.Thread.run(Thread.java:1589)
+      java.base/jdk.internal.misc.InnocuousThread.run(InnocuousThread.java:186)
+

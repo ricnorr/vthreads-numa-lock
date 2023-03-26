@@ -1,11 +1,18 @@
 package ru.ricnorr.benchmarks;
 
 public enum LockType {
+
+    SYNCHRONIZED,
+
     UNFAIR_REENTRANT,
 
     FAIR_REENTRANT,
 
     MCS,
+
+    MCS_SLEEP,
+
+    MCS_PARK,
 
     TAS,
 

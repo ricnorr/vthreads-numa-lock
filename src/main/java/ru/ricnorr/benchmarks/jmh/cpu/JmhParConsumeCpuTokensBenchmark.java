@@ -9,6 +9,9 @@ import ru.ricnorr.numa.locks.Affinity;
 import ru.ricnorr.numa.locks.NumaLock;
 import ru.ricnorr.numa.locks.Utils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -59,6 +62,7 @@ public class JmhParConsumeCpuTokensBenchmark {
 
     Set<Thread> carrierThreads = new HashSet<>();
 
+    final Object obj = new Object();
     @Setup(Level.Trial)
     public void init() {
         if (!pinUsingJna && !System.getProperty("os.name").toLowerCase().contains("mac")) {
@@ -69,7 +73,9 @@ public class JmhParConsumeCpuTokensBenchmark {
                 System.getProperty("jdk.virtualThreadScheduler.parallelism"));
         System.out.println("Get system property jdk.virtualThreadScheduler.maxPoolSize=" +
                 System.getProperty("jdk.virtualThreadScheduler.maxPoolSize"));
-        lock = Utils.initLock(LockType.valueOf(lockType));
+        if (!lockType.equals(LockType.SYNCHRONIZED.toString())) {
+            lock = Utils.initLock(LockType.valueOf(lockType));
+        }
     }
 
     @Setup(Level.Invocation)
@@ -110,13 +116,19 @@ public class JmhParConsumeCpuTokensBenchmark {
                         Object nodeForLock = null;
                         for (int i1 = 0; i1 < actionsPerThread; i1++) {
                             Blackhole.consumeCPU(beforeCpuTokens);
-                            if (lock.canUseNodeFromPreviousLocking()) {
-                                nodeForLock = lock.lock(nodeForLock);
+                            if (lockType.equals("SYNCHRONIZED")) {
+                                synchronized (obj) {
+                                    Blackhole.consumeCPU(inCpuTokens);
+                                }
                             } else {
-                                nodeForLock = lock.lock(null);
+                                if (lock.canUseNodeFromPreviousLocking()) {
+                                    nodeForLock = lock.lock(nodeForLock);
+                                } else {
+                                    nodeForLock = lock.lock(null);
+                                }
+                                Blackhole.consumeCPU(inCpuTokens);
+                                lock.unlock(nodeForLock);
                             }
-                            Blackhole.consumeCPU(inCpuTokens);
-                            lock.unlock(nodeForLock);
                         }
                     }
             ));

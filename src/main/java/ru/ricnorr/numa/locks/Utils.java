@@ -163,6 +163,12 @@ public class Utils {
             case MCS -> {
                 return new MCS();
             }
+            case MCS_SLEEP -> {
+                return new MCS_SLEEP();
+            }
+            case MCS_PARK -> {
+                return new MCS_PARK();
+            }
             case TAS -> {
                 return new TAS();
             }

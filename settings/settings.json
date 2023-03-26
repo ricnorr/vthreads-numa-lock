@@ -5,16 +5,28 @@
       "skip": true
     },
     {
+      "name": "SYNCHRONIZED",
+      "skip": true
+    },
+    {
       "name": "TTAS",
       "skip": true
     },
     {
       "name": "MCS",
-      "skip": true
+      "skip": false
+    },
+    {
+      "name": "MCS_SLEEP",
+      "skip": false
+    },
+    {
+      "name": "MCS_PARK",
+      "skip": false
     },
     {
       "name": "FAIR_REENTRANT",
-      "skip": false
+      "skip": true
     },
     {
       "name": "UNFAIR_REENTRANT",
@@ -37,8 +49,16 @@
       "skip": true
     },
     {
+      "name": "HCLH_NUMA_SLEEP",
+      "skip": true
+    },
+    {
       "name": "HMCS_CCL_NUMA",
-      "skip": false
+      "skip": true
+    },
+    {
+      "name": "HMCS_CCL_NUMA_SLEEP",
+      "skip": true
     },
     {
       "name": "HMCS_CCL_NUMA_SUPERNUMA",
@@ -85,13 +105,13 @@
       "limitVirtualScheduler" : true,
       "pinUsingJna": true,
       "light": true,
-      "skip": true
+      "skip": false
     },
     {
       "name": "consumeCpu",
-      "actionsCount": 147456,
-      "before": 0,
-      "in": 9000,
+      "actionsCount": 36864,
+      "before": 80000,
+      "in": 500,
       "warmupIterations": 3,
       "measurementIterations": 3,
       "forks": 2,
@@ -99,32 +119,6 @@
       "pinUsingJna": true,
       "light": true,
       "skip": false
-    },
-    {
-      "name": "consumeCpu",
-      "before": 13000,
-      "in": 100,
-      "actionsCount": 36864,
-      "warmupIterations": 5,
-      "measurementIterations": 5,
-      "limitVirtualScheduler" : true,
-      "pinUsingJna": true,
-      "forks": 3,
-      "light": true,
-      "skip": true
-    },
-    {
-      "name": "consumeCpu",
-      "before": 640000,
-      "in": 5000,
-      "actionsCount": 147456,
-      "warmupIterations": 3,
-      "measurementIterations": 3,
-      "limitVirtualScheduler" : true,
-      "pinUsingJna": true,
-      "forks": 2,
-      "light": true,
-      "skip": true
     }
   ]
 }

@@ -4,6 +4,7 @@ import kotlin.Pair;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.openjdk.jmh.profile.AsyncProfiler;
+import org.openjdk.jmh.profile.JavaFlightRecorderProfiler;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.ChainedOptionsBuilder;
@@ -146,6 +147,11 @@ public class JmhBenchmarkRunner {
                 if (asyncProfilerParams != null) {
                     System.out.println("Async profiler detected!");
                     options.addProfiler(AsyncProfiler.class, asyncProfilerParams);
+                }
+                String jfrProfilerParams = parameters.profilerParams.get("jfr");
+                if (jfrProfilerParams != null) {
+                    System.out.println("JavaFlightRecorder detected!");
+                    options.addProfiler(JavaFlightRecorderProfiler.class, jfrProfilerParams);
                 }
                 List<Double> withLocksNanos = runBenchmarkNano(options,
                         Map.of(
