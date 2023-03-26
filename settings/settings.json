@@ -2,71 +2,71 @@
   "locks": [
     {
       "name": "TAS",
-      "skip": true
+      "skip": false
     },
     {
       "name": "SYNCHRONIZED",
-      "skip": true
+      "skip": false
     },
     {
       "name": "TTAS",
-      "skip": true
+      "skip": false
     },
     {
       "name": "MCS_PARK",
-      "skip": true
+      "skip": false
     },
     {
       "name": "FAIR_REENTRANT",
-      "skip": true
+      "skip": false
     },
     {
       "name": "UNFAIR_REENTRANT",
-      "skip": true
+      "skip": false
     },
     {
       "name": "CNA_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HCLH_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_CCL_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_CCL_NUMA_SUPERNUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_CCL",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "COMB_HCLH_CCL_MCS_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "COMB_CNA_CCL_MCS_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "COMB_TTAS_CCL_HCLH_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "COMB_TTAS_CCL_CNA_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "COMB_TTAS_NUMA_MCS",
-      "skip": true
+      "skip": false
     },
     {
       "name": "TTAS_CCL_MCS",
@@ -98,7 +98,7 @@
       "limitVirtualScheduler" : true,
       "pinUsingJna": true,
       "light": true,
-      "skip": true
+      "skip": false
     }
   ]
 }
