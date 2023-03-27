@@ -19,20 +19,6 @@ public abstract class AbstractNumaLock implements NumaLock {
         this.lockAcquiresThreadLocal = ThreadLocal.withInitial(() -> 0);
     }
 
-    public static int spinWait(int counter) {
-        if (counter % 8192 == 0) {
-            try {
-                Thread.sleep(1);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            Thread.onSpinWait();
-        }
-        counter++;
-        return counter;
-    }
-
     protected Integer getClusterId() {
         Thread carrierThread = Utils.getCurrentCarrierThread();
         return Utils.getByThreadFromThreadLocal(clusterIdThreadLocal, carrierThread);

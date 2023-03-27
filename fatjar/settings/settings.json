@@ -5,11 +5,15 @@
       "skip": true
     },
     {
+      "name": "SYNCHRONIZED",
+      "skip": true
+    },
+    {
       "name": "TTAS",
       "skip": true
     },
     {
-      "name": "MCS",
+      "name": "MCS_PARK",
       "skip": true
     },
     {
@@ -22,14 +26,6 @@
     },
     {
       "name": "CNA_NUMA",
-      "skip": false
-    },
-    {
-      "name": "CNA_CCL",
-      "skip": true
-    },
-    {
-      "name": "HCLH_CCL",
       "skip": true
     },
     {
@@ -71,18 +67,21 @@
     {
       "name": "COMB_TTAS_NUMA_MCS",
       "skip": true
+    },
+    {
+      "name": "TTAS_CCL_MCS",
+      "skip": false
     }
   ],
   "benches": [
     {
       "name": "consumeCpu",
-      "actionsCount": 442368,
+      "actionsCount": 147456,
       "before": 0,
       "in": 1000,
       "warmupIterations": 3,
       "measurementIterations": 3,
       "forks": 2,
-      "threads": [1, 2],
       "limitVirtualScheduler" : true,
       "pinUsingJna": true,
       "light": true,
@@ -90,41 +89,15 @@
     },
     {
       "name": "consumeCpu",
-      "actionsCount": 147456,
-      "before": 0,
-      "in": 1000,
-      "warmupIterations": 5,
-      "measurementIterations": 5,
-      "forks": 2,
-      "limitVirtualScheduler" : true,
-      "pinUsingJna": true,
-      "light": false,
-      "skip": true
-    },
-    {
-      "name": "consumeCpu",
+      "actionsCount": 36864,
       "before": 18000,
       "in": 100,
-      "actionsCount": 36864,
-      "warmupIterations": 5,
-      "measurementIterations": 5,
+      "warmupIterations": 3,
+      "measurementIterations": 3,
+      "forks": 2,
       "limitVirtualScheduler" : true,
       "pinUsingJna": true,
-      "forks": 2,
       "light": true,
-      "skip": true
-    },
-    {
-      "name": "consumeCpu",
-      "before": 18000,
-      "in": 100,
-      "actionsCount": 36864,
-      "warmupIterations": 5,
-      "measurementIterations": 5,
-      "limitVirtualScheduler" : true,
-      "pinUsingJna": true,
-      "forks": 2,
-      "light": false,
       "skip": true
     }
   ]

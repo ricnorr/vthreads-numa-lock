@@ -163,6 +163,12 @@ public class Utils {
             case MCS -> {
                 return new MCS();
             }
+            case MCS_SLEEP -> {
+                return new MCS_SLEEP();
+            }
+            case MCS_PARK -> {
+                return new MCS_PARK();
+            }
             case TAS -> {
                 return new TAS();
             }
@@ -307,6 +313,9 @@ public class Utils {
                         ),
                         Utils::getNumaNodeId
                 );
+            }
+            case TTAS_CCL_MCS -> {
+                return new TTAS_CCL_MCS();
             }
 
             default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
