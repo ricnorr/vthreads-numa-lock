@@ -2,74 +2,78 @@
   "locks": [
     {
       "name": "TAS",
-      "skip": false
+      "skip": true
     },
     {
       "name": "SYNCHRONIZED",
-      "skip": false
+      "skip": true
     },
     {
       "name": "TTAS",
-      "skip": false
+      "skip": true
     },
     {
       "name": "MCS_PARK",
-      "skip": false
+      "skip": true
     },
     {
       "name": "FAIR_REENTRANT",
-      "skip": false
+      "skip": true
     },
     {
       "name": "UNFAIR_REENTRANT",
-      "skip": false
+      "skip": true
     },
     {
       "name": "CNA_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HCLH_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_CCL_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_CCL_NUMA_SUPERNUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_CCL",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "COMB_HCLH_CCL_MCS_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "COMB_CNA_CCL_MCS_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "COMB_TTAS_CCL_HCLH_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "COMB_TTAS_CCL_CNA_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "COMB_TTAS_NUMA_MCS",
-      "skip": false
+      "skip": true
     },
     {
       "name": "TTAS_CCL_MCS",
+      "skip": true
+    },
+    {
+      "name": "HMCS_CCL_NUMA_V2",
       "skip": false
     }
   ],
@@ -96,6 +100,18 @@
       "measurementIterations": 3,
       "forks": 2,
       "threads": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        24,
+        32,
+        46,
+        47,
+        48,
+        56,
+        64,
         74,
         82,
         80,
