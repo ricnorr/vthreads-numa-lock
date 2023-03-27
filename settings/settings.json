@@ -86,10 +86,18 @@
     },
     {
       "name": "HMCS_NUMA_V5",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_NUMA_V6",
+      "skip": true
+    },
+    {
+      "name": "CNA_NUMA_SLEEP",
+      "skip": false
+    },
+    {
+      "name": "CNA_NUMA_SLEEP_2",
       "skip": false
     }
   ],
