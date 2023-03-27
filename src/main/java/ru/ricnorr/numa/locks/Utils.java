@@ -314,6 +314,9 @@ public class Utils {
                         Utils::getNumaNodeId
                 );
             }
+            case TTAS_CCL_MCS -> {
+                return new TTAS_CCL_MCS();
+            }
 
             default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
         }

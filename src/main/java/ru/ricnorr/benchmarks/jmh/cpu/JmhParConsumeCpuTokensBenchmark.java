@@ -84,6 +84,7 @@ public class JmhParConsumeCpuTokensBenchmark {
         AtomicInteger customBarrier = new AtomicInteger();
         AtomicBoolean locked = new AtomicBoolean(false);
         cyclicBarrier = new CyclicBarrier(threads);
+        boolean isOversub = threads > Runtime.getRuntime().availableProcessors();
         for (int i = 0; i < threads; i++) {
             ThreadFactory threadFactory;
             if (isLightThread) {
@@ -116,6 +117,9 @@ public class JmhParConsumeCpuTokensBenchmark {
                         Object nodeForLock = null;
                         for (int i1 = 0; i1 < actionsPerThread; i1++) {
                             Blackhole.consumeCPU(beforeCpuTokens);
+                            if (isOversub) {
+                                Thread.yield();
+                            }
                             if (lockType.equals("SYNCHRONIZED")) {
                                 synchronized (obj) {
                                     Blackhole.consumeCPU(inCpuTokens);

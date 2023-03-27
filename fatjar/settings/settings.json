@@ -13,11 +13,7 @@
       "skip": true
     },
     {
-      "name": "MCS",
-      "skip": true
-    },
-    {
-      "name": "MCS_SLEEP",
+      "name": "MCS_PARK",
       "skip": true
     },
     {
@@ -26,18 +22,10 @@
     },
     {
       "name": "UNFAIR_REENTRANT",
-      "skip": false
+      "skip": true
     },
     {
       "name": "CNA_NUMA",
-      "skip": true
-    },
-    {
-      "name": "CNA_CCL",
-      "skip": true
-    },
-    {
-      "name": "HCLH_CCL",
       "skip": true
     },
     {
@@ -45,15 +33,7 @@
       "skip": true
     },
     {
-      "name": "HCLH_NUMA_SLEEP",
-      "skip": true
-    },
-    {
       "name": "HMCS_CCL_NUMA",
-      "skip": true
-    },
-    {
-      "name": "HMCS_CCL_NUMA_SLEEP",
       "skip": true
     },
     {
@@ -87,6 +67,10 @@
     {
       "name": "COMB_TTAS_NUMA_MCS",
       "skip": true
+    },
+    {
+      "name": "TTAS_CCL_MCS",
+      "skip": false
     }
   ],
   "benches": [
@@ -101,27 +85,20 @@
       "limitVirtualScheduler" : true,
       "pinUsingJna": true,
       "light": true,
-      "skip": true
+      "skip": false
     },
     {
       "name": "consumeCpu",
       "actionsCount": 36864,
-      "before": 30000,
-      "in": 500,
-      "warmupIterations": 0,
-      "measurementIterations": 1,
-      "forks": 1,
-      "threads": [11],
-      "profiler": [
-        {
-          "name": "jgr",
-          "spec": "verbose=true;configName=profile-virtual-threads"
-        }
-      ],
+      "before": 18000,
+      "in": 100,
+      "warmupIterations": 3,
+      "measurementIterations": 3,
+      "forks": 2,
       "limitVirtualScheduler" : true,
       "pinUsingJna": true,
       "light": true,
-      "skip": false
+      "skip": true
     }
   ]
 }
