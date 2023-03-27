@@ -74,6 +74,14 @@
     },
     {
       "name": "HMCS_CCL_NUMA_V2",
+      "skip": true
+    },
+    {
+      "name": "HMCS_NUMA_V3",
+      "skip": false
+    },
+    {
+      "name": "HMCS_NUMA_V4",
       "skip": false
     }
   ],
