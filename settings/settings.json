@@ -89,7 +89,7 @@
       "limitVirtualScheduler": true,
       "pinUsingJna": true,
       "light": true,
-      "skip": true
+      "skip": false
     },
     {
       "name": "consumeCpu",
