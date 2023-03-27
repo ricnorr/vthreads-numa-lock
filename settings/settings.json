@@ -82,10 +82,10 @@
       "warmupIterations": 3,
       "measurementIterations": 3,
       "forks": 2,
-      "limitVirtualScheduler" : true,
+      "limitVirtualScheduler": true,
       "pinUsingJna": true,
       "light": true,
-      "skip": false
+      "skip": true
     },
     {
       "name": "consumeCpu",
@@ -95,7 +95,15 @@
       "warmupIterations": 3,
       "measurementIterations": 3,
       "forks": 2,
-      "limitVirtualScheduler" : true,
+      "threads": [
+        74,
+        82,
+        80,
+        88,
+        96,
+        104
+      ],
+      "limitVirtualScheduler": true,
       "pinUsingJna": true,
       "light": true,
       "skip": false
