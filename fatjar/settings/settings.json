@@ -70,6 +70,34 @@
     },
     {
       "name": "TTAS_CCL_MCS",
+      "skip": true
+    },
+    {
+      "name": "HMCS_CCL_NUMA_V2",
+      "skip": true
+    },
+    {
+      "name": "HMCS_NUMA_V3",
+      "skip": true
+    },
+    {
+      "name": "HMCS_NUMA_V4",
+      "skip": true
+    },
+    {
+      "name": "HMCS_NUMA_V5",
+      "skip": true
+    },
+    {
+      "name": "HMCS_NUMA_V6",
+      "skip": true
+    },
+    {
+      "name": "CNA_NUMA_SLEEP",
+      "skip": false
+    },
+    {
+      "name": "CNA_NUMA_SLEEP_2",
       "skip": false
     }
   ],
@@ -82,7 +110,7 @@
       "warmupIterations": 3,
       "measurementIterations": 3,
       "forks": 2,
-      "limitVirtualScheduler" : true,
+      "limitVirtualScheduler": true,
       "pinUsingJna": true,
       "light": true,
       "skip": false
@@ -95,10 +123,30 @@
       "warmupIterations": 3,
       "measurementIterations": 3,
       "forks": 2,
-      "limitVirtualScheduler" : true,
+      "threads": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        24,
+        32,
+        46,
+        47,
+        48,
+        56,
+        64,
+        74,
+        82,
+        80,
+        88,
+        96,
+        104
+      ],
+      "limitVirtualScheduler": true,
       "pinUsingJna": true,
       "light": true,
-      "skip": true
+      "skip": false
     }
   ]
 }

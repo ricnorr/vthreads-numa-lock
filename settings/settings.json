@@ -50,23 +50,23 @@
     },
     {
       "name": "COMB_HCLH_CCL_MCS_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "COMB_CNA_CCL_MCS_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "COMB_TTAS_CCL_HCLH_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "COMB_TTAS_CCL_CNA_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "COMB_TTAS_NUMA_MCS",
-      "skip": false
+      "skip": true
     },
     {
       "name": "TTAS_CCL_MCS",

@@ -1,6 +1,5 @@
 package ru.ricnorr.benchmarks.jmh.cpu;
 
-import com.sun.jna.Native;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import ru.ricnorr.benchmarks.BenchmarkException;
@@ -9,9 +8,6 @@ import ru.ricnorr.numa.locks.Affinity;
 import ru.ricnorr.numa.locks.NumaLock;
 import ru.ricnorr.numa.locks.Utils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -63,6 +59,7 @@ public class JmhParConsumeCpuTokensBenchmark {
     Set<Thread> carrierThreads = new HashSet<>();
 
     final Object obj = new Object();
+
     @Setup(Level.Trial)
     public void init() {
         if (!pinUsingJna && !System.getProperty("os.name").toLowerCase().contains("mac")) {
@@ -74,7 +71,7 @@ public class JmhParConsumeCpuTokensBenchmark {
         System.out.println("Get system property jdk.virtualThreadScheduler.maxPoolSize=" +
                 System.getProperty("jdk.virtualThreadScheduler.maxPoolSize"));
         if (!lockType.equals(LockType.SYNCHRONIZED.toString())) {
-            lock = Utils.initLock(LockType.valueOf(lockType));
+            lock = Utils.initLock(LockType.valueOf(lockType), threads);
         }
     }
 
@@ -96,18 +93,18 @@ public class JmhParConsumeCpuTokensBenchmark {
             threadList.add(threadFactory.newThread(
                     () -> {
                         if (pinUsingJna) {
-                                customBarrier.incrementAndGet();
-                                int cores = Math.min(threads, Runtime.getRuntime().availableProcessors());
-                                while (customBarrier.get() < cores) {
-                                }
-                                while (!locked.compareAndSet(false, true)) {
-                                }
-                                Thread currentCarrier = Utils.getCurrentCarrierThread();
-                                if (!carrierThreads.contains(currentCarrier)) {
-                                    Affinity.affinityLib.pinToCore(carrierThreads.size());
-                                    carrierThreads.add(currentCarrier);
-                                }
-                                locked.compareAndSet(true, false);
+                            customBarrier.incrementAndGet();
+                            int cores = Math.min(threads, Runtime.getRuntime().availableProcessors());
+                            while (customBarrier.get() < cores) {
+                            }
+                            while (!locked.compareAndSet(false, true)) {
+                            }
+                            Thread currentCarrier = Utils.getCurrentCarrierThread();
+                            if (!carrierThreads.contains(currentCarrier)) {
+                                Affinity.affinityLib.pinToCore(carrierThreads.size());
+                                carrierThreads.add(currentCarrier);
+                            }
+                            locked.compareAndSet(true, false);
                         }
                         try {
                             cyclicBarrier.await();
