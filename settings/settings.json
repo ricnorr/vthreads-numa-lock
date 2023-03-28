@@ -2,103 +2,103 @@
   "locks": [
     {
       "name": "TAS",
-      "skip": true
+      "skip": false
     },
     {
       "name": "SYNCHRONIZED",
-      "skip": true
+      "skip": false
     },
     {
       "name": "TTAS",
-      "skip": true
+      "skip": false
     },
     {
       "name": "MCS_PARK",
-      "skip": true
+      "skip": false
     },
     {
       "name": "FAIR_REENTRANT",
-      "skip": true
+      "skip": false
     },
     {
       "name": "UNFAIR_REENTRANT",
-      "skip": true
+      "skip": false
     },
     {
       "name": "CNA_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HCLH_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_CCL_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_CCL_NUMA_SUPERNUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_CCL",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "COMB_HCLH_CCL_MCS_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "COMB_CNA_CCL_MCS_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "COMB_TTAS_CCL_HCLH_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "COMB_TTAS_CCL_CNA_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "COMB_TTAS_NUMA_MCS",
-      "skip": true
+      "skip": false
     },
     {
       "name": "TTAS_CCL_MCS",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_CCL_NUMA_V2",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_NUMA_V3",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_NUMA_V4",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_NUMA_V5",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_NUMA_V6",
-      "skip": true
+      "skip": false
     },
     {
       "name": "CNA_NUMA_SLEEP",
-      "skip": true
+      "skip": false
     },
     {
       "name": "CNA_NUMA_SLEEP_2",
-      "skip": true
+      "skip": false
     },
     {
       "name": "CLH_SLEEP",
@@ -118,7 +118,7 @@
       "pinUsingJna": true,
       "light": true,
       "highCont": true,
-      "skip": false
+      "skip": true
     },
     {
       "name": "consumeCpu",
@@ -132,7 +132,7 @@
       "pinUsingJna": true,
       "light": true,
       "highCont": false,
-      "skip": false
+      "skip": true
     },
     {
       "name": "consumeCpu",
@@ -146,7 +146,52 @@
       "pinUsingJna": true,
       "light": true,
       "highCont": false,
-      "skip": false
+      "skip": true
+    },
+    {
+      "name": "consumeCpu",
+      "actionsCount": 147456,
+      "before": 0,
+      "in": 1000,
+      "warmupIterations": 3,
+      "measurementIterations": 3,
+      "forks": 1,
+      "limitVirtualScheduler": true,
+      "pinUsingJna": true,
+      "light": true,
+      "highCont": true,
+      "skip": false,
+      "yieldInCrit": true
+    },
+    {
+      "name": "consumeCpu",
+      "actionsCount": 36864,
+      "before": 18000,
+      "in": 100,
+      "warmupIterations": 3,
+      "measurementIterations": 3,
+      "forks": 1,
+      "limitVirtualScheduler": true,
+      "pinUsingJna": true,
+      "light": true,
+      "highCont": false,
+      "skip": false,
+      "yieldInCrit": true
+    },
+    {
+      "name": "consumeCpu",
+      "actionsCount": 36864,
+      "before": 5000,
+      "in": 5000,
+      "warmupIterations": 3,
+      "measurementIterations": 3,
+      "forks": 1,
+      "limitVirtualScheduler": true,
+      "pinUsingJna": true,
+      "light": true,
+      "highCont": false,
+      "skip": false,
+      "yieldInCrit": true
     }
   ]
 }
