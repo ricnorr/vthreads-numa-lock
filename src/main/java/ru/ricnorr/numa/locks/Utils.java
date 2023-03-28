@@ -11,6 +11,7 @@ import ru.ricnorr.numa.locks.cna.CNACcl;
 import ru.ricnorr.numa.locks.cna.CNANuma;
 import ru.ricnorr.numa.locks.cna.pad.CNACclWithPad;
 import ru.ricnorr.numa.locks.cna.pad.CNANumaWithPad;
+import ru.ricnorr.numa.locks.cna_sleep.CNANumaSleep;
 import ru.ricnorr.numa.locks.combination.CombinationLock;
 import ru.ricnorr.numa.locks.hclh.HCLHCcl;
 import ru.ricnorr.numa.locks.hclh.HCLHCclNoPad;
@@ -21,6 +22,8 @@ import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNoPad;
 import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNumaNoPad;
 import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNumaSupernumaNoPad;
 import ru.ricnorr.numa.locks.hmcs.nopad.HMCSNumaNoPad;
+import ru.ricnorr.numa.locks.hmcs_sleep.HMCSCclNumaSleep;
+import ru.ricnorr.numa.locks.hmcs_v.HMCSNumaV;
 import ru.ricnorr.numa.locks.reentrant.NumaReentrantLock;
 
 import java.lang.invoke.MethodHandle;
@@ -46,6 +49,10 @@ public class Utils {
     public static int NUMA_NODES_CNT = getNumaNodesCnt();
 
     public static int CCL_CNT = Runtime.getRuntime().availableProcessors() / CCL_SIZE;
+
+    public static int CORES_CNT = Runtime.getRuntime().availableProcessors();
+
+    public static int CORES_PER_NUMA = CORES_CNT / NUMA_NODES_CNT;
 
     static {
         GET_CARRIER_THREAD_METHOD_HANDLE = getMethodHandle(Thread.class, "currentCarrierThread");
@@ -152,6 +159,10 @@ public class Utils {
     }
 
     public static NumaLock initLock(LockType lockType) {
+        return initLock(lockType, 0);
+    }
+
+    public static NumaLock initLock(LockType lockType, int threads) {
         switch (lockType) {
             // Standard locks
             case UNFAIR_REENTRANT -> {
@@ -187,6 +198,12 @@ public class Utils {
             }
             case CNA_CCL -> {
                 return new CNACcl();
+            }
+            case CNA_NUMA_SLEEP -> {
+                return new CNANumaSleep(threads > Runtime.getRuntime().availableProcessors(), true);
+            }
+            case CNA_NUMA_SLEEP_2 -> {
+                return new CNANumaSleep(threads > Runtime.getRuntime().availableProcessors(), false);
             }
             // CNA PAD
             case CNA_CCL_PAD -> {
@@ -224,6 +241,21 @@ public class Utils {
             }
             case HMCS_NUMA_SUPERNUMA -> {
                 return new HMCSNumaSupernuma();
+            }
+            case HMCS_CCL_NUMA_V2 -> {
+                return new HMCSCclNumaSleep(threads > Runtime.getRuntime().availableProcessors());
+            }
+            case HMCS_NUMA_V3 -> {
+                return new HMCSNumaV(threads > Runtime.getRuntime().availableProcessors(), true, Utils.CORES_PER_NUMA / 2);
+            }
+            case HMCS_NUMA_V4 -> {
+                return new HMCSNumaV(threads > Runtime.getRuntime().availableProcessors(), false, Utils.CORES_PER_NUMA / 2);
+            }
+            case HMCS_NUMA_V5 -> {
+                return new HMCSNumaV(threads > Runtime.getRuntime().availableProcessors(), true, Utils.CORES_PER_NUMA / 4);
+            }
+            case HMCS_NUMA_V6 -> {
+                return new HMCSNumaV(threads > Runtime.getRuntime().availableProcessors(), true, Utils.CORES_PER_NUMA / 8);
             }
             // HMCS NO PAD
             case HMCS_CCL_NUMA_UNPAD -> {
@@ -271,17 +303,17 @@ public class Utils {
             }
             case COMB_TTAS_CCL_HCLH_NUMA -> {
                 return new CombinationLock(
-                    List.of(
-                            new CombinationLock.CombinationLockLevelDescription(
-                                    LockType.HCLH_NUMA,
-                                    Utils.CCL_CNT
-                            ),
-                            new CombinationLock.CombinationLockLevelDescription(
-                                    LockType.TTAS,
-                                    0
-                            )
-                    ),
-                    Utils::getKunpengCCLId
+                        List.of(
+                                new CombinationLock.CombinationLockLevelDescription(
+                                        LockType.HCLH_NUMA,
+                                        Utils.CCL_CNT
+                                ),
+                                new CombinationLock.CombinationLockLevelDescription(
+                                        LockType.TTAS,
+                                        0
+                                )
+                        ),
+                        Utils::getKunpengCCLId
                 );
             }
             case COMB_TTAS_CCL_CNA_NUMA -> {
