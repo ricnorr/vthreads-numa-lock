@@ -2,7 +2,7 @@
   "locks": [
     {
       "name": "TAS",
-      "skip": false
+      "skip": true
     },
     {
       "name": "SYNCHRONIZED",
