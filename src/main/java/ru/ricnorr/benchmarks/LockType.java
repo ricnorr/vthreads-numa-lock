@@ -22,6 +22,8 @@ public enum LockType {
 
     CLH,
 
+    CLH_SLEEP,
+
     /**
      * CNA
      */
@@ -74,6 +76,8 @@ public enum LockType {
     HMCS_NUMA_V5,
 
     HMCS_NUMA_V6,
+
+    HMCS_CUSTOM,
 
     /**
      * HMCS NO PAD

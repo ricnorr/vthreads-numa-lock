@@ -58,7 +58,7 @@ for bench in bench_names:
         x = sorted(set(df['threads']))
         y = x[1:-1]
         draw_by_bench_and_mode(df, bench, mode, x, '_all', sys.argv)
-        draw_by_bench_and_mode(df, bench, mode, y, '_zoomed', sys.argv)
+        #draw_by_bench_and_mode(df, bench, mode, y, '_zoomed', sys.argv)
 
 from PIL import Image
 

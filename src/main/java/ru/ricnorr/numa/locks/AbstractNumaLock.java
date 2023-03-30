@@ -1,13 +1,12 @@
 package ru.ricnorr.numa.locks;
 
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
 public abstract class AbstractNumaLock implements NumaLock {
 
     static final long MAX_WAIT = 100;
 
-    protected final Supplier<Integer> clusterIdSupplier;
+    protected Supplier<Integer> clusterIdSupplier;
 
     protected final ThreadLocal<Integer> clusterIdThreadLocal;
 
