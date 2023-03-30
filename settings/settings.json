@@ -34,11 +34,15 @@
     },
     {
       "name": "HMCS_CCL_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_CCL_NUMA_SUPERNUMA",
       "skip": true
+    },
+    {
+      "name": "HMCS_CUSTOM",
+      "skip": false
     },
     {
       "name": "HMCS_CCL",
