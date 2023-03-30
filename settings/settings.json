@@ -6,7 +6,7 @@
     },
     {
       "name": "SYNCHRONIZED",
-      "skip": false
+      "skip": true
     },
     {
       "name": "TTAS",
@@ -14,23 +14,23 @@
     },
     {
       "name": "MCS_PARK",
-      "skip": false
+      "skip": true
     },
     {
       "name": "FAIR_REENTRANT",
-      "skip": false
+      "skip": true
     },
     {
       "name": "UNFAIR_REENTRANT",
-      "skip": false
+      "skip": true
     },
     {
       "name": "CNA_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HCLH_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_CCL_NUMA",
@@ -38,71 +38,71 @@
     },
     {
       "name": "HMCS_CCL_NUMA_SUPERNUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_CCL",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "COMB_HCLH_CCL_MCS_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "COMB_CNA_CCL_MCS_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "COMB_TTAS_CCL_HCLH_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "COMB_TTAS_CCL_CNA_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "COMB_TTAS_NUMA_MCS",
-      "skip": false
+      "skip": true
     },
     {
       "name": "TTAS_CCL_MCS",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_CCL_NUMA_V2",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_NUMA_V3",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_NUMA_V4",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_NUMA_V5",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_NUMA_V6",
-      "skip": false
+      "skip": true
     },
     {
       "name": "CNA_NUMA_SLEEP",
-      "skip": false
+      "skip": true
     },
     {
       "name": "CNA_NUMA_SLEEP_2",
-      "skip": false
+      "skip": true
     },
     {
       "name": "CLH_SLEEP",
-      "skip": false
+      "skip": true
     }
   ],
   "benches": [
@@ -118,7 +118,7 @@
       "pinUsingJna": true,
       "light": true,
       "highCont": true,
-      "skip": true
+      "skip": false
     },
     {
       "name": "consumeCpu",
@@ -132,7 +132,7 @@
       "pinUsingJna": true,
       "light": true,
       "highCont": false,
-      "skip": true
+      "skip": false
     },
     {
       "name": "consumeCpu",
@@ -160,7 +160,7 @@
       "pinUsingJna": true,
       "light": true,
       "highCont": true,
-      "skip": false,
+      "skip": true,
       "yieldInCrit": true
     },
     {
@@ -175,7 +175,7 @@
       "pinUsingJna": true,
       "light": true,
       "highCont": false,
-      "skip": false,
+      "skip": true,
       "yieldInCrit": true
     },
     {
@@ -190,7 +190,7 @@
       "pinUsingJna": true,
       "light": true,
       "highCont": false,
-      "skip": false,
+      "skip": true,
       "yieldInCrit": true
     }
   ]
