@@ -15,8 +15,8 @@ import static ru.ricnorr.numa.locks.hmcs.HMCSQNodeInterface.COHORT_START;
 import static ru.ricnorr.numa.locks.hmcs.HMCSQNodeInterface.LOCKED;
 import static ru.ricnorr.numa.locks.hmcs.HMCSQNodeInterface.UNLOCKED;
 import static ru.ricnorr.numa.locks.hmcs.HMCSQNodeInterface.WAIT;
+import static ru.ricnorr.numa.locks.hmcs_comb.HMCSComb.NumaStatus.CLEAR_NUMA_FOR_LOCK;
 import static ru.ricnorr.numa.locks.hmcs_comb.HMCSComb.NumaStatus.HAVE_LOCK;
-import static ru.ricnorr.numa.locks.hmcs_comb.HMCSComb.NumaStatus.TRY_TO_GIVE_LOCK;
 import static ru.ricnorr.numa.locks.hmcs_comb.HMCSComb.NumaStatus.WAITING_LOCK;
 
 
@@ -35,7 +35,7 @@ public class HMCSComb extends AbstractNumaLock {
   enum NumaStatus {
     HAVE_LOCK,
 
-    TRY_TO_GIVE_LOCK,
+    CLEAR_NUMA_FOR_LOCK,
 
     WAITING_LOCK,
 
@@ -96,11 +96,12 @@ public class HMCSComb extends AbstractNumaLock {
     Triple res;
     int cclId;
     int numaId;
+
     while (true) {
       cclId = Utils.getByThreadFromThreadLocal(cclThreadLocal, Utils.getCurrentCarrierThread());
       numaId = Utils.getByThreadFromThreadLocal(numaThreadLocal, Utils.getCurrentCarrierThread());
       HNodeComb numaHNode = numaHNodes[numaId];
-      if (numaHNode.numaStatus == NumaStatus.TRY_TO_GIVE_LOCK) {
+      if (numaHNode.numaStatus == NumaStatus.CLEAR_NUMA_FOR_LOCK) {
         Thread.yield();
         continue;
       }
@@ -183,15 +184,15 @@ public class HMCSComb extends AbstractNumaLock {
     int curCount = qNode.getStatus();
     boolean skipThresholdCheck = false;
     if (curCount >= THRESHOLD && hNode.node.getStatus() >= THRESHOLD - 1 && lvl == 0) {
-      if (hNode.parent.numaStatus != TRY_TO_GIVE_LOCK) {
-        hNode.parent.numaStatus = TRY_TO_GIVE_LOCK;
+      if (hNode.parent.numaStatus != CLEAR_NUMA_FOR_LOCK) {
+        hNode.parent.numaStatus = CLEAR_NUMA_FOR_LOCK;
       }
       skipThresholdCheck = true;
     }
     if (lvl == 1 &&
-        (curCount >= THRESHOLD || hNode.numaStatus == TRY_TO_GIVE_LOCK)) { // проставил CCL либо еще не проставил
-      if (hNode.numaStatus != TRY_TO_GIVE_LOCK) {
-        hNode.numaStatus = TRY_TO_GIVE_LOCK;
+        (curCount >= THRESHOLD || hNode.numaStatus == CLEAR_NUMA_FOR_LOCK)) { // проставил CCL либо еще не проставил
+      if (hNode.numaStatus != CLEAR_NUMA_FOR_LOCK) {
+        hNode.numaStatus = CLEAR_NUMA_FOR_LOCK;
       }
       skipThresholdCheck = true;
     }
