@@ -46,7 +46,7 @@
     },
     {
       "name": "HMCS_CUSTOM",
-      "skip": false
+      "skip": true
     }
   ],
   "benches": [
