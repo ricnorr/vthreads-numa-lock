@@ -103,10 +103,6 @@
     {
       "name": "CNA_NUMA_SLEEP_2",
       "skip": true
-    },
-    {
-      "name": "CLH_SLEEP",
-      "skip": true
     }
   ],
   "benches": [
