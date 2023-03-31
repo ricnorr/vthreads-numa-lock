@@ -2,27 +2,27 @@
   "locks": [
     {
       "name": "TAS",
-      "skip": false
+      "skip": true
     },
     {
       "name": "SYNCHRONIZED",
-      "skip": false
+      "skip": true
     },
     {
       "name": "TTAS",
-      "skip": false
+      "skip": true
     },
     {
       "name": "MCS",
-      "skip": false
+      "skip": true
     },
     {
       "name": "FAIR_REENTRANT",
-      "skip": false
+      "skip": true
     },
     {
       "name": "UNFAIR_REENTRANT",
-      "skip": false
+      "skip": true
     },
     {
       "name": "CNA_NUMA",
@@ -30,15 +30,15 @@
     },
     {
       "name": "HCLH_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_CCL_NUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_CCL_NUMA_SUPERNUMA",
-      "skip": false
+      "skip": true
     },
     {
       "name": "HMCS_NUMA",
