@@ -83,11 +83,13 @@ public class JmhBenchmarkRunner {
             if (name.equals("consumeCpu")) {
                 long before = ((long) obj.get("before"));
                 long in = ((long) obj.get("in"));
-                boolean limitVirtualScheduler = obj.get("limitVirtualScheduler") != null && ((Boolean)obj.get("limitVirtualScheduler"));
-                boolean pinUsingJna = obj.get("pinUsingJna") != null && ((Boolean)obj.get("pinUsingJna"));
+                boolean limitVirtualScheduler = obj.get("limitVirtualScheduler") != null && ((Boolean) obj.get("limitVirtualScheduler"));
+                boolean pinUsingJna = obj.get("pinUsingJna") != null && ((Boolean) obj.get("pinUsingJna"));
+                boolean highCont = obj.get("highCont") != null && ((Boolean) obj.get("highCont"));
                 double beforeConsumeCpuTokensTimeNanos = JmhConsumeCpuTokensUtil.estimateConsumeCpuTokensTimeNanos(before);
                 double inConsumeCpuTokensTimeNanos = JmhConsumeCpuTokensUtil.estimateConsumeCpuTokensTimeNanos(in);
                 double highContentionWithoutLocksNanos = JmhConsumeCpuTokensUtil.estimateHighContentionWithoutLocksTimeNanos(before, in, actionsCount);
+                boolean yieldInCrit = obj.get("yieldInCrit") != null && ((Boolean) obj.get("yieldInCrit"));
                 for (int thread : threads) {
                     for (Object lockDescription : locks) {
                         if (!shouldSkip((JSONObject) lockDescription)) {
@@ -102,7 +104,7 @@ public class JmhBenchmarkRunner {
                                             forks,
                                             profilerSpec,
                                             limitVirtualScheduler,
-                                            pinUsingJna
+                                            pinUsingJna, highCont, yieldInCrit
                                     )
                             );
                         }
@@ -153,18 +155,27 @@ public class JmhBenchmarkRunner {
                     System.out.println("JavaFlightRecorder detected!");
                     options.addProfiler(JavaFlightRecorderProfiler.class, jfrProfilerParams);
                 }
-                List<Double> withLocksNanos = runBenchmarkNano(options,
-                        Map.of(
-                                "isLightThread", Boolean.toString(param.isLightThread),
-                                "beforeCpuTokens", Long.toString(param.beforeCpuTokens),
-                                "inCpuTokens", Long.toString(param.inCpuTokens),
-                                "threads", Integer.toString(param.threads),
-                                "actionsPerThread", Integer.toString(param.actionsPerThread),
-                                "lockType", param.lockType.toString(),
-                                "lockSpec", param.lockSpec,
-                                "pinUsingJna", Boolean.toString(param.pinUsingJNA)
-                        )
-                );
+                List<Double> withLocksNanos;
+                try {
+                    withLocksNanos = runBenchmarkNano(options,
+                            Map.of(
+                                    "isLightThread", Boolean.toString(param.isLightThread),
+                                    "beforeCpuTokens", Long.toString(param.beforeCpuTokens),
+                                    "inCpuTokens", Long.toString(param.inCpuTokens),
+                                    "threads", Integer.toString(param.threads),
+                                    "actionsPerThread", Integer.toString(param.actionsPerThread),
+                                    "lockType", param.lockType.toString(),
+                                    "lockSpec", param.lockSpec,
+                                    "pinUsingJna", Boolean.toString(param.pinUsingJNA),
+                                    "yieldInCrit", Boolean.toString(param.yieldInCrit)
+                            )
+                    );
+                } catch (Exception e) {
+                    withLocksNanos = List.of(1.0 * Integer.MAX_VALUE);
+                }
+                if (withLocksNanos.isEmpty()) {
+                    withLocksNanos = List.of(1.0 * Integer.MAX_VALUE);
+                }
                 double withLockNanosMin = withLocksNanos.stream().min(Double::compare).get();
                 double withLockNanosMax = withLocksNanos.stream().max(Double::compare).get();
                 double withLockNanosMedian = Utils.median(withLocksNanos);

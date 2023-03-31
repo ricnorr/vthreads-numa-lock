@@ -60,7 +60,7 @@ public class CNANumaSleep extends AbstractNumaLock {
         return cnaNodeFactory.get();
     }
 
-    public static class CNALockCoreSleep {
+    public class CNALockCoreSleep {
 
         public static CNANodeSleep TRUE_VALUE = new CNANodeSleep();
 
@@ -162,7 +162,7 @@ public class CNANumaSleep extends AbstractNumaLock {
 
         private CNANodeSleep find_successor(CNANodeSleep me) {
             CNANodeSleep next = me.getNext();
-            int mySocket = me.getSocket();
+            int mySocket = getClusterId();
 
             if (next.getSocket() == mySocket) {
                 return next;

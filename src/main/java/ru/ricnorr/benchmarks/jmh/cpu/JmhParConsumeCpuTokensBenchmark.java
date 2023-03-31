@@ -50,6 +50,9 @@ public class JmhParConsumeCpuTokensBenchmark {
     @Param("false")
     public boolean pinUsingJna;
 
+    @Param("false")
+    public boolean yieldInCrit;
+
     NumaLock lock;
 
     CyclicBarrier cyclicBarrier;
@@ -128,6 +131,9 @@ public class JmhParConsumeCpuTokensBenchmark {
                                     nodeForLock = lock.lock(null);
                                 }
                                 Blackhole.consumeCPU(inCpuTokens);
+                                if (yieldInCrit) {
+                                    Thread.yield();
+                                }
                                 lock.unlock(nodeForLock);
                             }
                         }
