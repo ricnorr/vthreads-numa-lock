@@ -26,6 +26,10 @@
     },
     {
       "name": "CNA_NUMA",
+      "skip": true
+    },
+    {
+      "name": "CNA_NUMA_SLEEP",
       "skip": false
     },
     {
