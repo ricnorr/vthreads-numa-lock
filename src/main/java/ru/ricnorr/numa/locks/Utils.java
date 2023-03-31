@@ -16,7 +16,6 @@ import oshi.hardware.CentralProcessor;
 import ru.ricnorr.benchmarks.BenchmarkException;
 import ru.ricnorr.benchmarks.LockType;
 import ru.ricnorr.numa.locks.basic.CLH;
-import ru.ricnorr.numa.locks.basic.CLH_SLEEP;
 import ru.ricnorr.numa.locks.basic.MCS;
 import ru.ricnorr.numa.locks.basic.MCS_PARK;
 import ru.ricnorr.numa.locks.basic.MCS_SLEEP;
@@ -206,9 +205,6 @@ public class Utils {
       }
       case CLH -> {
         return new CLH();
-      }
-      case CLH_SLEEP -> {
-        return new CLH_SLEEP();
       }
       // CNA
       case CNA_NUMA -> {
