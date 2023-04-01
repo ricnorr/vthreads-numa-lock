@@ -2,55 +2,51 @@
   "locks": [
     {
       "name": "TAS",
-      "skip": true
+      "skip": false
     },
     {
       "name": "SYNCHRONIZED",
-      "skip": true
+      "skip": false
     },
     {
       "name": "TTAS",
-      "skip": true
+      "skip": false
     },
     {
       "name": "MCS",
-      "skip": true
+      "skip": false
     },
     {
       "name": "FAIR_REENTRANT",
-      "skip": true
+      "skip": false
     },
     {
       "name": "UNFAIR_REENTRANT",
-      "skip": true
+      "skip": false
     },
     {
       "name": "CNA_NUMA",
-      "skip": true
-    },
-    {
-      "name": "CNA_NUMA_SLEEP",
       "skip": false
     },
     {
       "name": "HCLH_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_CCL_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_CCL_NUMA_SUPERNUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_CUSTOM",
-      "skip": true
+      "skip": false
     }
   ],
   "benches": [
@@ -64,7 +60,8 @@
       "forks": 1,
       "highCont": true,
       "yieldsBefore": 1,
-      "title": "Высокая конкуренция. Внутренняя ~3000 нс. Внешняя работа отсутствует. 1 точка переключения"
+      "title": "Высокая конкуренция. Внутренняя ~3000 нс. Внешняя работа отсутствует. 1 точка переключения",
+      "skip": true
     },
     {
       "name": "consumeCpu",
@@ -77,7 +74,20 @@
       "forks": 1,
       "yieldsBefore": 2,
       "highCont": false,
-      "title": "Низкая конкуренция. Внутренняя ~3000 нс. Внешняя работа в 128 раз больше внутренней. 2 точки переключения"
+      "title": "Низкая конкуренция. Внутренняя ~3000 нс. Внешняя работа в 128 раз больше внутренней. 2 точки переключения",
+      "skip": true
+    },
+    {
+      "name": "consumeCpu",
+      "actionsCount": 128000,
+      "before": 1000,
+      "in": 1000,
+      "warmupIterations": 3,
+      "measurementIterations": 3,
+      "forks": 1,
+      "yieldsBefore": 2,
+      "highCont": false,
+      "title": "Высокая конкуренция. Внешняя секция == внутренней секции == ~3000 нс. 2 точки переключения вне"
     }
   ]
 }
