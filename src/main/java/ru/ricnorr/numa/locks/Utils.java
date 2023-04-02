@@ -26,7 +26,6 @@ import ru.ricnorr.numa.locks.cna.CNACcl;
 import ru.ricnorr.numa.locks.cna.CNANuma;
 import ru.ricnorr.numa.locks.cna.pad.CNACclWithPad;
 import ru.ricnorr.numa.locks.cna.pad.CNANumaWithPad;
-import ru.ricnorr.numa.locks.cna_sleep.CNANumaSleep;
 import ru.ricnorr.numa.locks.combination.CombinationLock;
 import ru.ricnorr.numa.locks.hclh.HCLHCcl;
 import ru.ricnorr.numa.locks.hclh.HCLHCclNoPad;
@@ -212,12 +211,6 @@ public class Utils {
       }
       case CNA_CCL -> {
         return new CNACcl();
-      }
-      case CNA_NUMA_SLEEP -> {
-        return new CNANumaSleep(threads > Runtime.getRuntime().availableProcessors(), true);
-      }
-      case CNA_NUMA_SLEEP_2 -> {
-        return new CNANumaSleep(threads > Runtime.getRuntime().availableProcessors(), false);
       }
       // CNA PAD
       case CNA_CCL_PAD -> {
