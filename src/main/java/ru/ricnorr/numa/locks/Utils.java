@@ -41,8 +41,6 @@ import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNumaNoPad;
 import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNumaSupernumaNoPad;
 import ru.ricnorr.numa.locks.hmcs.nopad.HMCSNumaNoPad;
 import ru.ricnorr.numa.locks.hmcs_comb.HMCSComb;
-import ru.ricnorr.numa.locks.hmcs_sleep.HMCSCclNumaSleep;
-import ru.ricnorr.numa.locks.hmcs_v.HMCSNumaV;
 import ru.ricnorr.numa.locks.reentrant.NumaReentrantLock;
 
 public class Utils {
@@ -248,21 +246,6 @@ public class Utils {
       }
       case HMCS_NUMA_SUPERNUMA -> {
         return new HMCSNumaSupernuma();
-      }
-      case HMCS_CCL_NUMA_V2 -> {
-        return new HMCSCclNumaSleep(threads > Runtime.getRuntime().availableProcessors());
-      }
-      case HMCS_NUMA_V3 -> {
-        return new HMCSNumaV(threads > Runtime.getRuntime().availableProcessors(), true, Utils.CORES_PER_NUMA / 2);
-      }
-      case HMCS_NUMA_V4 -> {
-        return new HMCSNumaV(threads > Runtime.getRuntime().availableProcessors(), false, Utils.CORES_PER_NUMA / 2);
-      }
-      case HMCS_NUMA_V5 -> {
-        return new HMCSNumaV(threads > Runtime.getRuntime().availableProcessors(), true, Utils.CORES_PER_NUMA / 4);
-      }
-      case HMCS_NUMA_V6 -> {
-        return new HMCSNumaV(threads > Runtime.getRuntime().availableProcessors(), true, Utils.CORES_PER_NUMA / 8);
       }
       case HMCS_CUSTOM -> {
         return new HMCSComb();
