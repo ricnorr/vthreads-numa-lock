@@ -16,16 +16,9 @@ paths = []
 
 
 def draw_by_bench_and_mode(df, bench, mode, threads, suffix, filterLocks):
-        if 'Low' in bench and 'overhead' in mode:
+        if 'Низкая' in bench and 'overhead' in mode:
             return
         ax = plt.axes(title = bench + '\n mode=' + mode)
-
-        #ax.set_xticks(np.linspace(0, 256, 8))
-        #ax.set_xscale("log", base=2)
-        #ax.xaxis.set_major_formatter(ticker.ScalarFormatter())
-        #ax.set_xticks(threads)
-        #ax.set_xticklabels(list(map(lambda x : str(x), threads)))
-
         plt.gcf().set_size_inches(7, 7)
         ind = 0
         markevery = [1,2]
@@ -34,13 +27,17 @@ def draw_by_bench_and_mode(df, bench, mode, threads, suffix, filterLocks):
                 if lock not in filterLocks:
                     continue
             cur_df = df[(df['name'] == bench) & (df['lock'] == lock) & (df['threads'].isin(threads))].copy()
-            cur_df['threads cnt'] = cur_df['threads'].map(str)
-            cur_df.sort_values(by=['threads']).plot(ax=ax, x='threads cnt', y=mode, label=lock, style=[styles[ind % len(styles)]], marker='o')
+            cur_df['threads_cnt'] = cur_df['threads'].map(str)
+            cur_df.sort_values(by=['threads']).plot(ax=ax, x='threads_cnt', y=mode, label=lock, style=[styles[ind % len(styles)]], marker='o')
+            #ax.set_xticklabels(list(map(lambda x : str(x), cur_df['threads'])))
+            #ax.set_xlim(-0.65, 14.75999)
+            #plt.margins(1)
+            #ax.set_xlim(-1.90001,1.90001)
             ind+=1
         l = plt.legend()
         for text in l.get_texts():
             t = text.get_text()
-            if 'REENTRANT' in t:
+            if 'REENTRANT' in t or t == 'SYNCHRONIZED':
                 text.set_color("red")
         if 'ops_millisec' in mode:
             plt.ylabel('op/ms')
@@ -54,7 +51,7 @@ def draw_by_bench_and_mode(df, bench, mode, threads, suffix, filterLocks):
         plt.close()
 
 for bench in bench_names:
-    for mode in ['Median_overhead_(millisec)','Median_throughput_(ops_millisec)']:
+    for mode in ['Median_overhead_(millisec)','Пропускная способность (op|ms)']:
         x = sorted(set(df['threads']))
         y = x[1:-1]
         draw_by_bench_and_mode(df, bench, mode, x, '_all', sys.argv)

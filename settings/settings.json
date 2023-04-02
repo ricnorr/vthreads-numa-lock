@@ -2,19 +2,19 @@
   "locks": [
     {
       "name": "TAS",
-      "skip": true
+      "skip": false
     },
     {
       "name": "SYNCHRONIZED",
-      "skip": true
+      "skip": false
     },
     {
       "name": "TTAS",
-      "skip": true
+      "skip": false
     },
     {
-      "name": "MCS_PARK",
-      "skip": true
+      "name": "MCS",
+      "skip": false
     },
     {
       "name": "FAIR_REENTRANT",
@@ -26,11 +26,11 @@
     },
     {
       "name": "CNA_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HCLH_NUMA",
-      "skip": true
+      "skip": false
     },
     {
       "name": "HMCS_CCL_NUMA",
@@ -41,157 +41,51 @@
       "skip": false
     },
     {
-      "name": "HMCS_CUSTOM",
+      "name": "HMCS_NUMA",
       "skip": false
     },
     {
-      "name": "HMCS_CCL",
-      "skip": true
-    },
-    {
-      "name": "HMCS_NUMA",
-      "skip": true
-    },
-    {
-      "name": "COMB_HCLH_CCL_MCS_NUMA",
-      "skip": true
-    },
-    {
-      "name": "COMB_CNA_CCL_MCS_NUMA",
-      "skip": true
-    },
-    {
-      "name": "COMB_TTAS_CCL_HCLH_NUMA",
-      "skip": true
-    },
-    {
-      "name": "COMB_TTAS_CCL_CNA_NUMA",
-      "skip": true
-    },
-    {
-      "name": "COMB_TTAS_NUMA_MCS",
-      "skip": true
-    },
-    {
-      "name": "TTAS_CCL_MCS",
-      "skip": true
-    },
-    {
-      "name": "HMCS_CCL_NUMA_V2",
-      "skip": true
-    },
-    {
-      "name": "HMCS_NUMA_V3",
-      "skip": true
-    },
-    {
-      "name": "HMCS_NUMA_V4",
-      "skip": true
-    },
-    {
-      "name": "HMCS_NUMA_V5",
-      "skip": true
-    },
-    {
-      "name": "HMCS_NUMA_V6",
-      "skip": true
-    },
-    {
-      "name": "CNA_NUMA_SLEEP",
-      "skip": true
-    },
-    {
-      "name": "CNA_NUMA_SLEEP_2",
-      "skip": true
+      "name": "HMCS_CUSTOM",
+      "skip": false
     }
   ],
   "benches": [
     {
       "name": "consumeCpu",
-      "actionsCount": 147456,
+      "actionsCount": 128000,
       "before": 0,
       "in": 1000,
       "warmupIterations": 3,
       "measurementIterations": 3,
       "forks": 1,
-      "limitVirtualScheduler": true,
-      "pinUsingJna": true,
-      "light": true,
       "highCont": true,
-      "skip": false
+      "yieldsBefore": 1,
+      "title": "Высокая конкуренция. Внутренняя ~3000 нс. Внешняя работа отсутствует. 1 точка переключения"
     },
     {
       "name": "consumeCpu",
-      "actionsCount": 36864,
-      "before": 18000,
-      "in": 100,
+      "actionsCount": 128000,
+      "before": 128000,
+      "in": 1000,
+      "threadsFrom": 4,
       "warmupIterations": 3,
       "measurementIterations": 3,
       "forks": 1,
-      "limitVirtualScheduler": true,
-      "pinUsingJna": true,
-      "light": true,
+      "yieldsBefore": 2,
       "highCont": false,
-      "skip": false
+      "title": "Низкая конкуренция. Внутренняя ~3000 нс. Внешняя работа в 128 раз больше внутренней. 2 точки переключения"
     },
     {
       "name": "consumeCpu",
-      "actionsCount": 36864,
-      "before": 5000,
-      "in": 5000,
-      "warmupIterations": 3,
-      "measurementIterations": 3,
-      "forks": 1,
-      "limitVirtualScheduler": true,
-      "pinUsingJna": true,
-      "light": true,
-      "highCont": false,
-      "skip": true
-    },
-    {
-      "name": "consumeCpu",
-      "actionsCount": 147456,
-      "before": 0,
+      "actionsCount": 128000,
+      "before": 1000,
       "in": 1000,
       "warmupIterations": 3,
       "measurementIterations": 3,
       "forks": 1,
-      "limitVirtualScheduler": true,
-      "pinUsingJna": true,
-      "light": true,
-      "highCont": true,
-      "skip": true,
-      "yieldInCrit": true
-    },
-    {
-      "name": "consumeCpu",
-      "actionsCount": 36864,
-      "before": 18000,
-      "in": 100,
-      "warmupIterations": 3,
-      "measurementIterations": 3,
-      "forks": 1,
-      "limitVirtualScheduler": true,
-      "pinUsingJna": true,
-      "light": true,
+      "yieldsBefore": 2,
       "highCont": false,
-      "skip": true,
-      "yieldInCrit": true
-    },
-    {
-      "name": "consumeCpu",
-      "actionsCount": 36864,
-      "before": 5000,
-      "in": 5000,
-      "warmupIterations": 3,
-      "measurementIterations": 3,
-      "forks": 1,
-      "limitVirtualScheduler": true,
-      "pinUsingJna": true,
-      "light": true,
-      "highCont": false,
-      "skip": true,
-      "yieldInCrit": true
+      "title": "Высокая конкуренция. Внешняя секция == внутренней секции == ~3000 нс. 2 точки переключения вне"
     }
   ]
 }

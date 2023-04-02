@@ -28,11 +28,7 @@ public enum LockType {
   CNA_CCL,
 
   CNA_NUMA,
-
-  CNA_NUMA_SLEEP,
-
-  CNA_NUMA_SLEEP_2,
-
+  
   /**
    * CNA NO PAD
    */
