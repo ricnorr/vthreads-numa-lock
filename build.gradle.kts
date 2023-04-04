@@ -40,7 +40,7 @@ tasks.withType<JavaCompile>().configureEach {
         "java.base/jdk.internal.util=ALL-UNNAMED",
         "--enable-preview",
         "--add-exports",
-        "java.base/jdk.internal.vm.annotation=ALL-UNNAMED"
+        "java.base/jdk.internal.vm.annotation=ALL-UNNAMED",
     )
 }
 
@@ -52,7 +52,7 @@ tasks.withType<JavaExec>().configureEach {
         "-XX:-RestrictContended",
         "--add-opens",
         "java.base/java.lang=ALL-UNNAMED",
-        "-Djna.library.path=libs/"
+        "-Djna.library.path=libs/",
     )
 }
 
@@ -78,6 +78,7 @@ dependencies {
     annotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:1.35")
     implementation("org.openjdk.jol:jol-core:0.9")
     implementation("net.java.dev.jna:jna:4.5.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.8.9")
 }
 
 tasks.test {

@@ -52,65 +52,69 @@
   "benches": [
     {
       "name": "consumeCpu",
-      "actionsCount": 128000,
-      "before": 0,
-      "in": 1000,
-      "warmupIterations": 3,
-      "measurementIterations": 3,
-      "forks": 1,
-      "highCont": true,
-      "yieldsBefore": 1,
-      "title": "Высокая конкуренция. Внутренняя ~3000 нс. Внешняя работа отсутствует. 1 точка переключения",
-      "skip": true
+      "payload": {
+        "actionsCount": 128000,
+        "beforeCpuTokens": 0,
+        "inCpuTokens": 1000,
+        "warmupIterations": 3,
+        "measurementIterations": 3,
+        "forks": 1,
+        "yieldsBefore": 1,
+        "title": "Высокая конкуренция. Внутренняя ~3000 нс. Внешняя работа отсутствует. 1 точка переключения",
+        "skip": true
+      }
     },
     {
       "name": "consumeCpu",
-      "actionsCount": 128000,
-      "before": 128000,
-      "in": 1000,
-      "threadsFrom": 4,
-      "warmupIterations": 3,
-      "measurementIterations": 3,
-      "forks": 1,
-      "yieldsBefore": 2,
-      "highCont": false,
-      "title": "Низкая конкуренция. Внутренняя ~3000 нс. Внешняя работа в 128 раз больше внутренней. 2 точки переключения",
-      "skip": true
+      "payload": {
+        "actionsCount": 128000,
+        "beforeCpuTokens": 128000,
+        "inCpuTokens": 1000,
+        "threadsFrom": 4,
+        "warmupIterations": 3,
+        "measurementIterations": 3,
+        "forks": 1,
+        "yieldsBefore": 2,
+        "title": "Низкая конкуренция. Внутренняя ~3000 нс. Внешняя работа в 128 раз больше внутренней. 2 точки переключения",
+        "skip": true
+      }
     },
     {
       "name": "consumeCpu",
-      "actionsCount": 128000,
-      "before": 1000,
-      "in": 1000,
-      "warmupIterations": 3,
-      "measurementIterations": 3,
-      "forks": 1,
-      "yieldsBefore": 2,
-      "highCont": false,
-      "title": "Высокая конкуренция. Внешняя секция == внутренней секции == ~3000 нс. 2 точки переключения вне",
-      "skip": true
+      "payload": {
+        "actionsCount": 128000,
+        "beforeCpuTokens": 1000,
+        "inCpuTokens": 1000,
+        "warmupIterations": 3,
+        "measurementIterations": 3,
+        "forks": 1,
+        "yieldsBefore": 2,
+        "title": "Высокая конкуренция. Внешняя секция == внутренней секции == ~3000 нс. 2 точки переключения вне",
+        "skip": true
+      }
     },
     {
       "name": "consumeCpu",
-      "actionsCount": 2500000,
-      "before": 128000,
-      "in": 1000,
-      "warmupIterations": 3,
-      "measurementIterations": 3,
-      "forks": 1,
-      "threads": [
-        250,
-        500,
-        1000,
-        2000,
-        4000,
-        8000,
-        10000
-      ],
-      "yieldsBefore": 2,
-      "highCont": false,
-      "title": "Очень много потоков. Низкая конкуренция.Внутри ~3000.Внешняя в 128 раз больше. 2 yield.",
-      "skip": false
+      "payload": {
+        "actionsCount": 2500000,
+        "beforeCpuTokens": 128000,
+        "inCpuTokens": 1000,
+        "warmupIterations": 3,
+        "measurementIterations": 3,
+        "forks": 1,
+        "threads": [
+          250,
+          500,
+          1000,
+          2000,
+          4000,
+          8000,
+          10000
+        ],
+        "yieldsBefore": 2,
+        "title": "Очень много потоков. Низкая конкуренция.Внутри ~3000.Внешняя в 128 раз больше. 2 yield.",
+        "skip": false
+      }
     }
   ]
 }

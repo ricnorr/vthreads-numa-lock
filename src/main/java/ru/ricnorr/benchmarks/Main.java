@@ -10,9 +10,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.FileUtils;
@@ -26,7 +29,7 @@ import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import ru.ricnorr.benchmarks.jmh.JmhBenchmarkRunner;
 import ru.ricnorr.benchmarks.jmh.cpu.JmhJniCallBenchmark;
-import ru.ricnorr.benchmarks.params.BenchmarkParameters;
+import ru.ricnorr.benchmarks.params.LockParam;
 import ru.ricnorr.numa.locks.Utils;
 
 import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
@@ -75,18 +78,14 @@ public class Main {
     }
   }
 
-  public static List<Integer> autoThreadsInit(boolean isLightThread) {
+  public static List<Integer> autoThreadsInit() {
     int cores = Runtime.getRuntime().availableProcessors();
     List<Integer> threadsList =
         new ArrayList<>(List.of(1, 2, 4, 8, 16, 24, 32, 48, 64, 80, 96, 128)).stream().filter(it -> it < cores)
             .collect(Collectors.toList());
-    if (isLightThread) {
-      threadsList.addAll(
-          List.of(cores - 2, cores, cores + (cores / 8), cores + (cores / 4), cores + (cores / 2),
-              cores + cores));
-    } else {
-      threadsList.add(cores);
-    }
+    threadsList.addAll(
+        List.of(cores - 2, cores, cores + (cores / 8), cores + (cores / 4), cores + (cores / 2),
+            cores + cores));
     return threadsList.stream().distinct().toList();
   }
 
@@ -189,9 +188,11 @@ public class Main {
     }
     JSONObject obj = (JSONObject) JSONValue.parse(s);
 
-    var locks = (JSONArray) obj.get("locks");
+    var locks = new ObjectMapper().readValue(((JSONArray) obj.get("locks")).toJSONString(),
+        new TypeReference<List<LockParam>>() {
+        });
     var benches = (JSONArray) obj.get("benches");
-    List<BenchmarkParameters> benchmarkParametersList = JmhBenchmarkRunner.fillBenchmarkParameters(locks, benches);
+    List<Map<String, String>> benchmarkParametersList = JmhBenchmarkRunner.fillBenchmarkParameters(locks, benches);
 
     // Run benches and collect results
     List<BenchmarkResultsCsv> resultCsv = new ArrayList<>();
@@ -200,7 +201,7 @@ public class Main {
     System.out.println(processors.stream().map(Object::toString)
         .collect(Collectors.joining(",", "Processors ordered by NUMA node\n", "\n")));
 
-    for (BenchmarkParameters param : benchmarkParametersList) {
+    for (Map<String, String> param : benchmarkParametersList) {
       resultCsv.add(JmhBenchmarkRunner.runBenchmark(param));
 
     }
