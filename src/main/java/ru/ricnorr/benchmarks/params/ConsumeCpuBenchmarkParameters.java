@@ -5,6 +5,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.openjdk.jmh.profile.AsyncProfiler;
+import org.openjdk.jmh.profile.JavaFlightRecorderProfiler;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
+import org.openjdk.jmh.runner.options.TimeValue;
+import ru.ricnorr.benchmarks.jmh.cpu.JmhParConsumeCpuTokensBenchmark;
+import ru.ricnorr.numa.locks.Utils;
+
+import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
+
 public class ConsumeCpuBenchmarkParameters implements BenchmarkParameters {
 
   public long beforeCpuTokens;
@@ -14,6 +24,8 @@ public class ConsumeCpuBenchmarkParameters implements BenchmarkParameters {
   public Boolean yieldInCrit;
 
   public Integer yieldsBefore;
+
+  public List<LockParam> locks;
 
   public Integer threadsFrom;
 
@@ -27,7 +39,7 @@ public class ConsumeCpuBenchmarkParameters implements BenchmarkParameters {
 
   public int forks;
 
-  public Map<String, String> profilerParams;
+  public Map<String, String> profilerParams = new HashMap<>();
 
   public String title;
 
@@ -39,33 +51,38 @@ public class ConsumeCpuBenchmarkParameters implements BenchmarkParameters {
   }
 
   @Override
-  public List<Map<String, String>> getMap(LockParam lockParam) {
-    assert (!lockParam.skip);
+  public List<Options> getOptions() {
     if (threadsFrom != null) {
       threads = threads.stream().filter(it -> it >= threadsFrom).collect(Collectors.toList());
     }
-    return threads.stream().map(it -> {
-          var res = new HashMap<String, String>();
-          res.put("lockType", lockParam.name.name());
-          assert (title != null);
-          res.put("beforeCpuTokens", Long.toString(beforeCpuTokens));
-          res.put("inCpuTokens", Long.toString(inCpuTokens));
-          res.put("threads", Long.toString(it));
-          res.put("actionsCount", Long.toString(actionsCount));
-          res.put("warmupIterations", Long.toString(warmupIterations));
-          res.put("forks", Integer.toString(forks));
-          res.put("measurementIterations", Integer.toString(measurementIterations));
-          if (yieldInCrit != null) {
-            res.put("yieldInCrit", Boolean.toString(yieldInCrit));
+    return threads.stream().flatMap(thread -> locks.stream().map(lock -> {
+          var options = new OptionsBuilder().include(JmhParConsumeCpuTokensBenchmark.class.getSimpleName())
+              .warmupIterations(warmupIterations)
+              .measurementIterations(measurementIterations)
+              .forks(forks)
+              .timeout(TimeValue.valueOf("2m"))
+              .verbosity(NORMAL)
+              .jvmArgsAppend("-Djdk.virtualThreadScheduler.parallelism=" +
+                  Math.min(Utils.CORES_CNT, thread));
+          options = options.param("lockType", lock.name.name());
+          options = options.param("beforeCpuTokens", Long.toString(beforeCpuTokens));
+          options = options.param("inCpuTokens", Long.toString(inCpuTokens));
+          options = options.param("threads", Long.toString(thread));
+          options = options.param("yieldInCrit", Boolean.toString(yieldInCrit != null ? yieldInCrit : false));
+          options = options.param("yieldsBefore", Integer.toString(yieldsBefore != null ? yieldsBefore : 1));
+          options = options.param("title", title);
+          String asyncProfilerParams = profilerParams.get("async");
+          if (asyncProfilerParams != null) {
+            System.out.println("Async profiler detected!");
+            options.addProfiler(AsyncProfiler.class, asyncProfilerParams);
           }
-          if (yieldsBefore != null) {
-            res.put("yieldsBefore", Long.toString(yieldsBefore));
+          String jfrProfilerParams = profilerParams.get("jfr");
+          if (jfrProfilerParams != null) {
+            System.out.println("JavaFlightRecorder detected!");
+            options.addProfiler(JavaFlightRecorderProfiler.class, jfrProfilerParams);
           }
-          if (profilerParams != null) {
-            res.putAll(profilerParams);
-          }
-          return res;
-        }
+          return options.build();
+        })
     ).collect(Collectors.toList());
   }
 }

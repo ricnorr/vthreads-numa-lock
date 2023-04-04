@@ -10,12 +10,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.FileUtils;
@@ -23,13 +20,13 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import ru.ricnorr.benchmarks.jmh.JmhBenchmarkRunner;
 import ru.ricnorr.benchmarks.jmh.cpu.JmhJniCallBenchmark;
-import ru.ricnorr.benchmarks.params.LockParam;
 import ru.ricnorr.numa.locks.Utils;
 
 import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
@@ -169,7 +166,7 @@ public class Main {
     }
   }
 
-  public static void main(String[] args) throws Throwable {
+  public static void main(String[] args) {
     if (args.length != 0 && args[0].equals("print-clusters")) {
       printClusters();
       return;
@@ -187,12 +184,8 @@ public class Main {
       throw new BenchmarkException("Cannot read input file", e);
     }
     JSONObject obj = (JSONObject) JSONValue.parse(s);
-
-    var locks = new ObjectMapper().readValue(((JSONArray) obj.get("locks")).toJSONString(),
-        new TypeReference<List<LockParam>>() {
-        });
     var benches = (JSONArray) obj.get("benches");
-    List<Map<String, String>> benchmarkParametersList = JmhBenchmarkRunner.fillBenchmarkParameters(locks, benches);
+    List<Options> benchmarkOptions = JmhBenchmarkRunner.fillBenchmarkParameters(benches);
 
     // Run benches and collect results
     List<BenchmarkResultsCsv> resultCsv = new ArrayList<>();
@@ -201,8 +194,8 @@ public class Main {
     System.out.println(processors.stream().map(Object::toString)
         .collect(Collectors.joining(",", "Processors ordered by NUMA node\n", "\n")));
 
-    for (Map<String, String> param : benchmarkParametersList) {
-      resultCsv.add(JmhBenchmarkRunner.runBenchmark(param));
+    for (Options option : benchmarkOptions) {
+      resultCsv.add(JmhBenchmarkRunner.runBenchmark(option));
 
     }
 
