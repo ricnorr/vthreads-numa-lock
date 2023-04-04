@@ -17,9 +17,9 @@ import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
 
 public class ConsumeCpuBenchmarkParameters implements BenchmarkParameters {
 
-  public long beforeCpuTokens;
+  public Long beforeCpuTokens;
 
-  public long inCpuTokens;
+  public Long inCpuTokens;
 
   public Boolean yieldInCrit;
 
@@ -31,13 +31,13 @@ public class ConsumeCpuBenchmarkParameters implements BenchmarkParameters {
 
   public List<Integer> threads;
 
-  public int actionsCount;
+  public Integer actionsCount;
 
-  public int warmupIterations;
+  public Integer warmupIterations;
 
-  public int measurementIterations;
+  public Integer measurementIterations;
 
-  public int forks;
+  public Integer forks;
 
   public Map<String, String> profilerParams = new HashMap<>();
 
@@ -71,6 +71,7 @@ public class ConsumeCpuBenchmarkParameters implements BenchmarkParameters {
           options = options.param("yieldInCrit", Boolean.toString(yieldInCrit != null ? yieldInCrit : false));
           options = options.param("yieldsBefore", Integer.toString(yieldsBefore != null ? yieldsBefore : 1));
           options = options.param("title", title);
+          options = options.param("actionsCount", Integer.toString(actionsCount));
           String asyncProfilerParams = profilerParams.get("async");
           if (asyncProfilerParams != null) {
             System.out.println("Async profiler detected!");

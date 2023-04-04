@@ -34,7 +34,7 @@ public class JmhBenchmarkRunner {
         if (consumeCpuBenchmarkParameters.skip) {
           continue;
         }
-        if (consumeCpuBenchmarkParameters.threads.isEmpty()) {
+        if (consumeCpuBenchmarkParameters.threads == null) {
           consumeCpuBenchmarkParameters.threads = autoThreadsInit();
         }
         paramList.addAll(consumeCpuBenchmarkParameters.getOptions());

@@ -11,43 +11,10 @@
         "forks": 1,
         "yieldsBefore": 1,
         "title": "Высокая конкуренция. Внутренняя ~3000 нс. Внешняя работа отсутствует. 1 точка переключения",
-        "skip": true,
+        "skip": false,
         "locks": [
           {
             "name": "TAS"
-          },
-          {
-            "name": "SYNCHRONIZED"
-          },
-          {
-            "name": "TTAS"
-          },
-          {
-            "name": "MCS"
-          },
-          {
-            "name": "FAIR_REENTRANT"
-          },
-          {
-            "name": "UNFAIR_REENTRANT"
-          },
-          {
-            "name": "CNA_NUMA"
-          },
-          {
-            "name": "HCLH_NUMA"
-          },
-          {
-            "name": "HMCS_CCL_NUMA"
-          },
-          {
-            "name": "HMCS_CCL_NUMA_SUPERNUMA"
-          },
-          {
-            "name": "HMCS_NUMA"
-          },
-          {
-            "name": "HMCS_CUSTOM"
           }
         ]
       }
@@ -177,7 +144,7 @@
         ],
         "yieldsBefore": 2,
         "title": "Очень много потоков. Низкая конкуренция.Внутри ~3000.Внешняя в 128 раз больше. 2 yield.",
-        "skip": false,
+        "skip": true,
         "locks": [
           {
             "name": "TAS"
