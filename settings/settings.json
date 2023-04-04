@@ -110,7 +110,7 @@
       "yieldsBefore": 2,
       "highCont": false,
       "title": "Очень много потоков. Низкая конкуренция.Внутри ~3000.Внешняя в 128 раз больше. 2 yield.",
-      "skip": true
+      "skip": false
     }
   ]
 }
