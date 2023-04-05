@@ -11,6 +11,10 @@ public record BenchmarkResultsCsv(
         double overheadNanosMedian,
         double throughputNanosMax,
         double throughputNanosMin,
-        double throughputNanosMedian
+        double throughputNanosMedian,
+
+        double latencyNanosMedian,
+
+        double latencyNanosAverage
 ) {
 }
