@@ -65,7 +65,8 @@ public class JmhBenchmarkRunner {
     }
     int threads = Integer.parseInt(options.getParameter("threads").get().stream().findFirst().get());
     int actionsCount = Integer.parseInt(options.getParameter("actionsCount").get().stream().findFirst().get());
-    String title = options.getParameter("title").get().stream().findFirst().get();
+    String title =
+        String.format("Ядер : %d. %s", Utils.CORES_CNT, options.getParameter("title").get().stream().findFirst().get());
     String lockType = options.getParameter("lockType").get().stream().findFirst().get();
 
     double withLockNanosMin = withLocksNanos.stream().min(Double::compare).get();
