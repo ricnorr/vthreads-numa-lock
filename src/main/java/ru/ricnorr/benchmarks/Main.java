@@ -20,13 +20,13 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import ru.ricnorr.benchmarks.jmh.JmhBenchmarkRunner;
 import ru.ricnorr.benchmarks.jmh.cpu.JmhJniCallBenchmark;
-import ru.ricnorr.benchmarks.params.BenchmarkParameters;
 import ru.ricnorr.numa.locks.Utils;
 
 import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
@@ -75,18 +75,14 @@ public class Main {
     }
   }
 
-  public static List<Integer> autoThreadsInit(boolean isLightThread) {
+  public static List<Integer> autoThreadsInit() {
     int cores = Runtime.getRuntime().availableProcessors();
     List<Integer> threadsList =
         new ArrayList<>(List.of(1, 2, 4, 8, 16, 24, 32, 48, 64, 80, 96, 128)).stream().filter(it -> it < cores)
             .collect(Collectors.toList());
-    if (isLightThread) {
-      threadsList.addAll(
-          List.of(cores - 2, cores, cores + (cores / 8), cores + (cores / 4), cores + (cores / 2),
-              cores + cores));
-    } else {
-      threadsList.add(cores);
-    }
+    threadsList.addAll(
+        List.of(cores - 2, cores, cores + (cores / 8), cores + (cores / 4), cores + (cores / 2),
+            cores + cores));
     return threadsList.stream().distinct().toList();
   }
 
@@ -170,7 +166,7 @@ public class Main {
     }
   }
 
-  public static void main(String[] args) throws Throwable {
+  public static void main(String[] args) {
     if (args.length != 0 && args[0].equals("print-clusters")) {
       printClusters();
       return;
@@ -188,10 +184,8 @@ public class Main {
       throw new BenchmarkException("Cannot read input file", e);
     }
     JSONObject obj = (JSONObject) JSONValue.parse(s);
-
-    var locks = (JSONArray) obj.get("locks");
     var benches = (JSONArray) obj.get("benches");
-    List<BenchmarkParameters> benchmarkParametersList = JmhBenchmarkRunner.fillBenchmarkParameters(locks, benches);
+    List<Options> benchmarkOptions = JmhBenchmarkRunner.fillBenchmarkParameters(benches);
 
     // Run benches and collect results
     List<BenchmarkResultsCsv> resultCsv = new ArrayList<>();
@@ -200,8 +194,8 @@ public class Main {
     System.out.println(processors.stream().map(Object::toString)
         .collect(Collectors.joining(",", "Processors ordered by NUMA node\n", "\n")));
 
-    for (BenchmarkParameters param : benchmarkParametersList) {
-      resultCsv.add(JmhBenchmarkRunner.runBenchmark(param));
+    for (Options option : benchmarkOptions) {
+      resultCsv.add(JmhBenchmarkRunner.runBenchmark(option));
 
     }
 

@@ -1,91 +1,189 @@
 {
-  "locks": [
-    {
-      "name": "TAS",
-      "skip": false
-    },
-    {
-      "name": "SYNCHRONIZED",
-      "skip": false
-    },
-    {
-      "name": "TTAS",
-      "skip": false
-    },
-    {
-      "name": "MCS",
-      "skip": false
-    },
-    {
-      "name": "FAIR_REENTRANT",
-      "skip": false
-    },
-    {
-      "name": "UNFAIR_REENTRANT",
-      "skip": false
-    },
-    {
-      "name": "CNA_NUMA",
-      "skip": false
-    },
-    {
-      "name": "HCLH_NUMA",
-      "skip": false
-    },
-    {
-      "name": "HMCS_CCL_NUMA",
-      "skip": false
-    },
-    {
-      "name": "HMCS_CCL_NUMA_SUPERNUMA",
-      "skip": false
-    },
-    {
-      "name": "HMCS_NUMA",
-      "skip": false
-    },
-    {
-      "name": "HMCS_CUSTOM",
-      "skip": false
-    }
-  ],
   "benches": [
     {
       "name": "consumeCpu",
-      "actionsCount": 128000,
-      "before": 0,
-      "in": 1000,
-      "warmupIterations": 3,
-      "measurementIterations": 3,
-      "forks": 1,
-      "highCont": true,
-      "yieldsBefore": 1,
-      "title": "Высокая конкуренция. Внутренняя ~3000 нс. Внешняя работа отсутствует. 1 точка переключения"
+      "payload": {
+        "actionsCount": 128000,
+        "beforeCpuTokens": 0,
+        "inCpuTokens": 1000,
+        "warmupIterations": 3,
+        "measurementIterations": 3,
+        "forks": 1,
+        "yieldsBefore": 1,
+        "title": "Высокая конкуренция. Внутренняя ~3000 нс. Внешняя работа отсутствует. 1 точка переключения",
+        "skip": false,
+        "locks": [
+          {
+            "name": "TAS"
+          }
+        ]
+      }
     },
     {
       "name": "consumeCpu",
-      "actionsCount": 128000,
-      "before": 128000,
-      "in": 1000,
-      "threadsFrom": 4,
-      "warmupIterations": 3,
-      "measurementIterations": 3,
-      "forks": 1,
-      "yieldsBefore": 2,
-      "highCont": false,
-      "title": "Низкая конкуренция. Внутренняя ~3000 нс. Внешняя работа в 128 раз больше внутренней. 2 точки переключения"
+      "payload": {
+        "actionsCount": 128000,
+        "beforeCpuTokens": 128000,
+        "inCpuTokens": 1000,
+        "threadsFrom": 4,
+        "warmupIterations": 3,
+        "measurementIterations": 3,
+        "forks": 1,
+        "yieldsBefore": 2,
+        "title": "Низкая конкуренция. Внутренняя ~3000 нс. Внешняя работа в 128 раз больше внутренней. 2 точки переключения",
+        "skip": true,
+        "locks": [
+          {
+            "name": "TAS"
+          },
+          {
+            "name": "SYNCHRONIZED"
+          },
+          {
+            "name": "TTAS"
+          },
+          {
+            "name": "MCS"
+          },
+          {
+            "name": "FAIR_REENTRANT"
+          },
+          {
+            "name": "UNFAIR_REENTRANT"
+          },
+          {
+            "name": "CNA_NUMA"
+          },
+          {
+            "name": "HCLH_NUMA"
+          },
+          {
+            "name": "HMCS_CCL_NUMA"
+          },
+          {
+            "name": "HMCS_CCL_NUMA_SUPERNUMA"
+          },
+          {
+            "name": "HMCS_NUMA"
+          },
+          {
+            "name": "HMCS_CUSTOM"
+          }
+        ]
+      }
     },
     {
       "name": "consumeCpu",
-      "actionsCount": 128000,
-      "before": 1000,
-      "in": 1000,
-      "warmupIterations": 3,
-      "measurementIterations": 3,
-      "forks": 1,
-      "yieldsBefore": 2,
-      "highCont": false,
-      "title": "Высокая конкуренция. Внешняя секция == внутренней секции == ~3000 нс. 2 точки переключения вне"
+      "payload": {
+        "actionsCount": 128000,
+        "beforeCpuTokens": 1000,
+        "inCpuTokens": 1000,
+        "warmupIterations": 3,
+        "measurementIterations": 3,
+        "forks": 1,
+        "yieldsBefore": 2,
+        "title": "Высокая конкуренция. Внешняя секция == внутренней секции == ~3000 нс. 2 точки переключения вне",
+        "skip": true,
+        "locks": [
+          {
+            "name": "TAS"
+          },
+          {
+            "name": "SYNCHRONIZED"
+          },
+          {
+            "name": "TTAS"
+          },
+          {
+            "name": "MCS"
+          },
+          {
+            "name": "FAIR_REENTRANT"
+          },
+          {
+            "name": "UNFAIR_REENTRANT"
+          },
+          {
+            "name": "CNA_NUMA"
+          },
+          {
+            "name": "HCLH_NUMA"
+          },
+          {
+            "name": "HMCS_CCL_NUMA"
+          },
+          {
+            "name": "HMCS_CCL_NUMA_SUPERNUMA"
+          },
+          {
+            "name": "HMCS_NUMA"
+          },
+          {
+            "name": "HMCS_CUSTOM"
+          }
+        ]
+      }
+    },
+    {
+      "name": "consumeCpu",
+      "payload": {
+        "actionsCount": 2500000,
+        "beforeCpuTokens": 128000,
+        "inCpuTokens": 1000,
+        "warmupIterations": 3,
+        "measurementIterations": 3,
+        "forks": 1,
+        "threads": [
+          250,
+          500,
+          1000,
+          2000,
+          4000,
+          8000,
+          10000
+        ],
+        "yieldsBefore": 2,
+        "title": "Очень много потоков. Низкая конкуренция.Внутри ~3000.Внешняя в 128 раз больше. 2 yield.",
+        "skip": true,
+        "locks": [
+          {
+            "name": "TAS"
+          },
+          {
+            "name": "SYNCHRONIZED"
+          },
+          {
+            "name": "TTAS"
+          },
+          {
+            "name": "MCS"
+          },
+          {
+            "name": "FAIR_REENTRANT"
+          },
+          {
+            "name": "UNFAIR_REENTRANT"
+          },
+          {
+            "name": "CNA_NUMA"
+          },
+          {
+            "name": "HCLH_NUMA"
+          },
+          {
+            "name": "HMCS_CCL_NUMA"
+          },
+          {
+            "name": "HMCS_CCL_NUMA_SUPERNUMA"
+          },
+          {
+            "name": "HMCS_NUMA"
+          },
+          {
+            "name": "HMCS_CUSTOM"
+          }
+        ]
+      }
     }
   ]
 }

@@ -30,14 +30,9 @@ import ru.ricnorr.numa.locks.NumaLock;
 import ru.ricnorr.numa.locks.Utils;
 
 import static org.openjdk.jmh.annotations.Scope.Benchmark;
-import static ru.ricnorr.benchmarks.Main.getProcessorsNumbersInNumaNodeOrder;
-import static ru.ricnorr.benchmarks.Main.setAffinity;
 
 @State(Benchmark)
 public class JmhParConsumeCpuTokensBenchmark {
-
-  @Param("false")
-  public boolean isLightThread;
 
   @Param("0")
   public long beforeCpuTokens;
@@ -46,19 +41,13 @@ public class JmhParConsumeCpuTokensBenchmark {
   public long inCpuTokens;
 
   @Param("0")
-  public int actionsPerThread;
+  public int actionsCount;
 
   @Param("0")
   public int threads;
 
   @Param("")
   public String lockType;
-
-  @Param("")
-  public String lockSpec;
-
-  @Param("false")
-  public boolean pinUsingJna;
 
   @Param("false")
   public boolean yieldInCrit;
@@ -78,10 +67,6 @@ public class JmhParConsumeCpuTokensBenchmark {
 
   @Setup(Level.Trial)
   public void init() {
-    if (!pinUsingJna && !System.getProperty("os.name").toLowerCase().contains("mac")) {
-      List<Integer> processors = getProcessorsNumbersInNumaNodeOrder();
-      setAffinity(threads, ProcessHandle.current().pid(), processors);
-    }
     System.out.println("Get system property jdk.virtualThreadScheduler.parallelism=" +
         System.getProperty("jdk.virtualThreadScheduler.parallelism"));
     System.out.println("Get system property jdk.virtualThreadScheduler.maxPoolSize=" +
@@ -97,38 +82,33 @@ public class JmhParConsumeCpuTokensBenchmark {
     AtomicInteger customBarrier = new AtomicInteger();
     AtomicBoolean locked = new AtomicBoolean(false);
     cyclicBarrier = new CyclicBarrier(threads);
-    boolean isOversub = threads > Runtime.getRuntime().availableProcessors();
     for (int i = 0; i < threads; i++) {
       ThreadFactory threadFactory;
-      if (isLightThread) {
-        threadFactory = Thread.ofVirtual().factory();
-      } else {
-        threadFactory = Thread.ofPlatform().factory();
-      }
+      threadFactory = Thread.ofVirtual().factory();
       int finalI = i;
       threadList.add(threadFactory.newThread(
           () -> {
-            if (pinUsingJna) {
-              customBarrier.incrementAndGet();
-              int cores = Math.min(threads, Runtime.getRuntime().availableProcessors());
-              while (customBarrier.get() < cores) {
-              }
-              while (!locked.compareAndSet(false, true)) {
-              }
-              Thread currentCarrier = Utils.getCurrentCarrierThread();
-              if (!carrierThreads.contains(currentCarrier)) {
-                Affinity.affinityLib.pinToCore(carrierThreads.size());
-                carrierThreads.add(currentCarrier);
-              }
-              locked.compareAndSet(true, false);
+            customBarrier.incrementAndGet();
+            int cores = Math.min(threads, Utils.CORES_CNT);
+            while (customBarrier.get() < cores) {
+              // do nothing
             }
+            while (!locked.compareAndSet(false, true)) {
+              // do nothing
+            }
+            Thread currentCarrier = Utils.getCurrentCarrierThread();
+            if (!carrierThreads.contains(currentCarrier)) {
+              Affinity.affinityLib.pinToCore(carrierThreads.size());
+              carrierThreads.add(currentCarrier);
+            }
+            locked.compareAndSet(true, false);
             try {
               cyclicBarrier.await();
             } catch (InterruptedException | BrokenBarrierException e) {
               throw new BenchmarkException("Fail waiting barrier", e);
             }
             Object nodeForLock = null;
-            for (int i1 = 0; i1 < actionsPerThread; i1++) {
+            for (int i1 = 0; i1 < actionsCount / threads; i1++) {
               for (int i2 = 0; i2 < Math.max(yieldsBefore, 1); i2++) {
                 Blackhole.consumeCPU(beforeCpuTokens / yieldsBefore);
                 Thread.yield();

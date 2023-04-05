@@ -1,76 +1,89 @@
 package ru.ricnorr.benchmarks.params;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import ru.ricnorr.benchmarks.LockType;
+import org.openjdk.jmh.profile.AsyncProfiler;
+import org.openjdk.jmh.profile.JavaFlightRecorderProfiler;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
+import org.openjdk.jmh.runner.options.TimeValue;
+import ru.ricnorr.benchmarks.jmh.cpu.JmhParConsumeCpuTokensBenchmark;
 import ru.ricnorr.numa.locks.Utils;
 
-public class ConsumeCpuBenchmarkParameters extends BenchmarkParameters {
+import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
 
-  public long beforeCpuTokens;
+public class ConsumeCpuBenchmarkParameters implements BenchmarkParameters {
 
-  public long inCpuTokens;
+  public Long beforeCpuTokens;
 
-  public double inConsumeCpuTokensTimeNanos;
+  public Long inCpuTokens;
 
-  public double beforeConsumeCpuTokensTimeNanos;
+  public Boolean yieldInCrit;
 
-  public boolean isHighContention;
+  public Integer yieldsBefore;
 
-  public double highContentionWithoutLockNanos;
+  public List<LockParam> locks;
 
-  public boolean limitVirtualScheduler;
+  public Integer threadsFrom;
 
-  public boolean pinUsingJNA;
+  public List<Integer> threads;
 
-  public boolean yieldInCrit;
+  public Integer actionsCount;
 
-  public int yieldsBefore;
+  public Integer warmupIterations;
 
+  public Integer measurementIterations;
 
-  public ConsumeCpuBenchmarkParameters(int threads, LockType lockType, String lockSpec,
-                                       boolean isLightThread, long beforeCpuTokens, long inCpuTokens,
-                                       int actionsPerThread, double beforeConsumeCpuTokensTimeNanos,
-                                       double inConsumeCpuTokensTimeNanos, double highContentionWithoutLockNanos,
-                                       int warmupIterations, int measurementIterations, int forks,
-                                       Map<String, String> profilerParams,
-                                       boolean limitVirtualScheduler, boolean pinUsingJNA, boolean highCont,
-                                       boolean yieldInCrit, String title,
-                                       int yieldsBefore) {
-    super(threads, lockType, actionsPerThread, lockSpec, isLightThread, warmupIterations, measurementIterations, forks,
-        profilerParams, title);
-    this.beforeCpuTokens = beforeCpuTokens;
-    this.inCpuTokens = inCpuTokens;
-    this.beforeConsumeCpuTokensTimeNanos = beforeConsumeCpuTokensTimeNanos;
-    this.inConsumeCpuTokensTimeNanos = inConsumeCpuTokensTimeNanos;
-    this.isHighContention = highCont;
-    this.highContentionWithoutLockNanos = highContentionWithoutLockNanos;
-    this.limitVirtualScheduler = limitVirtualScheduler;
-    this.pinUsingJNA = pinUsingJNA;
-    this.yieldInCrit = yieldInCrit;
-    this.yieldsBefore = yieldsBefore;
-  }
+  public Integer forks;
+
+  public Map<String, String> profilerParams = new HashMap<>();
+
+  public String title;
+
+  public boolean skip;
 
   @Override
   public String getBenchmarkName() {
-    return String.format("Ядер : %d. %s", Utils.CORES_CNT, title);
+    return null;
   }
 
-  public String logBegin() {
-    return String.format(
-        "%nStart %s contention consume cpu benchmark: threads=%d, lightThreads=%b, " +
-            "lockType=%s, lockSpec=%s, beforeTokens=%d, inTokens=%d, " +
-            "beforeTimeNanos=%f, inTimeNanos=%f%n",
-        isHighContention ? "high" : "low",
-        threads,
-        isLightThread,
-        lockType,
-        lockSpec,
-        beforeCpuTokens,
-        inCpuTokens,
-        beforeConsumeCpuTokensTimeNanos,
-        inConsumeCpuTokensTimeNanos
-    );
+  @Override
+  public List<Options> getOptions() {
+    if (threadsFrom != null) {
+      threads = threads.stream().filter(it -> it >= threadsFrom).collect(Collectors.toList());
+    }
+    return threads.stream().flatMap(thread -> locks.stream().map(lock -> {
+          var options = new OptionsBuilder().include(JmhParConsumeCpuTokensBenchmark.class.getSimpleName())
+              .warmupIterations(warmupIterations)
+              .measurementIterations(measurementIterations)
+              .forks(forks)
+              .timeout(TimeValue.valueOf("2m"))
+              .verbosity(NORMAL)
+              .jvmArgsAppend("-Djdk.virtualThreadScheduler.parallelism=" +
+                  Math.min(Utils.CORES_CNT, thread));
+          options = options.param("lockType", lock.name.name());
+          options = options.param("beforeCpuTokens", Long.toString(beforeCpuTokens));
+          options = options.param("inCpuTokens", Long.toString(inCpuTokens));
+          options = options.param("threads", Long.toString(thread));
+          options = options.param("yieldInCrit", Boolean.toString(yieldInCrit != null ? yieldInCrit : false));
+          options = options.param("yieldsBefore", Integer.toString(yieldsBefore != null ? yieldsBefore : 1));
+          options = options.param("title", title);
+          options = options.param("actionsCount", Integer.toString(actionsCount));
+          String asyncProfilerParams = profilerParams.get("async");
+          if (asyncProfilerParams != null) {
+            System.out.println("Async profiler detected!");
+            options.addProfiler(AsyncProfiler.class, asyncProfilerParams);
+          }
+          String jfrProfilerParams = profilerParams.get("jfr");
+          if (jfrProfilerParams != null) {
+            System.out.println("JavaFlightRecorder detected!");
+            options.addProfiler(JavaFlightRecorderProfiler.class, jfrProfilerParams);
+          }
+          return options.build();
+        })
+    ).collect(Collectors.toList());
   }
-
 }
