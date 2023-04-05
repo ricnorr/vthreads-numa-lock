@@ -1,5 +1,10 @@
 package ru.ricnorr.benchmarks.jmh.cpu;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -10,6 +15,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -21,6 +27,7 @@ import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.TearDown;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import ru.ricnorr.benchmarks.BenchmarkException;
@@ -65,6 +72,11 @@ public class JmhParConsumeCpuTokensBenchmark {
 
   final Object obj = new Object();
 
+  // первое измерение - замер бенча
+  // второе измерение - номер потока
+  // третье измерение - latency взятия блокировки
+  List<List<List<Long>>> latenciesForEachThread = new ArrayList<>();
+
   @Setup(Level.Trial)
   public void init() {
     System.out.println("Get system property jdk.virtualThreadScheduler.parallelism=" +
@@ -76,9 +88,32 @@ public class JmhParConsumeCpuTokensBenchmark {
     }
   }
 
+  @TearDown(Level.Invocation)
+  public void writeLatencies() throws IOException {
+    for (int iteration = 0; iteration < latenciesForEachThread.size(); iteration++) {
+      var latenciesForIteration = latenciesForEachThread.get(iteration);
+      for (int thread = 0; thread < threads; thread++) {
+        var latenciesForThread =
+            latenciesForIteration.get(thread).stream().map(Object::toString).collect(Collectors.joining("\n"));
+        Path newFile = Paths.get(String.format("latencies/%d_%d.tmp", iteration, thread));
+        if (!Files.exists(newFile)) {
+          Files.writeString(newFile, latenciesForThread, StandardOpenOption.CREATE);
+        } else {
+          Files.writeString(newFile, latenciesForThread, StandardOpenOption.TRUNCATE_EXISTING);
+        }
+      }
+    }
+  }
+
   @Setup(Level.Invocation)
   public void prepare() {
     threadList = new ArrayList<>();
+    latenciesForEachThread.add(new ArrayList<>());
+    final int benchmarkIteration = latenciesForEachThread.size() - 1;
+    for (int i = 0; i < threads; i++) {
+      latenciesForEachThread.get(benchmarkIteration).add(new ArrayList<>());
+    }
+
     AtomicInteger customBarrier = new AtomicInteger();
     AtomicBoolean locked = new AtomicBoolean(false);
     cyclicBarrier = new CyclicBarrier(threads);
@@ -86,8 +121,9 @@ public class JmhParConsumeCpuTokensBenchmark {
       ThreadFactory threadFactory;
       threadFactory = Thread.ofVirtual().factory();
       int finalI = i;
-      threadList.add(threadFactory.newThread(
+      var thread = threadFactory.newThread(
           () -> {
+            List<Long> threadLatencyNanosec = new ArrayList<>();
             customBarrier.incrementAndGet();
             int cores = Math.min(threads, Utils.CORES_CNT);
             while (customBarrier.get() < cores) {
@@ -113,8 +149,11 @@ public class JmhParConsumeCpuTokensBenchmark {
                 Blackhole.consumeCPU(beforeCpuTokens / yieldsBefore);
                 Thread.yield();
               }
+              long startAcquireLockNanos = System.nanoTime();
               if (lockType.equals("SYNCHRONIZED")) {
                 synchronized (obj) {
+                  long lockAcquiredNanos = System.nanoTime();
+                  threadLatencyNanosec.add(lockAcquiredNanos - startAcquireLockNanos);
                   Blackhole.consumeCPU(inCpuTokens);
                 }
               } else {
@@ -123,6 +162,8 @@ public class JmhParConsumeCpuTokensBenchmark {
                 } else {
                   nodeForLock = lock.lock(null);
                 }
+                long lockAcquiredNanos = System.nanoTime();
+                threadLatencyNanosec.add(lockAcquiredNanos - startAcquireLockNanos);
                 Blackhole.consumeCPU(inCpuTokens);
                 if (yieldInCrit) {
                   Thread.yield();
@@ -130,12 +171,14 @@ public class JmhParConsumeCpuTokensBenchmark {
                 lock.unlock(nodeForLock);
               }
             }
+            latenciesForEachThread.get(benchmarkIteration).set(finalI, threadLatencyNanosec);
           }
-      ));
+      );
+      thread.setName("virtual-" + i);
+      threadList.add(thread);
     }
     System.out.println("I pinned " + carrierThreads.size() + " carrier threads");
   }
-
 
   @Benchmark
   @Fork(1)
