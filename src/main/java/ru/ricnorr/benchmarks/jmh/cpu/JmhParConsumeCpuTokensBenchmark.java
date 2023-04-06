@@ -90,6 +90,7 @@ public class JmhParConsumeCpuTokensBenchmark {
 
   @TearDown(Level.Invocation)
   public void writeLatencies() throws IOException {
+    System.out.println("Write latencies");
     Path latenciesDirectory = Paths.get("latencies");
     if (Files.notExists(latenciesDirectory)) {
       Files.createDirectory(latenciesDirectory);
@@ -107,6 +108,7 @@ public class JmhParConsumeCpuTokensBenchmark {
         }
       }
     }
+    System.out.println("End write latencies");
   }
 
   @Setup(Level.Invocation)
