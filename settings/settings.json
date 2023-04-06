@@ -160,7 +160,7 @@
     {
       "name": "consumeCpu",
       "payload": {
-        "actionsCount": 1000000,
+        "actionsCount": 500000,
         "beforeCpuTokens": 128000,
         "inCpuTokens": 1000,
         "warmupIterations": 3,
