@@ -10,12 +10,9 @@ public abstract class AbstractNumaLock implements NumaLock {
 
     protected final ThreadLocal<Integer> clusterIdThreadLocal;
 
-    protected final ThreadLocal<Integer> lockAcquiresThreadLocal;
-
     public AbstractNumaLock(Supplier<Integer> clusterIdSupplier) {
         this.clusterIdSupplier = clusterIdSupplier;
         this.clusterIdThreadLocal = ThreadLocal.withInitial(clusterIdSupplier);
-        this.lockAcquiresThreadLocal = ThreadLocal.withInitial(() -> 0);
     }
 
     protected Integer getClusterId() {

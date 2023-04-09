@@ -1,8 +1,12 @@
 package ru.ricnorr.numa.locks;
 
+import java.io.DataOutput;
+import java.io.File;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,6 +15,7 @@ import java.util.stream.Collectors;
 
 import com.sun.jna.Platform;
 import com.sun.jna.ptr.IntByReference;
+import org.apache.commons.io.FileUtils;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import ru.ricnorr.benchmarks.BenchmarkException;
@@ -63,6 +68,11 @@ public class Utils {
   public static int CORES_PER_NUMA = CORES_CNT / NUMA_NODES_CNT;
 
   public static int CCL_PER_NUMA = CCL_CNT / NUMA_NODES_CNT;
+
+  /**
+   * JMH не позволяет передавать кастомный результат, поэтому бенчмарк записывает в директорию результаты latency
+   */
+  public static String LATENCIES_DIR_NAME = "latencies";
 
 
   static {
@@ -171,6 +181,46 @@ public class Utils {
 
   public static NumaLock initLock(LockType lockType) {
     return initLock(lockType, 0);
+  }
+
+  public static List<List<List<Long>>> readLatenciesFromDirectory(int totalIterations, int threads) {
+    try {
+      List<List<List<Long>>> latencies = new ArrayList<>();
+      for (int iteration = 0; iteration < totalIterations; iteration++) {
+        var iterationLatencies = new ArrayList<List<Long>>();
+        latencies.add(iterationLatencies);
+        for (int threadNum = 0; threadNum < threads; threadNum++) {
+          var threadLatencies = new ArrayList<Long>();
+          iterationLatencies.add(threadLatencies);
+          var path = Paths.get(String.format("%s/%d_%d.tmp", LATENCIES_DIR_NAME, iteration, threadNum));
+          threadLatencies.addAll(Files.readAllLines(path).stream().map(Long::parseLong).toList());
+        }
+      }
+      FileUtils.deleteDirectory(new File(LATENCIES_DIR_NAME));
+      return latencies;
+    } catch (Exception e) {
+      throw new RuntimeException("", e);
+    }
+  }
+
+  public static double medianLatency(int warmupIterations, List<List<List<Long>>> latencies) {
+    List<Long> allLatencies = new ArrayList<>();
+    for (int i = warmupIterations; i < latencies.size(); i++) {
+      var iterationLatencies = latencies.get(warmupIterations);
+      var maxLatenciesForEachThreadOnIteration = iterationLatencies.stream().map(it -> it.stream().mapToLong(it2 -> it2).max().getAsLong()).toList();
+      allLatencies.addAll(maxLatenciesForEachThreadOnIteration);
+    }
+    return Utils.median(allLatencies.stream().map(it -> (double) it).collect(Collectors.toList()));
+  }
+
+  public static double averageLatency(int warmupIterations, List<List<List<Long>>> latencies) {
+    List<Long> allLatencies = new ArrayList<>();
+    for (int i = warmupIterations; i < latencies.size(); i++) {
+      var iterationLatencies = latencies.get(warmupIterations);
+      var maxLatenciesForEachThreadOnIteration = iterationLatencies.stream().map(it -> it.stream().mapToLong(it2 -> it2).max().getAsLong()).toList();
+      allLatencies.addAll(maxLatenciesForEachThreadOnIteration);
+    }
+    return allLatencies.stream().mapToDouble(it -> (double) it).average().getAsDouble();
   }
 
   public static NumaLock initLock(LockType lockType, int threads) {

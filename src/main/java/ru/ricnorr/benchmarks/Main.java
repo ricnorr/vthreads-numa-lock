@@ -36,7 +36,8 @@ public class Main {
   private static final List<String> RESULTS_HEADERS =
       List.of("name", "lock", "threads", "Maximum_overhead_(millisec)", "Minimum_overhead_(millisec)",
           "Median_overhead_(millisec)", "Maximum_throughout_(ops_millisec)", "Minimum_throughput_(ops_millisec)",
-          "Пропускная способность (op|ms)");
+          "Пропускная способность (op|ms)", "Медиана максимальных latency (millisec)",
+          "Среднее максимальных latency (millisec)");
 
   public static List<Integer> getProcessorsNumbersInNumaNodeOrder() {
     SystemInfo si = new SystemInfo();
@@ -46,23 +47,26 @@ public class Main {
         .map(CentralProcessor.LogicalProcessor::getProcessorNumber).collect(Collectors.toList());
   }
 
+  private static void print(CSVPrinter printer, BenchmarkResultsCsv resultsCsv) throws IOException {
+    printer.printRecord(resultsCsv.name(), resultsCsv.lock(), resultsCsv.threads(),
+        resultsCsv.overheadNanosMax() / 1000 / 1000,
+        resultsCsv.overheadNanosMin() / 1000 / 1000, resultsCsv.overheadNanosMedian() / 1000 / 1000,
+        resultsCsv.throughputNanosMax() * 1000 * 1000, resultsCsv.throughputNanosMin() * 1000 * 1000,
+        resultsCsv.throughputNanosMedian() * 1000 * 1000, resultsCsv.latencyNanosMedian() / 1000 / 1000,
+        resultsCsv.latencyNanosAverage() / 1000 / 1000);
+  }
+
   private static void writeResultsToCSVfile(String filename, List<BenchmarkResultsCsv> results) {
     try (FileWriter out = new FileWriter(filename)) {
       try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT)) {
         printer.printRecord(RESULTS_HEADERS);
         results.forEach(it -> {
           try {
-            printer.printRecord(it.name(), it.lock(), it.threads(), it.overheadNanosMax() / 1000 / 1000,
-                it.overheadNanosMin() / 1000 / 1000, it.overheadNanosMedian() / 1000 / 1000,
-                it.throughputNanosMax() * 1000 * 1000, it.throughputNanosMin() * 1000 * 1000,
-                it.throughputNanosMedian() * 1000 * 1000);
+            print(printer, it);
             // bug with matplotlib - last point should be duplicated
             if (results.stream().filter(result -> result.name().equals(it.name()))
                 .allMatch(result -> result.threads() <= it.threads())) {
-              printer.printRecord(it.name(), it.lock(), it.threads(), it.overheadNanosMax() / 1000 / 1000,
-                  it.overheadNanosMin() / 1000 / 1000, it.overheadNanosMedian() / 1000 / 1000,
-                  it.throughputNanosMax() * 1000 * 1000, it.throughputNanosMin() * 1000 * 1000,
-                  it.throughputNanosMedian() * 1000 * 1000);
+              print(printer, it);
             }
           } catch (IOException e) {
             throw new BenchmarkException("Cannot write record to file with benchmarks results", e);
@@ -78,11 +82,11 @@ public class Main {
   public static List<Integer> autoThreadsInit() {
     int cores = Runtime.getRuntime().availableProcessors();
     List<Integer> threadsList =
-        new ArrayList<>(List.of(1, 2, 4, 8, 16, 24, 32, 48, 64, 80, 96, 128)).stream().filter(it -> it < cores)
+        new ArrayList<>(List.of(4, 8, 16, 24, 32, 48, 64, 80, 96, 128)).stream().filter(it -> it < cores)
             .collect(Collectors.toList());
     threadsList.addAll(
-        List.of(cores - 2, cores, cores + (cores / 8), cores + (cores / 4), cores + (cores / 2),
-            cores + cores));
+        List.of(cores, cores + (cores / 4), cores + (cores / 2), 2 * cores, 4 * cores, 8 * cores, 10 * cores,
+            20 * cores));
     return threadsList.stream().distinct().toList();
   }
 

@@ -28,7 +28,11 @@ def draw_by_bench_and_mode(df, bench, mode, threads, suffix, filterLocks):
                     continue
             cur_df = df[(df['name'] == bench) & (df['lock'] == lock) & (df['threads'].isin(threads))].copy()
             cur_df['threads_cnt'] = cur_df['threads'].map(str)
-            cur_df.sort_values(by=['threads']).plot(ax=ax, x='threads_cnt', y=mode, label=lock, style=[styles[ind % len(styles)]], marker='o')
+            if lock == 'UNFAIR_REENTRANT' or lock == 'FAIR_REENTRANT' or lock == 'SYNCHRONIZED':
+                marker = 'o'
+            else:
+                marker = '.'
+            cur_df.sort_values(by=['threads']).plot(ax=ax, x='threads_cnt', y=mode, label=lock, style=[styles[ind % len(styles)]], marker=marker)
             #ax.set_xticklabels(list(map(lambda x : str(x), cur_df['threads'])))
             #ax.set_xlim(-0.65, 14.75999)
             #plt.margins(1)
@@ -51,7 +55,7 @@ def draw_by_bench_and_mode(df, bench, mode, threads, suffix, filterLocks):
         plt.close()
 
 for bench in bench_names:
-    for mode in ['Median_overhead_(millisec)','Пропускная способность (op|ms)']:
+    for mode in ['Пропускная способность (op|ms)', 'Медиана максимальных latency (millisec)']:
         x = sorted(set(df['threads']))
         y = x[1:-1]
         draw_by_bench_and_mode(df, bench, mode, x, '_all', sys.argv)

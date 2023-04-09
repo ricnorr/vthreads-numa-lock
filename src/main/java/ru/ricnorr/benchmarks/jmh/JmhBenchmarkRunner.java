@@ -65,10 +65,15 @@ public class JmhBenchmarkRunner {
     }
     int threads = Integer.parseInt(options.getParameter("threads").get().stream().findFirst().get());
     int actionsCount = Integer.parseInt(options.getParameter("actionsCount").get().stream().findFirst().get());
+    int warmupIterations = options.getWarmupIterations().get();
+    int measurementIterations = options.getMeasurementIterations().get();
+
     String title =
         String.format("Ядер : %d. %s", Utils.CORES_CNT, options.getParameter("title").get().stream().findFirst().get());
     String lockType = options.getParameter("lockType").get().stream().findFirst().get();
-
+    var latenciesNanos = Utils.readLatenciesFromDirectory(warmupIterations + measurementIterations, threads);
+    var medianLatenciesNanos = Utils.medianLatency(warmupIterations, latenciesNanos);
+    var averageLatenciesNanos = Utils.averageLatency(warmupIterations, latenciesNanos);
     double withLockNanosMin = withLocksNanos.stream().min(Double::compare).get();
     double withLockNanosMax = withLocksNanos.stream().max(Double::compare).get();
     double withLockNanosMedian = Utils.median(withLocksNanos);
@@ -88,6 +93,6 @@ public class JmhBenchmarkRunner {
         lockType,
         threads,
         overheadNanosMax, overheadNanosMin, overheadNanosAverage, throughputNanosMax, throughputNanosMin,
-        throughputNanosMedian);
+        throughputNanosMedian, medianLatenciesNanos, averageLatenciesNanos);
   }
 }

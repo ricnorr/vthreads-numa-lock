@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import kotlin.Pair;
 import ru.ricnorr.numa.locks.AbstractNumaLock;
+import ru.ricnorr.numa.locks.Utils;
 
 import static ru.ricnorr.numa.locks.hmcs.HMCSQNodeInterface.ACQUIRE_PARENT;
 import static ru.ricnorr.numa.locks.hmcs.HMCSQNodeInterface.COHORT_START;
@@ -18,19 +19,19 @@ public abstract class AbstractHMCS<QNode extends HMCSQNodeInterface> extends Abs
 
   protected final HNode[] leafs;
 
-  private final Supplier<QNode> qNodeSupplier;
+  private final ThreadLocal<QNode> threadLocalQNode;
 
   @SuppressWarnings("unchecked")
   public AbstractHMCS(Supplier<QNode> qNodeSupplier, Supplier<Integer> clusterIdSupplier, int leafsCnt) {
     super(clusterIdSupplier);
     this.leafs = (HNode[]) Array.newInstance(HNode.class, leafsCnt);
-    this.qNodeSupplier = qNodeSupplier;
+    this.threadLocalQNode = ThreadLocal.withInitial(qNodeSupplier);
   }
 
   @Override
   @SuppressWarnings("unchecked")
   public Object lock(Object obj) {
-    QNode node = qNodeSupplier.get();
+    QNode node = Utils.getByThreadFromThreadLocal(threadLocalQNode, Utils.getCurrentCarrierThread());
     int clusterId = getClusterId();
     lockH(node, leafs[clusterId]);
     return new Pair<>(node, clusterId);
