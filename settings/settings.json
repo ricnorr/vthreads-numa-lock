@@ -14,37 +14,7 @@
         "skip": false,
         "locks": [
           {
-            "name": "TAS"
-          },
-          {
-            "name": "SYNCHRONIZED"
-          },
-          {
-            "name": "TTAS"
-          },
-          {
-            "name": "MCS"
-          },
-          {
-            "name": "FAIR_REENTRANT"
-          },
-          {
-            "name": "UNFAIR_REENTRANT"
-          },
-          {
-            "name": "CNA_NUMA"
-          },
-          {
-            "name": "HCLH_NUMA"
-          },
-          {
-            "name": "HMCS_CCL_NUMA"
-          },
-          {
-            "name": "HMCS_CCL_NUMA_SUPERNUMA"
-          },
-          {
-            "name": "HMCS_NUMA"
+            "name": "HMCS_NUMA_PARK"
           }
         ]
       }
@@ -144,6 +114,9 @@
           },
           {
             "name": "HMCS_NUMA"
+          },
+          {
+            "name": "HMCS_NUMA_PARK"
           }
         ]
       }
