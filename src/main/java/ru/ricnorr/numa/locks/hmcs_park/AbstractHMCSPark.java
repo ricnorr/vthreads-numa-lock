@@ -2,7 +2,6 @@ package ru.ricnorr.numa.locks.hmcs_park;
 
 import java.lang.reflect.Array;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.LockSupport;
 import java.util.function.Supplier;
 
 import kotlin.Pair;
@@ -98,7 +97,7 @@ public abstract class AbstractHMCSPark<QNode extends HMCSQNodeParkInterface> ext
     HMCSQNodeParkInterface succ = qNode.getNext();
     if (succ != null) {
       succ.setStatusAtomically(curCount + 1);
-      LockSupport.unparkNextAndYieldThis(succ.getThread(), Thread.currentThread());
+//      LockSupport.unparkNextAndYieldThis(succ.getThread(), Thread.currentThread());
       return;
     }
     unlockH(hNode.parent, hNode.node);
@@ -109,7 +108,7 @@ public abstract class AbstractHMCSPark<QNode extends HMCSQNodeParkInterface> ext
     HMCSQNodeParkInterface succ = i.getNext();
     if (succ != null) {
       succ.setStatusAtomically(val);
-      LockSupport.unparkNextAndYieldThis(succ.getThread(), Thread.currentThread());
+//      LockSupport.unparkNextAndYieldThis(succ.getThread(), Utils.getCurrentCarrierThread());
     } else {
       if (l.tail.compareAndSet(i, null)) {
         return;
@@ -118,7 +117,7 @@ public abstract class AbstractHMCSPark<QNode extends HMCSQNodeParkInterface> ext
         succ = i.getNext();
       } while (succ == null);
       succ.setStatusAtomically(val);
-      LockSupport.unparkNextAndYieldThis(succ.getThread(), Thread.currentThread());
+//      LockSupport.unparkNextAndYieldThis(succ.getThread(), Utils.getCurrentCarrierThread());
     }
   }
 
