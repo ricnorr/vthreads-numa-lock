@@ -34,9 +34,6 @@
         "skip": false,
         "locks": [
           {
-            "name": "UNFAIR_REENTRANT"
-          },
-          {
             "name": "CNA_NUMA_PARK"
           }
         ]
