@@ -1,0 +1,135 @@
+965328
+2023-04-15T13:16:33.788609030Z
+19-internal-adhoc.itmonikol.jdk19
+
+#1 "main"
+      java.base/jdk.internal.misc.Unsafe.park(Native Method)
+      java.base/java.util.concurrent.locks.LockSupport.park(LockSupport.java:394)
+      java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionNode.block(AbstractQueuedSynchronizer.java:506)
+      java.base/java.util.concurrent.ForkJoinPool.unmanagedBlock(ForkJoinPool.java:3769)
+      java.base/java.util.concurrent.ForkJoinPool.managedBlock(ForkJoinPool.java:3714)
+      java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1625)
+      java.base/java.lang.ProcessImpl.waitFor(ProcessImpl.java:447)
+      org.openjdk.jmh.runner.Runner.doFork(Runner.java:738)
+      org.openjdk.jmh.runner.Runner.runSeparate(Runner.java:660)
+      org.openjdk.jmh.runner.Runner.runBenchmarks(Runner.java:558)
+      org.openjdk.jmh.runner.Runner.internalRun(Runner.java:310)
+      org.openjdk.jmh.runner.Runner.run(Runner.java:209)
+      ru.ricnorr.benchmarks.jmh.JmhBenchmarkRunner.runBenchmarkNano(JmhBenchmarkRunner.java:48)
+      ru.ricnorr.benchmarks.jmh.JmhBenchmarkRunner.runBenchmark(JmhBenchmarkRunner.java:59)
+      ru.ricnorr.benchmarks.Main.main(Main.java:220)
+
+#4 "Reference Handler"
+      java.base/java.lang.ref.Reference.waitForReferencePendingList(Native Method)
+      java.base/java.lang.ref.Reference.processPendingReferences(Reference.java:245)
+      java.base/java.lang.ref.Reference$ReferenceHandler.run(Reference.java:207)
+
+#5 "Finalizer"
+      java.base/java.lang.Object.wait0(Native Method)
+      java.base/java.lang.Object.wait(Object.java:366)
+      java.base/java.lang.Object.wait(Object.java:339)
+      java.base/java.lang.ref.NativeReferenceQueue.await(NativeReferenceQueue.java:48)
+      java.base/java.lang.ref.ReferenceQueue.remove0(ReferenceQueue.java:158)
+      java.base/java.lang.ref.NativeReferenceQueue.remove(NativeReferenceQueue.java:89)
+      java.base/java.lang.ref.Finalizer$FinalizerThread.run(Finalizer.java:173)
+
+#6 "Signal Dispatcher"
+
+#25 "Common-Cleaner"
+      java.base/jdk.internal.misc.Unsafe.park(Native Method)
+      java.base/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:292)
+      java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1759)
+      java.base/java.lang.ref.ReferenceQueue.await(ReferenceQueue.java:71)
+      java.base/java.lang.ref.ReferenceQueue.remove0(ReferenceQueue.java:143)
+      java.base/java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:218)
+      java.base/jdk.internal.ref.CleanerImpl.run(CleanerImpl.java:140)
+      java.base/java.lang.Thread.run(Thread.java:1589)
+      java.base/jdk.internal.misc.InnocuousThread.run(InnocuousThread.java:186)
+
+#26 "Notification Thread"
+
+#30 "JNA Cleaner"
+      java.base/jdk.internal.misc.Unsafe.park(Native Method)
+      java.base/java.util.concurrent.locks.LockSupport.park(LockSupport.java:394)
+      java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionNode.block(AbstractQueuedSynchronizer.java:506)
+      java.base/java.util.concurrent.ForkJoinPool.unmanagedBlock(ForkJoinPool.java:3769)
+      java.base/java.util.concurrent.ForkJoinPool.managedBlock(ForkJoinPool.java:3714)
+      java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1625)
+      java.base/java.lang.ref.ReferenceQueue.await(ReferenceQueue.java:67)
+      java.base/java.lang.ref.ReferenceQueue.remove0(ReferenceQueue.java:158)
+      java.base/java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:234)
+      com.sun.jna.internal.Cleaner$1.run(Cleaner.java:58)
+
+#71 "Thread-9"
+      java.base/sun.nio.ch.Net.accept(Native Method)
+      java.base/sun.nio.ch.NioSocketImpl.accept(NioSocketImpl.java:741)
+      java.base/java.net.ServerSocket.implAccept(ServerSocket.java:690)
+      java.base/java.net.ServerSocket.platformImplAccept(ServerSocket.java:655)
+      java.base/java.net.ServerSocket.implAccept(ServerSocket.java:631)
+      java.base/java.net.ServerSocket.implAccept(ServerSocket.java:588)
+      java.base/java.net.ServerSocket.accept(ServerSocket.java:546)
+      org.openjdk.jmh.runner.link.BinaryLinkServer$Acceptor.run(BinaryLinkServer.java:221)
+
+#72 "Thread-10"
+      java.base/java.io.FileInputStream.readBytes(Native Method)
+      java.base/java.io.FileInputStream.read(FileInputStream.java:293)
+      java.base/java.io.BufferedInputStream.fill(BufferedInputStream.java:255)
+      java.base/java.io.BufferedInputStream.read1(BufferedInputStream.java:310)
+      java.base/java.io.BufferedInputStream.implRead(BufferedInputStream.java:382)
+      java.base/java.io.BufferedInputStream.read(BufferedInputStream.java:367)
+      java.base/java.io.FilterInputStream.read(FilterInputStream.java:95)
+      org.openjdk.jmh.util.InputStreamDrainer.run(InputStreamDrainer.java:80)
+
+#73 "Thread-11"
+      java.base/java.io.FileInputStream.readBytes(Native Method)
+      java.base/java.io.FileInputStream.read(FileInputStream.java:293)
+      java.base/java.io.BufferedInputStream.fill(BufferedInputStream.java:255)
+      java.base/java.io.BufferedInputStream.read1(BufferedInputStream.java:310)
+      java.base/java.io.BufferedInputStream.implRead(BufferedInputStream.java:382)
+      java.base/java.io.BufferedInputStream.read(BufferedInputStream.java:367)
+      java.base/java.io.FilterInputStream.read(FilterInputStream.java:95)
+      org.openjdk.jmh.util.InputStreamDrainer.run(InputStreamDrainer.java:80)
+
+#74 "Thread-12"
+      java.base/sun.nio.ch.SocketDispatcher.read0(Native Method)
+      java.base/sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:47)
+      java.base/sun.nio.ch.NioSocketImpl.tryRead(NioSocketImpl.java:251)
+      java.base/sun.nio.ch.NioSocketImpl.implRead(NioSocketImpl.java:302)
+      java.base/sun.nio.ch.NioSocketImpl.read(NioSocketImpl.java:340)
+      java.base/sun.nio.ch.NioSocketImpl$1.read(NioSocketImpl.java:789)
+      java.base/java.net.Socket$SocketInputStream.read(Socket.java:1025)
+      java.base/java.io.BufferedInputStream.fill(BufferedInputStream.java:255)
+      java.base/java.io.BufferedInputStream.implRead(BufferedInputStream.java:289)
+      java.base/java.io.BufferedInputStream.read(BufferedInputStream.java:276)
+      java.base/java.io.ObjectInputStream$PeekInputStream.peek(ObjectInputStream.java:2900)
+      java.base/java.io.ObjectInputStream$BlockDataInputStream.peek(ObjectInputStream.java:3227)
+      java.base/java.io.ObjectInputStream$BlockDataInputStream.peekByte(ObjectInputStream.java:3237)
+      java.base/java.io.ObjectInputStream.readObject0(ObjectInputStream.java:1711)
+      java.base/java.io.ObjectInputStream.readObject(ObjectInputStream.java:538)
+      java.base/java.io.ObjectInputStream.readObject(ObjectInputStream.java:496)
+      org.openjdk.jmh.runner.link.BinaryLinkServer$Handler.run(BinaryLinkServer.java:287)
+
+#75 "Attach Listener"
+      java.base/java.lang.Thread.getStackTrace(Thread.java:2550)
+      java.base/jdk.internal.vm.ThreadDumper.dumpThread(ThreadDumper.java:162)
+      java.base/jdk.internal.vm.ThreadDumper.lambda$dumpThreads$0(ThreadDumper.java:155)
+      java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:179)
+      java.base/java.util.Spliterators$ArraySpliterator.forEachRemaining(Spliterators.java:1006)
+      java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+      java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+      java.base/java.util.stream.StreamSpliterators$WrappingSpliterator.forEachRemaining(StreamSpliterators.java:310)
+      java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:734)
+      java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:762)
+      java.base/jdk.internal.vm.ThreadDumper.dumpThreads(ThreadDumper.java:155)
+      java.base/jdk.internal.vm.ThreadDumper.dumpThreads(ThreadDumper.java:151)
+      java.base/jdk.internal.vm.ThreadDumper.dumpThreadsToFile(ThreadDumper.java:117)
+      java.base/jdk.internal.vm.ThreadDumper.dumpThreads(ThreadDumper.java:67)
+
+#29 "process reaper (pid 965572)"
+      java.base/java.lang.ProcessHandleImpl.waitForProcessExit0(Native Method)
+      java.base/java.lang.ProcessHandleImpl$1.run(ProcessHandleImpl.java:146)
+      java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+      java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+      java.base/java.lang.Thread.run(Thread.java:1589)
+      java.base/jdk.internal.misc.InnocuousThread.run(InnocuousThread.java:186)
+
