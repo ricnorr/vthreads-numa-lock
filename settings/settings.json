@@ -37,7 +37,7 @@
             "name": "UNFAIR_REENTRANT"
           },
           {
-            "name": "HMCS_NUMA_PARK"
+            "name": "CNA_NUMA_PARK"
           }
         ]
       }
