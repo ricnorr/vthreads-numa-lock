@@ -31,7 +31,7 @@
         "forks": 1,
         "yieldsBefore": 2,
         "title": "Низкая конкуренция. Внутренняя ~3000 нс. Внешняя работа в 128 раз больше внутренней. 2 точки переключения",
-        "skip": true,
+        "skip": false,
         "locks": [
           {
             "name": "UNFAIR_REENTRANT"
