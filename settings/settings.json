@@ -11,9 +11,9 @@
         "forks": 1,
         "yieldsBefore": 1,
         "threads": [
-          4,
-          8,
+          12,
           16,
+          20,
           24
         ],
         "title": "Высокая конкуренция. Внутренняя ~3000 нс. Внешняя работа отсутствует. 1 точка переключения",
@@ -21,6 +21,9 @@
         "locks": [
           {
             "name": "LOCAL_REENTRANT"
+          },
+          {
+            "name": "UNFAIR_REENTRANT"
           }
         ]
       }
@@ -36,9 +39,9 @@
         "measurementIterations": 3,
         "forks": 1,
         "threads": [
-          4,
-          8,
+          12,
           16,
+          20,
           24
         ],
         "yieldsBefore": 2,
@@ -47,6 +50,9 @@
         "locks": [
           {
             "name": "LOCAL_REENTRANT"
+          },
+          {
+            "name": "UNFAIR_REENTRANT"
           }
         ]
       }
