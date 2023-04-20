@@ -24,5 +24,5 @@ elif [ `uname -s` == "Linux"  ] && [ `uname -m` == "aarch64"  ]; then
 elif [ `uname -s` == "Linux"  ] && [ `uname -m` == "x86_64"  ]; then
   INST="linux-x86_64-server-server-release"
 fi
-sdk install java custom-19 ~/jdk19/build/{$INST}/jdk/bin
+sdk install java custom-19 ~/jdk19/build/$INST/jdk/bin
 
