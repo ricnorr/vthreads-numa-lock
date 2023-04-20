@@ -58,7 +58,10 @@ public class JmhBenchmarkRunner {
     try {
       withLocksNanos = runBenchmarkNano(options);
     } catch (Exception e) {
-      withLocksNanos = List.of(Double.MAX_VALUE);
+      System.err.println(e.getMessage());
+      System.err.println("Error");
+      throw new RuntimeException(e);
+      //withLocksNanos = List.of(Double.MAX_VALUE);
     }
     if (withLocksNanos.isEmpty()) {
       withLocksNanos = List.of(Double.MAX_VALUE);

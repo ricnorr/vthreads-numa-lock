@@ -1,6 +1,5 @@
 package ru.ricnorr.numa.locks;
 
-import java.io.DataOutput;
 import java.io.File;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -46,6 +45,7 @@ import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNumaNoPad;
 import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNumaSupernumaNoPad;
 import ru.ricnorr.numa.locks.hmcs.nopad.HMCSNumaNoPad;
 import ru.ricnorr.numa.locks.hmcs_comb.HMCSComb;
+import ru.ricnorr.numa.locks.hmcs_exp.HMCSCclNumaExpv2;
 import ru.ricnorr.numa.locks.reentrant.NumaReentrantLock;
 
 public class Utils {
@@ -96,6 +96,7 @@ public class Utils {
       throw new RuntimeException(e);
     }
   }
+
 
   public static int getNumaNodeId() {
     int res;
@@ -207,7 +208,8 @@ public class Utils {
     List<Long> allLatencies = new ArrayList<>();
     for (int i = warmupIterations; i < latencies.size(); i++) {
       var iterationLatencies = latencies.get(warmupIterations);
-      var maxLatenciesForEachThreadOnIteration = iterationLatencies.stream().map(it -> it.stream().mapToLong(it2 -> it2).max().getAsLong()).toList();
+      var maxLatenciesForEachThreadOnIteration =
+          iterationLatencies.stream().map(it -> it.stream().mapToLong(it2 -> it2).max().getAsLong()).toList();
       allLatencies.addAll(maxLatenciesForEachThreadOnIteration);
     }
     return Utils.median(allLatencies.stream().map(it -> (double) it).collect(Collectors.toList()));
@@ -217,7 +219,8 @@ public class Utils {
     List<Long> allLatencies = new ArrayList<>();
     for (int i = warmupIterations; i < latencies.size(); i++) {
       var iterationLatencies = latencies.get(warmupIterations);
-      var maxLatenciesForEachThreadOnIteration = iterationLatencies.stream().map(it -> it.stream().mapToLong(it2 -> it2).max().getAsLong()).toList();
+      var maxLatenciesForEachThreadOnIteration =
+          iterationLatencies.stream().map(it -> it.stream().mapToLong(it2 -> it2).max().getAsLong()).toList();
       allLatencies.addAll(maxLatenciesForEachThreadOnIteration);
     }
     return allLatencies.stream().mapToDouble(it -> (double) it).average().getAsDouble();
@@ -392,7 +395,9 @@ public class Utils {
       case TTAS_CCL_MCS -> {
         return new TTAS_CCL_MCS();
       }
-
+      case MY_HMCS -> {
+        return new HMCSCclNumaExpv2();
+      }
       default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
     }
   }
