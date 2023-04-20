@@ -98,4 +98,10 @@ public enum LockType {
 
   HMCS_NUMA_PARK,
 
+  CNA_NUMA_PARK,
+
+  LOCAL_REENTRANT,
+
+  MY_HMCS,
+
 }

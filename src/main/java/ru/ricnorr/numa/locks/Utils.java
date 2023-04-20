@@ -45,7 +45,7 @@ import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNumaNoPad;
 import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNumaSupernumaNoPad;
 import ru.ricnorr.numa.locks.hmcs.nopad.HMCSNumaNoPad;
 import ru.ricnorr.numa.locks.hmcs_comb.HMCSComb;
-import ru.ricnorr.numa.locks.hmcs_park.HMCSNumaPark;
+import ru.ricnorr.numa.locks.hmcs_exp.HMCSCclNumaExpv2;
 import ru.ricnorr.numa.locks.reentrant.NumaReentrantLock;
 
 public class Utils {
@@ -96,6 +96,7 @@ public class Utils {
       throw new RuntimeException(e);
     }
   }
+
 
   public static int getNumaNodeId() {
     int res;
@@ -394,8 +395,8 @@ public class Utils {
       case TTAS_CCL_MCS -> {
         return new TTAS_CCL_MCS();
       }
-      case HMCS_NUMA_PARK -> {
-        return new HMCSNumaPark();
+      case MY_HMCS -> {
+        return new HMCSCclNumaExpv2();
       }
       default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
     }

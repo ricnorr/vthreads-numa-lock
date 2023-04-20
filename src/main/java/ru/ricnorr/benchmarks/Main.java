@@ -11,7 +11,6 @@ import java.util.Comparator;
 import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.locks.LockSupport;
 import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
@@ -172,22 +171,6 @@ public class Main {
   }
 
   public static void main(String[] args) throws InterruptedException {
-    var threadFactory = Thread.ofVirtual().factory();
-    var lt1 = threadFactory.newThread(() -> {
-      LockSupport.park();
-      System.out.println("Hi");
-    });
-    var lt2 = threadFactory.newThread(() -> {
-      LockSupport.parkNanos(2000);
-      LockSupport.unpark(lt1);
-    });
-    lt1.start();
-    lt2.start();
-    lt1.join();
-    lt2.join();
-    if (args.length == 0) {
-      return;
-    }
     if (args.length != 0 && args[0].equals("print-clusters")) {
       printClusters();
       return;
