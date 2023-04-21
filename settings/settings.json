@@ -10,11 +10,43 @@
         "measurementIterations": 3,
         "forks": 1,
         "yieldsBefore": 1,
-        "title": "Высокая конкуренция. Внутренняя ~3000 нс. Внешняя работа отсутствует. 1 точка переключения",
+        "title": "Высокая конкуренция",
         "skip": false,
         "locks": [
           {
             "name": "UNFAIR_REENTRANT"
+          },
+          {
+            "name": "CUSTOM_HMCS"
+          },
+          {
+            "name": "SYNCHRONIZED"
+          }
+        ]
+      }
+    },
+    {
+      "name": "consumeCpu",
+      "payload": {
+        "actionsCount": 128000,
+        "beforeCpuTokens": 0,
+        "inCpuTokens": 1000,
+        "warmupIterations": 3,
+        "measurementIterations": 3,
+        "forks": 1,
+        "yieldsBefore": 1,
+        "yieldInCrit": true,
+        "title": "Высокая конкуренция. Внутри yield.",
+        "skip": false,
+        "locks": [
+          {
+            "name": "UNFAIR_REENTRANT"
+          },
+          {
+            "name": "CUSTOM_HMCS"
+          },
+          {
+            "name": "SYNCHRONIZED"
           }
         ]
       }
@@ -30,11 +62,44 @@
         "measurementIterations": 3,
         "forks": 1,
         "yieldsBefore": 2,
-        "title": "Низкая конкуренция. Внутренняя ~3000 нс. Внешняя работа в 128 раз больше внутренней. 2 точки переключения",
+        "title": "Низкая конкуренция.",
         "skip": false,
         "locks": [
           {
             "name": "UNFAIR_REENTRANT"
+          },
+          {
+            "name": "CUSTOM_HMCS"
+          },
+          {
+            "name": "SYNCHRONIZED"
+          }
+        ]
+      }
+    },
+    {
+      "name": "consumeCpu",
+      "payload": {
+        "actionsCount": 128000,
+        "beforeCpuTokens": 128000,
+        "inCpuTokens": 1000,
+        "threadsFrom": 4,
+        "warmupIterations": 3,
+        "measurementIterations": 3,
+        "forks": 1,
+        "yieldsBefore": 2,
+        "title": "Низкая конкуренция. Внутри yield.",
+        "yieldInCrit": true,
+        "skip": false,
+        "locks": [
+          {
+            "name": "UNFAIR_REENTRANT"
+          },
+          {
+            "name": "CUSTOM_HMCS"
+          },
+          {
+            "name": "SYNCHRONIZED"
           }
         ]
       }
