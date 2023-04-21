@@ -31,6 +31,7 @@ import ru.ricnorr.numa.locks.cna.CNANuma;
 import ru.ricnorr.numa.locks.cna.pad.CNACclWithPad;
 import ru.ricnorr.numa.locks.cna.pad.CNANumaWithPad;
 import ru.ricnorr.numa.locks.combination.CombinationLock;
+import ru.ricnorr.numa.locks.effective_hmcs.HMCSEffective;
 import ru.ricnorr.numa.locks.hclh.HCLHCcl;
 import ru.ricnorr.numa.locks.hclh.HCLHCclNoPad;
 import ru.ricnorr.numa.locks.hclh.HCLHNuma;
@@ -44,8 +45,6 @@ import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNoPad;
 import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNumaNoPad;
 import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNumaSupernumaNoPad;
 import ru.ricnorr.numa.locks.hmcs.nopad.HMCSNumaNoPad;
-import ru.ricnorr.numa.locks.hmcs_comb.HMCSComb;
-import ru.ricnorr.numa.locks.hmcs_exp.HMCSCclNumaExpv2;
 import ru.ricnorr.numa.locks.reentrant.NumaReentrantLock;
 
 public class Utils {
@@ -300,8 +299,8 @@ public class Utils {
       case HMCS_NUMA_SUPERNUMA -> {
         return new HMCSNumaSupernuma();
       }
-      case HMCS_CUSTOM -> {
-        return new HMCSComb();
+      case CUSTOM_HMCS -> {
+        return new HMCSEffective();
       }
       // HMCS NO PAD
       case HMCS_CCL_NUMA_UNPAD -> {
@@ -391,12 +390,6 @@ public class Utils {
             ),
             Utils::getNumaNodeId
         );
-      }
-      case TTAS_CCL_MCS -> {
-        return new TTAS_CCL_MCS();
-      }
-      case MY_HMCS -> {
-        return new HMCSCclNumaExpv2();
       }
       default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
     }

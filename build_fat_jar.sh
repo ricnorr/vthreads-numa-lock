@@ -1,3 +1,6 @@
+#!/bin/bash
+source "$HOME/.sdkman/bin/sdkman-init.sh"
+sdk use java custom-19
 gradle shadowJar
 cp ./build/libs/NUMA-aware-locks-1.0-SNAPSHOT-all.jar ./fatjar/NUMA-aware-locks.jar
 git add fatjar/NUMA-aware-locks.jar

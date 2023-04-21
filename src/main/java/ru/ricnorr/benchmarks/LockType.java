@@ -61,18 +61,6 @@ public enum LockType {
 
   HMCS_NUMA_SUPERNUMA,
 
-  HMCS_CCL_NUMA_V2,
-
-  HMCS_NUMA_V3,
-
-  HMCS_NUMA_V4,
-
-  HMCS_NUMA_V5,
-
-  HMCS_NUMA_V6,
-
-  HMCS_CUSTOM,
-
   /**
    * HMCS NO PAD
    */
@@ -94,14 +82,6 @@ public enum LockType {
 
   COMB_TTAS_NUMA_MCS,
 
-  TTAS_CCL_MCS,
-
-  HMCS_NUMA_PARK,
-
-  CNA_NUMA_PARK,
-
-  LOCAL_REENTRANT,
-
-  MY_HMCS,
+  CUSTOM_HMCS,
 
 }
