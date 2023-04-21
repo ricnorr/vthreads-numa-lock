@@ -24,14 +24,11 @@ public abstract class EffectiveAbstractHMCS extends AbstractNumaLock {
 
   protected HNode root;
 
-  private final ThreadLocal<QNode> threadLocalQNode;
-
   @SuppressWarnings("unchecked")
   public EffectiveAbstractHMCS(Supplier<QNode> qNodeSupplier, Supplier<Integer> clusterIdSupplier,
                                int leafsCnt) {
     super(clusterIdSupplier);
     this.leafs = (HNode[]) Array.newInstance(HNode.class, leafsCnt);
-    this.threadLocalQNode = ThreadLocal.withInitial(qNodeSupplier);
   }
 
   @Override

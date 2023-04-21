@@ -30,7 +30,7 @@ public class HMCSEffective extends EffectiveAbstractHMCS {
       }
     } else {
       // on servers with CCL+NUMA
-      var root = new HNode(null, new QNode());
+      root = new HNode(null, new QNode());
       List<HNode> numaNodes = new ArrayList<>();
       for (int i = 0; i < Utils.NUMA_NODES_CNT; i++) {
         numaNodes.add(new HNode(root, new QNode()));
