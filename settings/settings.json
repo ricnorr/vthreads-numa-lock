@@ -14,13 +14,7 @@
         "skip": false,
         "locks": [
           {
-            "name": "UNFAIR_REENTRANT"
-          },
-          {
-            "name": "CUSTOM_HMCS"
-          },
-          {
-            "name": "SYNCHRONIZED"
+            "name": "FAIR_REENTRANT"
           }
         ]
       }
@@ -40,7 +34,7 @@
         "skip": true,
         "locks": [
           {
-            "name": "UNFAIR_REENTRANT"
+            "name": "FAIR_REENTRANT"
           },
           {
             "name": "CUSTOM_HMCS"
@@ -66,13 +60,7 @@
         "skip": false,
         "locks": [
           {
-            "name": "UNFAIR_REENTRANT"
-          },
-          {
-            "name": "CUSTOM_HMCS"
-          },
-          {
-            "name": "SYNCHRONIZED"
+            "name": "FAIR_REENTRANT"
           }
         ]
       }
