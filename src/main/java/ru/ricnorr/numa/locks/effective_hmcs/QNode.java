@@ -1,4 +1,4 @@
-package ru.ricnorr.numa.locks.hmcs_exp;
+package ru.ricnorr.numa.locks.effective_hmcs;
 
 import jdk.internal.vm.annotation.Contended;
 

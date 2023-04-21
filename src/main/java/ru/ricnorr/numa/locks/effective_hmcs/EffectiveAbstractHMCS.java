@@ -1,4 +1,4 @@
-package ru.ricnorr.numa.locks.hmcs_exp;
+package ru.ricnorr.numa.locks.effective_hmcs;
 
 import java.lang.reflect.Array;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -11,11 +11,11 @@ import kotlin.Triple;
 import ru.ricnorr.numa.locks.AbstractNumaLock;
 import ru.ricnorr.numa.locks.Utils;
 
-import static ru.ricnorr.numa.locks.hmcs_exp.QNode.ACQUIRE_PARENT;
-import static ru.ricnorr.numa.locks.hmcs_exp.QNode.COHORT_START;
-import static ru.ricnorr.numa.locks.hmcs_exp.QNode.LOCKED;
-import static ru.ricnorr.numa.locks.hmcs_exp.QNode.UNLOCKED;
-import static ru.ricnorr.numa.locks.hmcs_exp.QNode.WAIT;
+import static ru.ricnorr.numa.locks.effective_hmcs.QNode.ACQUIRE_PARENT;
+import static ru.ricnorr.numa.locks.effective_hmcs.QNode.COHORT_START;
+import static ru.ricnorr.numa.locks.effective_hmcs.QNode.LOCKED;
+import static ru.ricnorr.numa.locks.effective_hmcs.QNode.UNLOCKED;
+import static ru.ricnorr.numa.locks.effective_hmcs.QNode.WAIT;
 
 public abstract class EffectiveAbstractHMCS extends AbstractNumaLock {
 
