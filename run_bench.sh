@@ -1,5 +1,6 @@
 # run from NUMA-aware-locks directory
 #!/bin/bash
+source "$HOME/.sdkman/bin/sdkman-init.sh"
 DIR=${CONDA_PREFIX:-$HOME/miniconda3}
 CONDA_PROFILE=$DIR/etc/profile.d/conda.sh
 source "$CONDA_PROFILE"

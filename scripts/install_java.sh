@@ -20,7 +20,7 @@ if [ `uname -s` == "Darwin"  ] && [ `uname -m` == "x86_64"  ]; then
 elif [ `uname -s` == "Darwin"  ] && [ `uname -m` == "arm64"  ]; then
   INST="macosx-aarch64-server-release"
 elif [ `uname -s` == "Linux"  ] && [ `uname -m` == "aarch64"  ]; then
-  INST="linux-aarch64-server-server-release"
+  INST="linux-aarch64-server-release"
 elif [ `uname -s` == "Linux"  ] && [ `uname -m` == "x86_64"  ]; then
   INST="linux-x86_64-server-server-release"
 fi

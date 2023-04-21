@@ -20,9 +20,6 @@
         "skip": false,
         "locks": [
           {
-            "name": "LOCAL_REENTRANT_MCS"
-          },
-          {
             "name": "UNFAIR_REENTRANT"
           }
         ]
@@ -48,9 +45,6 @@
         "title": "Низкая конкуренция. Внутренняя ~3000 нс. Внешняя работа в 128 раз больше внутренней. 2 точки переключения",
         "skip": false,
         "locks": [
-          {
-            "name": "LOCAL_REENTRANT_MCS"
-          },
           {
             "name": "UNFAIR_REENTRANT"
           }
