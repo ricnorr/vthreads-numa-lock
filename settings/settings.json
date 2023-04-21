@@ -37,7 +37,7 @@
         "yieldsBefore": 1,
         "yieldInCrit": true,
         "title": "Высокая конкуренция. Внутри yield.",
-        "skip": false,
+        "skip": true,
         "locks": [
           {
             "name": "UNFAIR_REENTRANT"
@@ -90,7 +90,7 @@
         "yieldsBefore": 2,
         "title": "Низкая конкуренция. Внутри yield.",
         "yieldInCrit": true,
-        "skip": false,
+        "skip": true,
         "locks": [
           {
             "name": "UNFAIR_REENTRANT"
