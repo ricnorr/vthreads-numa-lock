@@ -139,7 +139,7 @@ public abstract class AbstractHMCSExpv2 extends AbstractNumaLock {
     if (succ != null) {
       root.lockIsTaken.set(false);
       succ.setStatusAtomically(curCount + 1);
-      LockSupport.unparkNextAndYieldThis(succ.thread, Utils.getCurrentCarrierThread());
+      LockSupport.unparkNextAndRunOnTheCarrier(succ.thread, Utils.getCurrentCarrierThread());
       return;
     }
     unlockH(hNode.parent, hNode.node);
