@@ -39,7 +39,7 @@
         "yieldsBefore": 2,
         "title": "ConsumeCPU. Low contention.",
         "yieldInCrit": true,
-        "skip": false,
+        "skip": true,
         "locks": [
           {
             "name": "NUMA_MCS"
