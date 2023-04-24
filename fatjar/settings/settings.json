@@ -1,152 +1,84 @@
 {
-  "locks": [
-    {
-      "name": "TAS",
-      "skip": true
-    },
-    {
-      "name": "SYNCHRONIZED",
-      "skip": true
-    },
-    {
-      "name": "TTAS",
-      "skip": true
-    },
-    {
-      "name": "MCS_PARK",
-      "skip": true
-    },
-    {
-      "name": "FAIR_REENTRANT",
-      "skip": true
-    },
-    {
-      "name": "UNFAIR_REENTRANT",
-      "skip": true
-    },
-    {
-      "name": "CNA_NUMA",
-      "skip": true
-    },
-    {
-      "name": "HCLH_NUMA",
-      "skip": true
-    },
-    {
-      "name": "HMCS_CCL_NUMA",
-      "skip": true
-    },
-    {
-      "name": "HMCS_CCL_NUMA_SUPERNUMA",
-      "skip": true
-    },
-    {
-      "name": "HMCS_CCL",
-      "skip": true
-    },
-    {
-      "name": "HMCS_NUMA",
-      "skip": true
-    },
-    {
-      "name": "COMB_HCLH_CCL_MCS_NUMA",
-      "skip": true
-    },
-    {
-      "name": "COMB_CNA_CCL_MCS_NUMA",
-      "skip": true
-    },
-    {
-      "name": "COMB_TTAS_CCL_HCLH_NUMA",
-      "skip": true
-    },
-    {
-      "name": "COMB_TTAS_CCL_CNA_NUMA",
-      "skip": true
-    },
-    {
-      "name": "COMB_TTAS_NUMA_MCS",
-      "skip": true
-    },
-    {
-      "name": "TTAS_CCL_MCS",
-      "skip": true
-    },
-    {
-      "name": "HMCS_CCL_NUMA_V2",
-      "skip": true
-    },
-    {
-      "name": "HMCS_NUMA_V3",
-      "skip": true
-    },
-    {
-      "name": "HMCS_NUMA_V4",
-      "skip": true
-    },
-    {
-      "name": "HMCS_NUMA_V5",
-      "skip": true
-    },
-    {
-      "name": "HMCS_NUMA_V6",
-      "skip": true
-    },
-    {
-      "name": "CNA_NUMA_SLEEP",
-      "skip": false
-    },
-    {
-      "name": "CNA_NUMA_SLEEP_2",
-      "skip": false
-    }
-  ],
   "benches": [
     {
       "name": "consumeCpu",
-      "actionsCount": 147456,
-      "before": 0,
-      "in": 1000,
-      "warmupIterations": 3,
-      "measurementIterations": 3,
-      "forks": 2,
-      "limitVirtualScheduler": true,
-      "pinUsingJna": true,
-      "light": true,
-      "skip": false
+      "payload": {
+        "actionsCount": 128000,
+        "beforeCpuTokens": 0,
+        "inCpuTokens": 1000,
+        "warmupIterations": 3,
+        "measurementIterations": 3,
+        "forks": 1,
+        "yieldsBefore": 1,
+        "title": "Высокая конкуренция",
+        "skip": true,
+        "locks": [
+          {
+            "name": "FAIR_REENTRANT"
+          }
+        ]
+      }
     },
     {
       "name": "consumeCpu",
-      "actionsCount": 36864,
-      "before": 18000,
-      "in": 100,
-      "warmupIterations": 3,
-      "measurementIterations": 3,
-      "forks": 2,
-      "threads": [
-        1,
-        2,
-        4,
-        8,
-        16,
-        24,
-        32,
-        46,
-        47,
-        48,
-        56,
-        64,
-        74,
-        82,
-        80,
-        88,
-        96,
-        104
-      ],
-      "limitVirtualScheduler": true,
-      "pinUsingJna": true,
-      "light": true,
-      "skip": false
+      "payload": {
+        "actionsCount": 128000,
+        "beforeCpuTokens": 0,
+        "inCpuTokens": 1000,
+        "warmupIterations": 3,
+        "measurementIterations": 3,
+        "forks": 1,
+        "yieldsBefore": 1,
+        "yieldInCrit": true,
+        "title": "Высокая конкуренция. Внутри yield.",
+        "skip": false,
+        "locks": [
+          {
+            "name": "SOME_LOCK"
+          }
+        ]
+      }
+    },
+    {
+      "name": "consumeCpu",
+      "payload": {
+        "actionsCount": 128000,
+        "beforeCpuTokens": 128000,
+        "inCpuTokens": 1000,
+        "threadsFrom": 4,
+        "warmupIterations": 3,
+        "measurementIterations": 3,
+        "forks": 1,
+        "yieldsBefore": 2,
+        "title": "Низкая конкуренция.",
+        "skip": true,
+        "locks": [
+          {
+            "name": "FAIR_REENTRANT"
+          }
+        ]
+      }
+    },
+    {
+      "name": "consumeCpu",
+      "payload": {
+        "actionsCount": 2000,
+        "beforeCpuTokens": 128000,
+        "inCpuTokens": 1000,
+        "threadsFrom": 4,
+        "warmupIterations": 3,
+        "measurementIterations": 3,
+        "forks": 1,
+        "yieldsBefore": 2,
+        "title": "Низкая конкуренция. Внутри yield.",
+        "yieldInCrit": true,
+        "skip": false,
+        "locks": [
+          {
+            "name": "SOME_LOCK"
+          }
+        ]
+      }
     }
   ]
 }

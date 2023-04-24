@@ -82,6 +82,6 @@ public enum LockType {
 
   COMB_TTAS_NUMA_MCS,
 
-  CUSTOM_HMCS,
+  NUMA_MCS,
 
 }
