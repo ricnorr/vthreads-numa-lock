@@ -31,7 +31,6 @@ import ru.ricnorr.numa.locks.cna.CNANuma;
 import ru.ricnorr.numa.locks.cna.pad.CNACclWithPad;
 import ru.ricnorr.numa.locks.cna.pad.CNANumaWithPad;
 import ru.ricnorr.numa.locks.combination.CombinationLock;
-import ru.ricnorr.numa.locks.effective_hmcs.HMCSEffective;
 import ru.ricnorr.numa.locks.hclh.HCLHCcl;
 import ru.ricnorr.numa.locks.hclh.HCLHCclNoPad;
 import ru.ricnorr.numa.locks.hclh.HCLHNuma;
@@ -45,6 +44,7 @@ import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNoPad;
 import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNumaNoPad;
 import ru.ricnorr.numa.locks.hmcs.nopad.HMCSCclNumaSupernumaNoPad;
 import ru.ricnorr.numa.locks.hmcs.nopad.HMCSNumaNoPad;
+import ru.ricnorr.numa.locks.numa_mcs.NumaMCS;
 import ru.ricnorr.numa.locks.reentrant.NumaReentrantLock;
 
 public class Utils {
@@ -299,8 +299,11 @@ public class Utils {
       case HMCS_NUMA_SUPERNUMA -> {
         return new HMCSNumaSupernuma();
       }
-      case CUSTOM_HMCS -> {
-        return new HMCSEffective();
+//      case CUSTOM_HMCS_UNLOCK_HIGHER_IF_NOT_THIS_NUMA -> {
+//        return new HMCSEffective();
+//      }
+      case NUMA_MCS -> {
+        return new NumaMCS();
       }
       // HMCS NO PAD
       case HMCS_CCL_NUMA_UNPAD -> {

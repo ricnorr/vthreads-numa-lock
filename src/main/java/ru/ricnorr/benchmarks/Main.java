@@ -36,7 +36,7 @@ public class Main {
   private static final List<String> RESULTS_HEADERS =
       List.of("name", "lock", "threads", "Maximum_overhead_(millisec)", "Minimum_overhead_(millisec)",
           "Median_overhead_(millisec)", "Maximum_throughout_(ops_millisec)", "Minimum_throughput_(ops_millisec)",
-          "Пропускная способность (op|ms)", "Медиана максимальных latency (millisec)",
+          "Throughput (op|ms)", "Медиана максимальных latency (millisec)",
           "Среднее максимальных latency (millisec)");
 
   public static List<Integer> getProcessorsNumbersInNumaNodeOrder() {
