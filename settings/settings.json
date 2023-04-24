@@ -15,7 +15,7 @@
         "skip": true,
         "locks": [
           {
-            "name": "SOME_LOCK"
+            "name": "MCS_NUMA"
           },
           {
             "name": "UNFAIR_REENTRANT"
@@ -42,7 +42,7 @@
         "skip": false,
         "locks": [
           {
-            "name": "SOME_LOCK"
+            "name": "MCS_NUMA"
           },
           {
             "name": "UNFAIR_REENTRANT"
