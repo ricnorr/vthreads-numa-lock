@@ -39,7 +39,7 @@
         "yieldsBefore": 2,
         "title": "ConsumeCPU. Low contention.",
         "yieldInCrit": true,
-        "skip": true,
+        "skip": false,
         "locks": [
           {
             "name": "NUMA_MCS"
@@ -64,6 +64,9 @@
         "title": "Priority queue. 128000 operations.",
         "skip": false,
         "locks": [
+          {
+            "name": "NUMA_MCS"
+          },
           {
             "name": "UNFAIR_REENTRANT"
           },
