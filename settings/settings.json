@@ -12,7 +12,7 @@
         "yieldsBefore": 1,
         "yieldInCrit": true,
         "title": "ConsumeCPU. High contention.",
-        "skip": true,
+        "skip": false,
         "locks": [
           {
             "name": "NUMA_MCS"
@@ -39,7 +39,7 @@
         "yieldsBefore": 2,
         "title": "ConsumeCPU. Low contention.",
         "yieldInCrit": true,
-        "skip": true,
+        "skip": false,
         "locks": [
           {
             "name": "NUMA_MCS"
