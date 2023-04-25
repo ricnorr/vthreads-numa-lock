@@ -15,13 +15,10 @@
         "skip": false,
         "locks": [
           {
-            "name": "NUMA_MCS"
+            "name": "NUMA_MCS_NO_YIELD"
           },
           {
-            "name": "UNFAIR_REENTRANT"
-          },
-          {
-            "name": "FAIR_REENTRANT"
+            "name": "NUMA_MCS_CCL_NO_YIELD"
           }
         ]
       }
@@ -42,13 +39,10 @@
         "skip": false,
         "locks": [
           {
-            "name": "NUMA_MCS"
+            "name": "NUMA_MCS_NO_YIELD"
           },
           {
-            "name": "UNFAIR_REENTRANT"
-          },
-          {
-            "name": "FAIR_REENTRANT"
+            "name": "NUMA_MCS_CCL_NO_YIELD"
           }
         ]
       }
@@ -65,13 +59,10 @@
         "skip": false,
         "locks": [
           {
-            "name": "NUMA_MCS"
+            "name": "NUMA_MCS_NO_YIELD"
           },
           {
-            "name": "UNFAIR_REENTRANT"
-          },
-          {
-            "name": "FAIR_REENTRANT"
+            "name": "NUMA_MCS_CCL_NO_YIELD"
           }
         ]
       }
