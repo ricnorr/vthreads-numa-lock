@@ -3,7 +3,7 @@
     {
       "name": "consumeCpu",
       "payload": {
-        "actionsCount": 128000,
+        "actionsCount": 64000,
         "beforeCpuTokens": 0,
         "inCpuTokens": 1000,
         "warmupIterations": 5,
@@ -29,13 +29,13 @@
     {
       "name": "consumeCpu",
       "payload": {
-        "actionsCount": 128000,
+        "actionsCount": 64000,
         "beforeCpuTokens": 128000,
         "inCpuTokens": 1000,
         "threadsFrom": 4,
-        "warmupIterations": 3,
-        "measurementIterations": 3,
-        "forks": 1,
+        "warmupIterations": 5,
+        "measurementIterations": 5,
+        "forks": 2,
         "yieldsBefore": 2,
         "title": "ConsumeCPU. Low contention.",
         "yieldInCrit": true,
@@ -56,11 +56,11 @@
     {
       "name": "priority-queue",
       "payload": {
-        "actionsCount": 128000,
+        "actionsCount": 64000,
         "threadsFrom": 4,
-        "warmupIterations": 3,
-        "measurementIterations": 3,
-        "forks": 1,
+        "warmupIterations": 5,
+        "measurementIterations": 5,
+        "forks": 2,
         "title": "Priority queue. 128000 operations.",
         "skip": false,
         "locks": [
