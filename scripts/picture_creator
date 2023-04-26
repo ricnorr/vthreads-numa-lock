@@ -41,7 +41,7 @@ def draw_by_bench_and_mode(df, bench, mode, threads, suffix, filterLocks):
         l = plt.legend(loc='lower left')
         for text in l.get_texts():
             t = text.get_text()
-            if 'REENTRANT' in t or t == 'SYNCHRONIZED':
+            if 'REENTRANT' not in t and t != 'SYNCHRONIZED':
                 text.set_color("red")
         if 'ops_millisec' in mode:
             plt.ylabel('op/ms')

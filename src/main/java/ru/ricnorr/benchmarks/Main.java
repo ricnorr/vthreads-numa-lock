@@ -19,17 +19,11 @@ import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.Options;
-import org.openjdk.jmh.runner.options.OptionsBuilder;
-import org.openjdk.jmh.runner.options.TimeValue;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import ru.ricnorr.benchmarks.jmh.JmhBenchmarkRunner;
-import ru.ricnorr.benchmarks.jmh.cpu.JmhJniCallBenchmark;
 import ru.ricnorr.numa.locks.Utils;
-
-import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
 
 public class Main {
 
@@ -157,26 +151,10 @@ public class Main {
     System.out.println("Possible cpu ids: " +
         cpuIds.stream().sorted().distinct().map(Object::toString).collect(Collectors.joining(",")));
   }
-
-  public static void estimateJniCall() {
-    var optionsBuilder =
-        new OptionsBuilder().include(JmhJniCallBenchmark.class.getSimpleName()).operationsPerInvocation(1)
-            .warmupIterations(1).forks(1).measurementTime(TimeValue.seconds(5)).measurementIterations(1)
-            .verbosity(NORMAL);
-    try {
-      new Runner(optionsBuilder.build()).run();
-    } catch (Exception e) {
-      throw new BenchmarkException("Can't get jmh benchmark result");
-    }
-  }
-
+  
   public static void main(String[] args) throws InterruptedException {
     if (args.length != 0 && args[0].equals("print-clusters")) {
       printClusters();
-      return;
-    }
-    if (args.length != 0 && args[0].equals("check-jni-call")) {
-      estimateJniCall();
       return;
     }
     // Read benchmark parameters
