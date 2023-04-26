@@ -41,12 +41,6 @@
         "yieldInCrit": true,
         "skip": true,
         "locks": [
-          {
-            "name": "NUMA_MCS_NO_YIELD"
-          },
-          {
-            "name": "NUMA_MCS_CCL_NO_YIELD"
-          }
         ]
       }
     },
@@ -61,12 +55,6 @@
         "title": "Priority queue. 128000 operations.",
         "skip": true,
         "locks": [
-          {
-            "name": "NUMA_MCS_NO_YIELD"
-          },
-          {
-            "name": "NUMA_MCS_CCL_NO_YIELD"
-          }
         ]
       }
     }
