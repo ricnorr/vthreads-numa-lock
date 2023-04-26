@@ -16,12 +16,6 @@
         "locks": [
           {
             "name": "NUMA_MCS"
-          },
-          {
-            "name": "UNFAIR_REENTRANT"
-          },
-          {
-            "name": "FAIR_REENTRANT"
           }
         ]
       }
