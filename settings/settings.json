@@ -15,7 +15,7 @@
         "skip": false,
         "locks": [
           {
-            "name": "NUMA_MCS_RUN_ON_THIS_CARRIER_FEATURE_ENABLED"
+            "name": "NUMA_MCS_YIELD_IF_DOESNT_CHANGED_NUMA"
           }
         ]
       }
@@ -36,7 +36,7 @@
         "skip": false,
         "locks": [
           {
-            "name": "NUMA_MCS_RUN_ON_THIS_CARRIER_FEATURE_ENABLED"
+            "name": "NUMA_MCS_YIELD_IF_DOESNT_CHANGED_NUMA"
           }
         ]
       }
@@ -53,7 +53,7 @@
         "skip": false,
         "locks": [
           {
-            "name": "NUMA_MCS_RUN_ON_THIS_CARRIER_FEATURE_ENABLED"
+            "name": "NUMA_MCS_YIELD_IF_DOESNT_CHANGED_NUMA"
           }
         ]
       }
