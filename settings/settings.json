@@ -15,7 +15,7 @@
         "skip": false,
         "locks": [
           {
-            "name": "NUMA_MCS_YIELD_IF_DOESNT_CHANGED_NUMA"
+            "name": "NUMA_MCS_YIELD_WHEN_SPIN_ON_GLOBAL"
           }
         ]
       }
@@ -36,7 +36,7 @@
         "skip": false,
         "locks": [
           {
-            "name": "NUMA_MCS_YIELD_IF_DOESNT_CHANGED_NUMA"
+            "name": "NUMA_MCS_YIELD_WHEN_SPIN_ON_GLOBAL"
           }
         ]
       }
@@ -53,7 +53,7 @@
         "skip": false,
         "locks": [
           {
-            "name": "NUMA_MCS_YIELD_IF_DOESNT_CHANGED_NUMA"
+            "name": "NUMA_MCS_YIELD_WHEN_SPIN_ON_GLOBAL"
           }
         ]
       }
