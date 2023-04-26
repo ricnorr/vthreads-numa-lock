@@ -11,6 +11,7 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import ru.ricnorr.benchmarks.BenchmarkResultsCsv;
 import ru.ricnorr.benchmarks.params.ConsumeCpuBenchmarkParameters;
+import ru.ricnorr.benchmarks.params.PriorityQueueBenchmarkParameters;
 import ru.ricnorr.numa.locks.Utils;
 
 import static ru.ricnorr.benchmarks.Main.autoThreadsInit;
@@ -22,8 +23,8 @@ public class JmhBenchmarkRunner {
     for (Object o : array) {
       JSONObject obj = (JSONObject) o;
       String name = (String) obj.get("name");
+      JSONObject payload = (JSONObject) obj.get("payload");
       if (name.equals("consumeCpu")) {
-        JSONObject payload = (JSONObject) obj.get("payload");
         ConsumeCpuBenchmarkParameters consumeCpuBenchmarkParameters;
         try {
           consumeCpuBenchmarkParameters =
@@ -38,6 +39,20 @@ public class JmhBenchmarkRunner {
           consumeCpuBenchmarkParameters.threads = autoThreadsInit();
         }
         paramList.addAll(consumeCpuBenchmarkParameters.getOptions());
+      } else if (name.equals("priority-queue")) {
+        PriorityQueueBenchmarkParameters priorityQueueBenchmarkParameters;
+        try {
+          priorityQueueBenchmarkParameters =
+              new ObjectMapper().readValue(payload.toJSONString(), PriorityQueueBenchmarkParameters.class);
+        } catch (Exception e) {
+          throw new RuntimeException("Failed to parse payload of benchmark, err=" + e.getMessage());
+        }
+        if (priorityQueueBenchmarkParameters.threads == null) {
+          priorityQueueBenchmarkParameters.threads = autoThreadsInit();
+        }
+        paramList.addAll(priorityQueueBenchmarkParameters.getOptions());
+      } else {
+        throw new IllegalStateException("Benchmark name not found");
       }
     }
     return paramList;
@@ -72,11 +87,15 @@ public class JmhBenchmarkRunner {
     int measurementIterations = options.getMeasurementIterations().get();
 
     String title =
-        String.format("Ядер : %d. %s", Utils.CORES_CNT, options.getParameter("title").get().stream().findFirst().get());
+        String.format("Cores : %d. %s", Utils.CORES_CNT,
+            options.getParameter("title").get().stream().findFirst().get());
     String lockType = options.getParameter("lockType").get().stream().findFirst().get();
-    var latenciesNanos = Utils.readLatenciesFromDirectory(warmupIterations + measurementIterations, threads);
-    var medianLatenciesNanos = Utils.medianLatency(warmupIterations, latenciesNanos);
-    var averageLatenciesNanos = Utils.averageLatency(warmupIterations, latenciesNanos);
+//    var latenciesNanos = Utils.readLatenciesFromDirectory(warmupIterations + measurementIterations, threads);
+//    var medianLatenciesNanos = Utils.medianLatency(warmupIterations, latenciesNanos);
+//    var averageLatenciesNanos = Utils.averageLatency(warmupIterations, latenciesNanos);
+
+    var medianLatenciesNanos = 0L;
+    var averageLatenciesNanos = 0L;
     double withLockNanosMin = withLocksNanos.stream().min(Double::compare).get();
     double withLockNanosMax = withLocksNanos.stream().max(Double::compare).get();
     double withLockNanosMedian = Utils.median(withLocksNanos);

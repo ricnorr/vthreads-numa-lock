@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.LockSupport;
 
+import jdk.internal.vm.annotation.Contended;
 import ru.ricnorr.numa.locks.NumaLock;
 import ru.ricnorr.numa.locks.Utils;
 
@@ -17,6 +18,7 @@ public class NumaMCS implements NumaLock {
 
   ThreadLocal<Integer> lockAcquiresThreadLocal = ThreadLocal.withInitial(() -> 0);
 
+  @Contended
   AtomicBoolean globalLock = new AtomicBoolean();
 
   public NumaMCS() {
@@ -46,13 +48,13 @@ public class NumaMCS implements NumaLock {
     }
     Utils.setByThreadToThreadLocal(lockAcquiresThreadLocal, Utils.getCurrentCarrierThread(), lockAcquires);
 
-    if (globalLock.compareAndExchange(false, true)) {
+    if (globalLock.compareAndSet(false, true)) {
       return new NumaMCSRes(true, numaId, node);
     }
     var localQueue = localQueues.get(numaId);
     var pred = localQueue.getAndSet(node);
     if (pred == null) {
-      while (!globalLock.compareAndExchange(false, true)) {
+      while (!globalLock.compareAndSet(false, true)) {
       }
       return new NumaMCSRes(false, numaId, node);
     }
@@ -60,7 +62,7 @@ public class NumaMCS implements NumaLock {
     while (node.spin) {
       LockSupport.park();
     }
-    while (!globalLock.compareAndExchange(false, true)) {
+    while (!globalLock.compareAndSet(false, true)) {
     }
     return new NumaMCSRes(false, numaId, node);
   }
@@ -84,7 +86,9 @@ public class NumaMCS implements NumaLock {
     globalLock.set(false);
     nextNode.spin = false;
     LockSupport.unpark(nextNode.thread);
-    Thread.yield();
+//    if (curNumaId == res.numaId) {
+//      Thread.yield();
+//    }
   }
 
   @Override
@@ -92,11 +96,15 @@ public class NumaMCS implements NumaLock {
     return false;
   }
 
-  class Node {
+  static class Node {
 
+    @Contended
     Thread thread = Thread.currentThread();
+
+    @Contended
     volatile boolean spin = true;
 
+    @Contended
     AtomicReference<Node> next = new AtomicReference<>();
 
   }
