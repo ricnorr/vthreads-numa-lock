@@ -49,7 +49,7 @@
         "warmupIterations": 3,
         "measurementIterations": 3,
         "forks": 1,
-        "title": "Priority queue. 128000 operations.",
+        "title": "Priority queue.",
         "skip": false,
         "locks": [
           {
