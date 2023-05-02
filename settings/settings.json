@@ -6,16 +6,22 @@
         "actionsCount": 64000,
         "beforeCpuTokens": 0,
         "inCpuTokens": 1000,
-        "warmupIterations": 3,
-        "measurementIterations": 3,
-        "forks": 1,
+        "warmupIterations": 10,
+        "measurementIterations": 10,
+        "forks": 4,
         "yieldsBefore": 1,
         "yieldInCrit": true,
         "title": "ConsumeCPU. High contention.",
-        "skip": true,
+        "skip": false,
         "locks": [
           {
-            "name": "NUMA_MCS_YIELD_WHEN_SPIN_ON_GLOBAL"
+            "name": "NUMA_MCS"
+          },
+          {
+            "name": "UNFAIR_REENTRANT"
+          },
+          {
+            "name": "FAIR_REENTRANT"
           }
         ]
       }
@@ -27,16 +33,22 @@
         "beforeCpuTokens": 128000,
         "inCpuTokens": 1000,
         "threadsFrom": 4,
-        "warmupIterations": 3,
-        "measurementIterations": 3,
-        "forks": 1,
+        "warmupIterations": 10,
+        "measurementIterations": 10,
+        "forks": 4,
         "yieldsBefore": 2,
         "title": "ConsumeCPU. Low contention.",
         "yieldInCrit": true,
-        "skip": true,
+        "skip": false,
         "locks": [
           {
-            "name": "NUMA_MCS_YIELD_WHEN_SPIN_ON_GLOBAL"
+            "name": "NUMA_MCS"
+          },
+          {
+            "name": "UNFAIR_REENTRANT"
+          },
+          {
+            "name": "FAIR_REENTRANT"
           }
         ]
       }
@@ -55,7 +67,13 @@
         "skip": true,
         "locks": [
           {
-            "name": "NUMA_MCS_YIELD_WHEN_SPIN_ON_GLOBAL"
+            "name": "NUMA_MCS"
+          },
+          {
+            "name": "UNFAIR_REENTRANT"
+          },
+          {
+            "name": "FAIR_REENTRANT"
           }
         ]
       }
@@ -77,7 +95,7 @@
         ],
         "threadsFrom": 4,
         "title": "Dijkstra.",
-        "skip": false,
+        "skip": true,
         "locks": [
           {
             "name": "NUMA_MCS"
