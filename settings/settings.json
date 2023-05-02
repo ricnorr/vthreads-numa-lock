@@ -68,6 +68,7 @@
         "warmupIterations": 3,
         "measurementIterations": 2,
         "forks": 1,
+        "threadsFrom": 4,
         "title": "Dijkstra.",
         "skip": false,
         "locks": [
