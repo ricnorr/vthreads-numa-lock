@@ -63,7 +63,7 @@
     {
       "name": "dijkstra",
       "payload": {
-        "nodesCnt": 6000,
+        "nodesCnt": 500,
         "probabilityOfEdge": 0.5,
         "warmupIterations": 10,
         "measurementIterations": 10,
@@ -75,12 +75,6 @@
         "title": "Dijkstra.",
         "skip": false,
         "locks": [
-          {
-            "name": "UNFAIR_REENTRANT"
-          },
-          {
-            "name": "FAIR_REENTRANT"
-          },
           {
             "name": "NUMA_MCS"
           }
