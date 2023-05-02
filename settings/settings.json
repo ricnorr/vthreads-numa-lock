@@ -68,7 +68,7 @@
         "warmupIterations": 10,
         "measurementIterations": 10,
         "threads": [
-          110
+          150
         ],
         "forks": 1,
         "threadsFrom": 4,
