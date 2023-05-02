@@ -19,6 +19,7 @@ def draw_by_bench_and_mode(df, bench, mode, threads, suffix, filterLocks):
         if 'Низкая' in bench and 'overhead' in mode:
             return
         ax = plt.axes(title = bench + '\n mode=' + mode)
+        #threads = [4, 16, 24, 32, 48, 80, 128, 192, 256, 512, 1024, 1280, 2560]
         plt.gcf().set_size_inches(7, 7)
         ind = 0
         markevery = [1,2]
@@ -33,21 +34,13 @@ def draw_by_bench_and_mode(df, bench, mode, threads, suffix, filterLocks):
             else:
                 marker = '.'
             cur_df.sort_values(by=['threads']).plot(ax=ax, x='threads_cnt', y=mode, label=lock, style=[styles[ind % len(styles)]], marker=marker)
-            #ax.set_xticklabels(list(map(lambda x : str(x), cur_df['threads'])))
-            #ax.set_xlim(-0.65, 14.75999)
-            #plt.margins(1)
-            #ax.set_xlim(-1.90001,1.90001)
             ind+=1
         l = plt.legend(loc='lower left')
         for text in l.get_texts():
             t = text.get_text()
             if 'REENTRANT' not in t and t != 'SYNCHRONIZED':
                 text.set_color("red")
-        if 'ops_millisec' in mode:
             plt.ylabel('op/ms')
-        else:
-            plt.ylabel('ms')
-
         name = '../results/pictures/' + bench + '_' + mode  + suffix + '.png'
         paths.append(name)
 

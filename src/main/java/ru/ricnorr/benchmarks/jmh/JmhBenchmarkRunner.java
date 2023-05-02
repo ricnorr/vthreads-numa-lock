@@ -79,7 +79,7 @@ public class JmhBenchmarkRunner {
       //withLocksNanos = List.of(Double.MAX_VALUE);
     }
     if (withLocksNanos.isEmpty()) {
-      withLocksNanos = List.of(Double.MAX_VALUE);
+      throw new RuntimeException("No result found in benchmark");
     }
     int threads = Integer.parseInt(options.getParameter("threads").get().stream().findFirst().get());
     int actionsCount = Integer.parseInt(options.getParameter("actionsCount").get().stream().findFirst().get());
@@ -87,7 +87,7 @@ public class JmhBenchmarkRunner {
     int measurementIterations = options.getMeasurementIterations().get();
 
     String title =
-        String.format("Cores : %d. %s", Utils.CORES_CNT,
+        String.format("Cores: %d. %s", Utils.CORES_CNT,
             options.getParameter("title").get().stream().findFirst().get());
     String lockType = options.getParameter("lockType").get().stream().findFirst().get();
 //    var latenciesNanos = Utils.readLatenciesFromDirectory(warmupIterations + measurementIterations, threads);
