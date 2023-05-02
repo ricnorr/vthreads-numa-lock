@@ -67,7 +67,7 @@
         "probabilityOfEdge": 0.5,
         "threadsFrom": 4,
         "warmupIterations": 3,
-        "measurementIterations": 3,
+        "measurementIterations": 1,
         "forks": 2,
         "title": "Dijkstra.",
         "skip": false,
