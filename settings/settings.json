@@ -12,7 +12,7 @@
         "yieldsBefore": 1,
         "yieldInCrit": true,
         "title": "ConsumeCPU. High contention.",
-        "skip": false,
+        "skip": true,
         "locks": [
           {
             "name": "NUMA_MCS_YIELD_WHEN_SPIN_ON_GLOBAL"
@@ -33,7 +33,7 @@
         "yieldsBefore": 2,
         "title": "ConsumeCPU. Low contention.",
         "yieldInCrit": true,
-        "skip": false,
+        "skip": true,
         "locks": [
           {
             "name": "NUMA_MCS_YIELD_WHEN_SPIN_ON_GLOBAL"
@@ -45,15 +45,41 @@
       "name": "priority-queue",
       "payload": {
         "actionsCount": 64000,
-        "threadsFrom": 4,
         "warmupIterations": 3,
         "measurementIterations": 3,
         "forks": 1,
+        "threads": [
+          1
+        ],
         "title": "Priority queue.",
-        "skip": false,
+        "skip": true,
         "locks": [
           {
             "name": "NUMA_MCS_YIELD_WHEN_SPIN_ON_GLOBAL"
+          }
+        ]
+      }
+    },
+    {
+      "name": "dijkstra",
+      "payload": {
+        "nodesCnt": 10000,
+        "probabilityOfEdge": 0.5,
+        "threadsFrom": 4,
+        "warmupIterations": 1,
+        "measurementIterations": 1,
+        "forks": 1,
+        "title": "Dijkstra.",
+        "skip": false,
+        "locks": [
+          {
+            "name": "UNFAIR_REENTRANT"
+          },
+          {
+            "name": "FAIR_REENTRANT"
+          },
+          {
+            "name": "NUMA_MCS"
           }
         ]
       }
