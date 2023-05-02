@@ -305,6 +305,21 @@ public class Utils {
       case NUMA_MCS -> {
         return new NumaMCS();
       }
+      case NUMA_MCS_RUN_ON_THIS_CARRIER_FEATURE_ENABLED -> {
+        var lock = new NumaMCS();
+        lock.runOnThisCarrierFeatureEnabled = true;
+        return lock;
+      }
+      case NUMA_MCS_YIELD_IF_DOESNT_CHANGED_NUMA -> {
+        var lock = new NumaMCS();
+        lock.yieldIfDoesntChangedNuma = true;
+        return lock;
+      }
+      case NUMA_MCS_YIELD_WHEN_SPIN_ON_GLOBAL -> {
+        var lock = new NumaMCS();
+        lock.yieldWhenWaitGlobal = true;
+        return lock;
+      }
       // HMCS NO PAD
       case HMCS_CCL_NUMA_UNPAD -> {
         return new HMCSCclNumaNoPad();

@@ -9,7 +9,6 @@ import org.openjdk.jmh.profile.AsyncProfiler;
 import org.openjdk.jmh.profile.JavaFlightRecorderProfiler;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
-import org.openjdk.jmh.runner.options.TimeValue;
 import ru.ricnorr.benchmarks.jmh.priority_queue.JmhPriorityQueueBenchmark;
 import ru.ricnorr.numa.locks.Utils;
 
@@ -53,7 +52,7 @@ public class PriorityQueueBenchmarkParameters implements BenchmarkParameters {
               .warmupIterations(warmupIterations)
               .measurementIterations(measurementIterations)
               .forks(forks)
-              .timeout(TimeValue.valueOf("2m"))
+              .timeout(BENCHMARK_MAX_DURATION)
               .verbosity(NORMAL)
               .jvmArgsAppend("-Djdk.virtualThreadScheduler.parallelism=" +
                   Math.min(Utils.CORES_CNT, thread));
