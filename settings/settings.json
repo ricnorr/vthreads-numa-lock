@@ -76,12 +76,6 @@
         "skip": false,
         "locks": [
           {
-            "name": "UNFAIR_REENTRANT"
-          },
-          {
-            "name": "FAIR_REENTRANT"
-          },
-          {
             "name": "NUMA_MCS"
           }
         ]
