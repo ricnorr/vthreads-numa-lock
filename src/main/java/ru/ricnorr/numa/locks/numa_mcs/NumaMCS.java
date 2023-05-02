@@ -26,7 +26,7 @@ public class NumaMCS implements NumaLock {
   public boolean yieldIfDoesntChangedNuma = false; // работает плохо на 96 потоках
 
   public boolean yieldWhenWaitGlobal = false;
-      // см NUMA_MCS_YIELD_WHEN_SPIN_ON_GLOBAL, сильно буста не дает, но это микробенчи
+  // см NUMA_MCS_YIELD_WHEN_SPIN_ON_GLOBAL, сильно буста не дает, но это микробенчи
 
   public NumaMCS() {
     this.localQueues = new ArrayList<>();
@@ -82,6 +82,7 @@ public class NumaMCS implements NumaLock {
 
   @Override
   public void unlock(Object obj) {
+    System.out.println("Unlock " + Thread.currentThread().getName());
     var res = (NumaMCSRes) obj;
     if (res.fastPath) {
       globalLock.set(false);

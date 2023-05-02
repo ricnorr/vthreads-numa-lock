@@ -29,7 +29,7 @@ public class Main {
 
   private static final List<String> RESULTS_HEADERS =
       List.of("name", "lock", "threads", "Maximum_overhead_(millisec)", "Minimum_overhead_(millisec)",
-          "Median_overhead_(millisec)", "Maximum_throughout_(ops_millisec)", "Minimum_throughput_(ops_millisec)",
+          "Median of execution time (ms)", "Maximum_throughout_(ops_millisec)", "Minimum_throughput_(ops_millisec)",
           "Throughput (op|ms)", "Медиана максимальных latency (millisec)",
           "Среднее максимальных latency (millisec)");
 
@@ -44,7 +44,8 @@ public class Main {
   private static void print(CSVPrinter printer, BenchmarkResultsCsv resultsCsv) throws IOException {
     printer.printRecord(resultsCsv.name(), resultsCsv.lock(), resultsCsv.threads(),
         resultsCsv.overheadNanosMax() / 1000 / 1000,
-        resultsCsv.overheadNanosMin() / 1000 / 1000, resultsCsv.overheadNanosMedian() / 1000 / 1000,
+        resultsCsv.overheadNanosMin() / 1000 / 1000,
+        resultsCsv.executionTimeMedian() / 1000 / 1000,
         resultsCsv.throughputNanosMax() * 1000 * 1000, resultsCsv.throughputNanosMin() * 1000 * 1000,
         resultsCsv.throughputNanosMedian() * 1000 * 1000, resultsCsv.latencyNanosMedian() / 1000 / 1000,
         resultsCsv.latencyNanosAverage() / 1000 / 1000);
@@ -151,7 +152,7 @@ public class Main {
     System.out.println("Possible cpu ids: " +
         cpuIds.stream().sorted().distinct().map(Object::toString).collect(Collectors.joining(",")));
   }
-  
+
   public static void main(String[] args) throws InterruptedException {
     if (args.length != 0 && args[0].equals("print-clusters")) {
       printClusters();

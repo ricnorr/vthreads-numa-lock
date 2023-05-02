@@ -9,7 +9,7 @@ import org.openjdk.jmh.profile.AsyncProfiler;
 import org.openjdk.jmh.profile.JavaFlightRecorderProfiler;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
-import ru.ricnorr.benchmarks.jmh.priority_queue.JmhPriorityQueueBenchmark;
+import ru.ricnorr.benchmarks.jmh.dijkstra.JmhDijkstraBenchmark;
 import ru.ricnorr.numa.locks.Utils;
 
 import static org.openjdk.jmh.runner.options.VerboseMode.NORMAL;
@@ -21,9 +21,9 @@ public class DijkstraBenchmarkParameters implements BenchmarkParameters {
 
   public List<Integer> threads;
 
-  int nodesCnt;
+  public int nodesCnt;
 
-  double probabilityOfEdge;
+  public double probabilityOfEdge;
   public Integer warmupIterations;
 
   public Integer measurementIterations;
@@ -47,7 +47,7 @@ public class DijkstraBenchmarkParameters implements BenchmarkParameters {
       threads = threads.stream().filter(it -> it >= threadsFrom).collect(Collectors.toList());
     }
     return threads.stream().flatMap(thread -> locks.stream().map(lock -> {
-          var options = new OptionsBuilder().include(JmhPriorityQueueBenchmark.class.getSimpleName())
+          var options = new OptionsBuilder().include(JmhDijkstraBenchmark.class.getSimpleName())
               .warmupIterations(warmupIterations)
               .measurementIterations(measurementIterations)
               .forks(forks)
@@ -58,7 +58,8 @@ public class DijkstraBenchmarkParameters implements BenchmarkParameters {
           options = options.param("lockType", lock.name.name());
           options = options.param("threads", Long.toString(thread));
           options = options.param("title", title);
-          options = options.param("actionsCount", Integer.toString(actionsCount));
+          options = options.param("nodesCnt", Integer.toString(nodesCnt));
+          options = options.param("probabilityOfEdge", Double.toString(probabilityOfEdge));
           String asyncProfilerParams = profilerParams.get("async");
           if (asyncProfilerParams != null) {
             System.out.println("Async profiler detected!");

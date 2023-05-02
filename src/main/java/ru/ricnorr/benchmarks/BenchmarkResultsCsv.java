@@ -1,20 +1,20 @@
 package ru.ricnorr.benchmarks;
 
 public record BenchmarkResultsCsv(
-        String name,
-        String lock,
-        int threads,
-        double overheadNanosMax,
+    String name,
+    String lock,
+    int threads,
+    double overheadNanosMax,
 
-        double overheadNanosMin,
+    double overheadNanosMin,
 
-        double overheadNanosMedian,
-        double throughputNanosMax,
-        double throughputNanosMin,
-        double throughputNanosMedian,
+    double executionTimeMedian,
+    double throughputNanosMax,
+    double throughputNanosMin,
+    double throughputNanosMedian,
 
-        double latencyNanosMedian,
+    double latencyNanosMedian,
 
-        double latencyNanosAverage
+    double latencyNanosAverage
 ) {
 }
