@@ -1,0 +1,177 @@
+3635310
+2023-05-02T21:52:20.109679310Z
+19.0.2+7-44
+
+#1 "main"
+      java.base/jdk.internal.misc.Unsafe.park(Native Method)
+      java.base/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:269)
+      java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:1674)
+      java.base/java.util.concurrent.LinkedBlockingQueue.poll(LinkedBlockingQueue.java:460)
+      java.base/java.util.concurrent.ExecutorCompletionService.poll(ExecutorCompletionService.java:211)
+      org.openjdk.jmh.runner.BenchmarkHandler.runIteration(BenchmarkHandler.java:368)
+      org.openjdk.jmh.runner.BaseRunner.runBenchmark(BaseRunner.java:261)
+      org.openjdk.jmh.runner.BaseRunner.runBenchmark(BaseRunner.java:233)
+      org.openjdk.jmh.runner.BaseRunner.doSingle(BaseRunner.java:138)
+      org.openjdk.jmh.runner.BaseRunner.runBenchmarksForked(BaseRunner.java:75)
+      org.openjdk.jmh.runner.ForkedRunner.run(ForkedRunner.java:72)
+      org.openjdk.jmh.runner.ForkedMain.main(ForkedMain.java:86)
+
+#4 "Reference Handler"
+      java.base/java.lang.ref.Reference.waitForReferencePendingList(Native Method)
+      java.base/java.lang.ref.Reference.processPendingReferences(Reference.java:245)
+      java.base/java.lang.ref.Reference$ReferenceHandler.run(Reference.java:207)
+
+#5 "Finalizer"
+      java.base/java.lang.Object.wait0(Native Method)
+      java.base/java.lang.Object.wait(Object.java:366)
+      java.base/java.lang.Object.wait(Object.java:339)
+      java.base/java.lang.ref.NativeReferenceQueue.await(NativeReferenceQueue.java:48)
+      java.base/java.lang.ref.ReferenceQueue.remove0(ReferenceQueue.java:158)
+      java.base/java.lang.ref.NativeReferenceQueue.remove(NativeReferenceQueue.java:89)
+      java.base/java.lang.ref.Finalizer$FinalizerThread.run(Finalizer.java:173)
+
+#6 "Signal Dispatcher"
+
+#25 "Common-Cleaner"
+      java.base/jdk.internal.misc.Unsafe.park(Native Method)
+      java.base/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:269)
+      java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1759)
+      java.base/java.lang.ref.ReferenceQueue.await(ReferenceQueue.java:71)
+      java.base/java.lang.ref.ReferenceQueue.remove0(ReferenceQueue.java:143)
+      java.base/java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:218)
+      java.base/jdk.internal.ref.CleanerImpl.run(CleanerImpl.java:140)
+      java.base/java.lang.Thread.run(Thread.java:1589)
+      java.base/jdk.internal.misc.InnocuousThread.run(InnocuousThread.java:186)
+
+#26 "Notification Thread"
+
+#33 "JNA Cleaner"
+      java.base/jdk.internal.misc.Unsafe.park(Native Method)
+      java.base/java.util.concurrent.locks.LockSupport.park(LockSupport.java:371)
+      java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionNode.block(AbstractQueuedSynchronizer.java:506)
+      java.base/java.util.concurrent.ForkJoinPool.unmanagedBlock(ForkJoinPool.java:3745)
+      java.base/java.util.concurrent.ForkJoinPool.managedBlock(ForkJoinPool.java:3690)
+      java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1625)
+      java.base/java.lang.ref.ReferenceQueue.await(ReferenceQueue.java:67)
+      java.base/java.lang.ref.ReferenceQueue.remove0(ReferenceQueue.java:158)
+      java.base/java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:234)
+      com.sun.jna.internal.Cleaner$1.run(Cleaner.java:58)
+
+#78 "Attach Listener"
+      java.base/java.lang.Thread.getStackTrace(Thread.java:2550)
+      java.base/jdk.internal.vm.ThreadDumper.dumpThread(ThreadDumper.java:162)
+      java.base/jdk.internal.vm.ThreadDumper.lambda$dumpThreads$0(ThreadDumper.java:155)
+      java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:179)
+      java.base/java.util.Spliterators$ArraySpliterator.forEachRemaining(Spliterators.java:1006)
+      java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+      java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+      java.base/java.util.stream.StreamSpliterators$WrappingSpliterator.forEachRemaining(StreamSpliterators.java:310)
+      java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:734)
+      java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:762)
+      java.base/jdk.internal.vm.ThreadDumper.dumpThreads(ThreadDumper.java:155)
+      java.base/jdk.internal.vm.ThreadDumper.dumpThreads(ThreadDumper.java:151)
+      java.base/jdk.internal.vm.ThreadDumper.dumpThreadsToFile(ThreadDumper.java:117)
+      java.base/jdk.internal.vm.ThreadDumper.dumpThreads(ThreadDumper.java:67)
+
+#74 "vt-thread-0" virtual
+      ru.ricnorr.numa.locks.numa_mcs.NumaMCS.lock(NumaMCS.java:65)
+      ru.ricnorr.benchmarks.jmh.dijkstra.MultiQueue.getElement(MultiQueue.java:59)
+      ru.ricnorr.benchmarks.jmh.dijkstra.JmhDijkstraBenchmark.lambda$prepare$2(JmhDijkstraBenchmark.java:107)
+      java.base/java.lang.VirtualThread.run(VirtualThread.java:287)
+      java.base/java.lang.VirtualThread$VThreadContinuation.lambda$new$0(VirtualThread.java:174)
+      java.base/jdk.internal.vm.Continuation.enter0(Continuation.java:327)
+      java.base/jdk.internal.vm.Continuation.enter(Continuation.java:320)
+
+#75 "vt-thread-1" virtual
+      ru.ricnorr.numa.locks.numa_mcs.NumaMCS.lock(NumaMCS.java:65)
+      ru.ricnorr.benchmarks.jmh.dijkstra.MultiQueue.getElement(MultiQueue.java:58)
+      ru.ricnorr.benchmarks.jmh.dijkstra.JmhDijkstraBenchmark.lambda$prepare$2(JmhDijkstraBenchmark.java:107)
+      java.base/java.lang.VirtualThread.run(VirtualThread.java:287)
+      java.base/java.lang.VirtualThread$VThreadContinuation.lambda$new$0(VirtualThread.java:174)
+      java.base/jdk.internal.vm.Continuation.enter0(Continuation.java:327)
+      java.base/jdk.internal.vm.Continuation.enter(Continuation.java:320)
+
+#76 "vt-thread-2" virtual
+      java.base/jdk.internal.vm.Continuation.yield(Continuation.java:357)
+      java.base/java.lang.VirtualThread.yieldContinuation(VirtualThread.java:370)
+      java.base/java.lang.VirtualThread.park(VirtualThread.java:499)
+      java.base/java.lang.System$2.parkVirtualThread(System.java:2606)
+      java.base/jdk.internal.misc.VirtualThreads.park(VirtualThreads.java:54)
+      java.base/java.util.concurrent.locks.LockSupport.park(LockSupport.java:369)
+      ru.ricnorr.numa.locks.numa_mcs.NumaMCS.lock(NumaMCS.java:71)
+      ru.ricnorr.benchmarks.jmh.dijkstra.MultiQueue.getElement(MultiQueue.java:59)
+      ru.ricnorr.benchmarks.jmh.dijkstra.JmhDijkstraBenchmark.lambda$prepare$2(JmhDijkstraBenchmark.java:107)
+      java.base/java.lang.VirtualThread.run(VirtualThread.java:287)
+      java.base/java.lang.VirtualThread$VThreadContinuation.lambda$new$0(VirtualThread.java:174)
+      java.base/jdk.internal.vm.Continuation.enter0(Continuation.java:327)
+      java.base/jdk.internal.vm.Continuation.enter(Continuation.java:320)
+
+#77 "vt-thread-3" virtual
+      ru.ricnorr.benchmarks.jmh.dijkstra.JmhDijkstraBenchmark.lambda$prepare$2(JmhDijkstraBenchmark.java:128)
+      java.base/java.lang.VirtualThread.run(VirtualThread.java:287)
+      java.base/java.lang.VirtualThread$VThreadContinuation.lambda$new$0(VirtualThread.java:174)
+      java.base/jdk.internal.vm.Continuation.enter0(Continuation.java:327)
+      java.base/jdk.internal.vm.Continuation.enter(Continuation.java:320)
+
+#70 "ForkJoinPool-1-worker-1"
+      java.base/jdk.internal.vm.Continuation.run(Continuation.java:260)
+      java.base/java.lang.VirtualThread.runContinuation(VirtualThread.java:213)
+      java.base/java.util.concurrent.ForkJoinTask$AdaptedRunnableAction.exec(ForkJoinTask.java:1403)
+      java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:387)
+      java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1311)
+      java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1841)
+      java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1806)
+      java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:177)
+
+#71 "ForkJoinPool-1-worker-2"
+      java.base/jdk.internal.vm.Continuation.run(Continuation.java:260)
+      java.base/java.lang.VirtualThread.runContinuation(VirtualThread.java:213)
+      java.base/java.util.concurrent.ForkJoinTask$AdaptedRunnableAction.exec(ForkJoinTask.java:1403)
+      java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:387)
+      java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1311)
+      java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1841)
+      java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1806)
+      java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:177)
+
+#72 "ForkJoinPool-1-worker-3"
+      java.base/jdk.internal.vm.Continuation.run(Continuation.java:260)
+      java.base/java.lang.VirtualThread.runContinuation(VirtualThread.java:213)
+      java.base/java.util.concurrent.ForkJoinTask$AdaptedRunnableAction.exec(ForkJoinTask.java:1403)
+      java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:387)
+      java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1311)
+      java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1841)
+      java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1806)
+      java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:177)
+
+#73 "ForkJoinPool-1-worker-4"
+      java.base/jdk.internal.vm.Continuation.run(Continuation.java:260)
+      java.base/java.lang.VirtualThread.runContinuation(VirtualThread.java:213)
+      java.base/java.util.concurrent.ForkJoinTask$AdaptedRunnableAction.exec(ForkJoinTask.java:1403)
+      java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:387)
+      java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1311)
+      java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1841)
+      java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1806)
+      java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:177)
+
+#30 "ru.ricnorr.benchmarks.jmh.dijkstra.JmhDijkstraBenchmark.bench-jmh-worker-1"
+      java.base/jdk.internal.misc.Unsafe.park(Native Method)
+      java.base/java.util.concurrent.locks.LockSupport.park(LockSupport.java:221)
+      java.base/java.util.concurrent.Phaser$QNode.block(Phaser.java:1133)
+      java.base/java.util.concurrent.ForkJoinPool.unmanagedBlock(ForkJoinPool.java:3745)
+      java.base/java.util.concurrent.ForkJoinPool.managedBlock(ForkJoinPool.java:3690)
+      java.base/java.util.concurrent.Phaser.internalAwaitAdvance(Phaser.java:1063)
+      java.base/java.util.concurrent.Phaser.arriveAndAwaitAdvance(Phaser.java:685)
+      ru.ricnorr.benchmarks.jmh.dijkstra.JmhDijkstraBenchmark.bench(JmhDijkstraBenchmark.java:180)
+      ru.ricnorr.benchmarks.jmh.dijkstra.jmh_generated.JmhDijkstraBenchmark_bench_jmhTest.bench_ss_jmhStub(JmhDijkstraBenchmark_bench_jmhTest.java:771)
+      ru.ricnorr.benchmarks.jmh.dijkstra.jmh_generated.JmhDijkstraBenchmark_bench_jmhTest.bench_SingleShotTime(JmhDijkstraBenchmark_bench_jmhTest.java:707)
+      java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+      java.base/java.lang.reflect.Method.invoke(Method.java:578)
+      org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call(BenchmarkHandler.java:475)
+      org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call(BenchmarkHandler.java:458)
+      java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+      java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:577)
+      java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+      java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+      java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+      java.base/java.lang.Thread.run(Thread.java:1589)
+
