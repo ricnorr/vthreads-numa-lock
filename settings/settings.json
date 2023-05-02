@@ -65,8 +65,12 @@
       "payload": {
         "nodesCnt": 10000,
         "probabilityOfEdge": 0.5,
-        "threadsFrom": 4,
-        "warmupIterations": 3,
+        "threads": [
+          384,
+          390,
+          400
+        ],
+        "warmupIterations": 1,
         "measurementIterations": 1,
         "forks": 2,
         "title": "Dijkstra.",
