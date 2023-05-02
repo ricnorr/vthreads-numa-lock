@@ -63,13 +63,10 @@
     {
       "name": "dijkstra",
       "payload": {
-        "nodesCnt": 500,
+        "nodesCnt": 10000,
         "probabilityOfEdge": 0.5,
-        "warmupIterations": 10,
-        "measurementIterations": 10,
-        "threads": [
-          150
-        ],
+        "warmupIterations": 3,
+        "measurementIterations": 3,
         "forks": 1,
         "threadsFrom": 4,
         "title": "Dijkstra.",
