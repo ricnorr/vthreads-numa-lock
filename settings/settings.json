@@ -66,9 +66,9 @@
         "nodesCnt": 10000,
         "probabilityOfEdge": 0.5,
         "threadsFrom": 4,
-        "warmupIterations": 1,
-        "measurementIterations": 1,
-        "forks": 1,
+        "warmupIterations": 3,
+        "measurementIterations": 3,
+        "forks": 2,
         "title": "Dijkstra.",
         "skip": false,
         "locks": [
