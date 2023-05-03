@@ -54,31 +54,6 @@
       }
     },
     {
-      "name": "priority-queue",
-      "payload": {
-        "actionsCount": 64000,
-        "warmupIterations": 3,
-        "measurementIterations": 3,
-        "forks": 1,
-        "threads": [
-          1
-        ],
-        "title": "Priority queue.",
-        "skip": false,
-        "locks": [
-          {
-            "name": "NUMA_MCS"
-          },
-          {
-            "name": "UNFAIR_REENTRANT"
-          },
-          {
-            "name": "FAIR_REENTRANT"
-          }
-        ]
-      }
-    },
-    {
       "name": "dijkstra",
       "payload": {
         "nodesCnt": 1000,
