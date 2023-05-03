@@ -1,10 +1,13 @@
 package ru.ricnorr.benchmarks.jmh.dijkstra;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Random;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -73,17 +76,25 @@ public class JmhDijkstraBenchmark {
     threadList = new ArrayList<>();
     onFinish = new Phaser(threads + 1);
     ThreadFactory threadFactory = Thread.ofVirtual().factory();
-    var priorityQueue = new MultiQueue(2 * Math.min(threads, Utils.CORES_CNT), LockType.valueOf(lockType));
-    randomGraph = new RandomGraph(nodesCnt, probabilityOfEdge);
-    var startNode = randomGraph.nodes.get(0);
-    startNode.parallelDistance.set(0);
-    priorityQueue.addElement(new NodeIdAndDistance(startNode.id, 0));
-
+//    var priorityQueue = new MultiQueue(Math.min(Utils.CORES_CNT, threads), LockType.valueOf(lockType));
+//    randomGraph = new RandomGraph(nodesCnt, probabilityOfEdge);
+//    var startNode = randomGraph.nodes.get(0);
+//    startNode.parallelDistance.set(0);
+//    priorityQueue.addElement(startNode);
+    byte[] array = new byte[256];
+    int wordsCnt = 1_000_00;
+    var words = new String[wordsCnt];
+    for (int i = 0; i < wordsCnt; i++) {
+      new Random().nextBytes(array);
+      words[i] = new String(array, StandardCharsets.UTF_8);
+    }
     System.out.println("create threads");
     AtomicInteger customBarrier = new AtomicInteger();
     AtomicBoolean locked = new AtomicBoolean(false);
     var carrierThreads = new HashSet<>();
+    var map = new HashMap<String, Integer>();
     for (int i = 0; i < threads; i++) {
+      int finalI = i;
       var thread = threadFactory.newThread(
           () -> {
             customBarrier.incrementAndGet();
@@ -101,35 +112,41 @@ public class JmhDijkstraBenchmark {
             }
             locked.compareAndSet(true, false);
 
-
-            while (true) {
-              System.out.printf("activeNodes %d\n", priorityQueue.valueCounter());
-              var curMin = priorityQueue.getElement();
-              if (curMin == null && priorityQueue.valueCounter() == 0) {
-                break;
+            int wordsPerThread = wordsCnt / threads;
+            for (int j = 0; j < wordsPerThread; j++) {
+              for (String x : words[finalI * wordsPerThread + j].split(" ")) {
+                var obj = lock.lock(null);
+                map.put(x, map.getOrDefault(x, 0) + 1);
+                lock.unlock(obj);
               }
-              if (curMin == null) {
-                continue;
-              }
-              var curNode = randomGraph.nodes.get(curMin.nodeId);
-              var curDistance = curNode.parallelDistance.get();
-              for (RandomGraph.Edge e : curNode.outgoingEdges) {
-                while (true) {
-                  var oldDistance = e.to().parallelDistance.get();
-                  var newDistance = curDistance + e.weight();
-                  if (oldDistance == Long.MAX_VALUE || oldDistance > newDistance) {
-                    if (e.to().parallelDistance.compareAndSet(oldDistance, newDistance)) {
-                      priorityQueue.addElement(new NodeIdAndDistance(e.to().id, newDistance));
-                    } else {
-                      continue;
-                    }
-                  }
-                  break;
-                }
-              }
-              priorityQueue.decCounter();
               Thread.yield();
             }
+//            while (true) {
+//              var cur = priorityQueue.getElement();
+//              if (cur == null && priorityQueue.valueCounter() == 0) {
+//                break;
+//              }
+//              if (cur == null) {
+//                continue;
+//              }
+//              var curDistance = cur.parallelDistance.get();
+//              for (RandomGraph.Edge e : cur.outgoingEdges) {
+//                while (true) {
+//                  var oldDistance = e.to().parallelDistance.get();
+//                  var newDistance = curDistance + e.weight();
+//                  if (oldDistance == Long.MAX_VALUE || oldDistance > newDistance) {
+//                    if (e.to().parallelDistance.compareAndSet(oldDistance, newDistance)) {
+//                      priorityQueue.addElement(cur);
+//                    } else {
+//                      continue;
+//                    }
+//                  }
+//                  break;
+//                }
+//              }
+//              priorityQueue.decCounter();
+//              Thread.yield();
+//            }
             onFinish.arrive();
           }
       );
@@ -156,18 +173,7 @@ public class JmhDijkstraBenchmark {
     }
     System.out.println("Shortest path seq ended");
   }
-
-  //@TearDown(Level.Invocation)
-  public void assertResult() {
-    shortestPathSequential(randomGraph.nodes.get(0));
-    for (RandomGraph.GraphNode node : randomGraph.nodes) {
-      if (node.seqDistance != node.parallelDistance.get()) {
-        throw new RuntimeException(String.format("Par and seq are different, expected=%d, got=%d", node.seqDistance,
-            node.parallelDistance.get()));
-      }
-    }
-  }
-
+  
   @org.openjdk.jmh.annotations.Benchmark
   @Fork(1)
   @Warmup(iterations = 20)
