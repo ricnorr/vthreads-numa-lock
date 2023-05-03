@@ -58,9 +58,9 @@
       "payload": {
         "nodesCnt": 1000,
         "probabilityOfEdge": 0.1,
-        "warmupIterations": 3,
-        "measurementIterations": 3,
-        "forks": 1,
+        "warmupIterations": 10,
+        "measurementIterations": 10,
+        "forks": 2,
         "threads": [
           8,
           24,
