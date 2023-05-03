@@ -56,8 +56,8 @@
     {
       "name": "dijkstra",
       "payload": {
-        "nodesCnt": 1000,
-        "probabilityOfEdge": 0.9,
+        "nodesCnt": 100,
+        "probabilityOfEdge": 0.1,
         "warmupIterations": 3,
         "measurementIterations": 3,
         "forks": 1,
