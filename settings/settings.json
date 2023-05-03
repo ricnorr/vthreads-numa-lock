@@ -12,7 +12,7 @@
         "yieldsBefore": 1,
         "yieldInCrit": true,
         "title": "ConsumeCPU. High contention.",
-        "skip": false,
+        "skip": true,
         "locks": [
           {
             "name": "NUMA_MCS"
@@ -39,7 +39,7 @@
         "yieldsBefore": 2,
         "title": "ConsumeCPU. Low contention.",
         "yieldInCrit": true,
-        "skip": false,
+        "skip": true,
         "locks": [
           {
             "name": "NUMA_MCS"
@@ -64,7 +64,7 @@
           1
         ],
         "title": "Priority queue.",
-        "skip": true,
+        "skip": false,
         "locks": [
           {
             "name": "NUMA_MCS"
@@ -81,21 +81,20 @@
     {
       "name": "dijkstra",
       "payload": {
-        "nodesCnt": 5000,
-        "probabilityOfEdge": 0.3,
+        "nodesCnt": 1000,
+        "probabilityOfEdge": 0.5,
         "warmupIterations": 3,
         "measurementIterations": 3,
         "forks": 1,
         "threads": [
+          8,
           24,
-          32,
           48,
-          56,
-          64
+          96
         ],
         "threadsFrom": 4,
         "title": "Dijkstra.",
-        "skip": true,
+        "skip": false,
         "locks": [
           {
             "name": "NUMA_MCS"
