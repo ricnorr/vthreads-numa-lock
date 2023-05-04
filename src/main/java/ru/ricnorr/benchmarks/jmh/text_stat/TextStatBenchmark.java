@@ -32,7 +32,7 @@ import ru.ricnorr.numa.locks.Utils;
 import static org.openjdk.jmh.annotations.Scope.Benchmark;
 
 @State(Benchmark)
-public class JmhDijkstraBenchmark {
+public class TextStatBenchmark {
 
   static final Comparator<NodeIdAndDistance> COMPARATOR =
       Comparator.comparing((NodeIdAndDistance it) -> it.distance).thenComparing((NodeIdAndDistance it) -> it.nodeId);
@@ -42,15 +42,11 @@ public class JmhDijkstraBenchmark {
       long distance
   ) {
   }
-
-  @Param("0")
-  public int nodesCnt;
+  
   @Param("0")
   public int threads;
   @Param("")
   public String lockType;
-  @Param("1")
-  public double probabilityOfEdge;
   NumaLock lock;
 
   List<Thread> threadList = new ArrayList<>();
@@ -173,7 +169,7 @@ public class JmhDijkstraBenchmark {
     }
     System.out.println("Shortest path seq ended");
   }
-  
+
   @org.openjdk.jmh.annotations.Benchmark
   @Fork(1)
   @Warmup(iterations = 20)
