@@ -78,7 +78,7 @@ public class Main {
   public static List<Integer> autoThreadsInit() {
     int cores = Runtime.getRuntime().availableProcessors();
     if (cores == 128) {
-      return List.of(4, 8, 16, 32, 64, 96, 128, 128 * 2, 128 * 5);
+      return List.of(4, 16, 32, 64, 96, 128, 128 * 2, 128 * 5);
     }
     if (cores == 48) {
       return List.of(4, 16, 24, 36, 48, 48 * 2, 48 * 5);
