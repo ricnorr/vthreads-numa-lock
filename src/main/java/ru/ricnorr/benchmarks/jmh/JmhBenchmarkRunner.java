@@ -11,8 +11,8 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import ru.ricnorr.benchmarks.BenchmarkResultsCsv;
 import ru.ricnorr.benchmarks.params.ConsumeCpuBenchmarkParameters;
-import ru.ricnorr.benchmarks.params.DijkstraBenchmarkParameters;
 import ru.ricnorr.benchmarks.params.PriorityQueueBenchmarkParameters;
+import ru.ricnorr.benchmarks.params.TextStatBenchmarkParameter;
 import ru.ricnorr.numa.locks.Utils;
 
 import static ru.ricnorr.benchmarks.Main.autoThreadsInit;
@@ -55,21 +55,21 @@ public class JmhBenchmarkRunner {
           priorityQueueBenchmarkParameters.threads = autoThreadsInit();
         }
         paramList.addAll(priorityQueueBenchmarkParameters.getOptions());
-      } else if (name.equals("dijkstra")) {
-        DijkstraBenchmarkParameters dijkstraBenchmarkParameters;
+      } else if (name.equals("text")) {
+        TextStatBenchmarkParameter textStatBenchmarkParameter;
         try {
-          dijkstraBenchmarkParameters =
-              new ObjectMapper().readValue(payload.toJSONString(), DijkstraBenchmarkParameters.class);
+          textStatBenchmarkParameter =
+              new ObjectMapper().readValue(payload.toJSONString(), TextStatBenchmarkParameter.class);
         } catch (Exception e) {
           throw new RuntimeException("Failed to parse payload of benchmark, err=" + e.getMessage());
         }
-        if (dijkstraBenchmarkParameters.skip) {
+        if (textStatBenchmarkParameter.skip) {
           continue;
         }
-        if (dijkstraBenchmarkParameters.threads == null) {
-          dijkstraBenchmarkParameters.threads = autoThreadsInit();
+        if (textStatBenchmarkParameter.threads == null) {
+          textStatBenchmarkParameter.threads = autoThreadsInit();
         }
-        paramList.addAll(dijkstraBenchmarkParameters.getOptions());
+        paramList.addAll(textStatBenchmarkParameter.getOptions());
       } else {
         throw new IllegalStateException("Benchmark name not found");
       }
@@ -137,6 +137,6 @@ public class JmhBenchmarkRunner {
         lockType,
         threads,
         overheadNanosMax, overheadNanosMin, withLockNanosMedian, throughputNanosMax, throughputNanosMin,
-        throughputNanosMedian, medianLatenciesNanos, averageLatenciesNanos);
+        throughputNanosMedian, medianLatenciesNanos, averageLatenciesNanos, Utils.deviation(withLocksNanos));
   }
 }

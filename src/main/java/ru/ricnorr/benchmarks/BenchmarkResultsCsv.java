@@ -15,6 +15,8 @@ public record BenchmarkResultsCsv(
 
     double latencyNanosMedian,
 
-    double latencyNanosAverage
+    double latencyNanosAverage,
+
+    double deviation
 ) {
 }

@@ -6,34 +6,25 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
-import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import ru.ricnorr.benchmarks.BenchmarkException;
 import ru.ricnorr.benchmarks.LockType;
-import ru.ricnorr.numa.locks.Affinity;
-import ru.ricnorr.numa.locks.NumaLock;
 import ru.ricnorr.numa.locks.Utils;
 
 import static org.openjdk.jmh.annotations.Scope.Benchmark;
@@ -62,13 +53,7 @@ public class JmhParConsumeCpuTokensBenchmark {
   @Param("1")
   public int yieldsBefore;
 
-  NumaLock lock;
-
-  CyclicBarrier cyclicBarrier;
-
   List<Thread> threadList = new ArrayList<>();
-
-  Set<Thread> carrierThreads = new HashSet<>();
 
   final Object obj = new Object();
 
@@ -83,9 +68,7 @@ public class JmhParConsumeCpuTokensBenchmark {
         System.getProperty("jdk.virtualThreadScheduler.parallelism"));
     System.out.println("Get system property jdk.virtualThreadScheduler.maxPoolSize=" +
         System.getProperty("jdk.virtualThreadScheduler.maxPoolSize"));
-    if (!lockType.equals(LockType.SYNCHRONIZED.toString())) {
-      lock = Utils.initLock(LockType.valueOf(lockType), threads);
-    }
+    Utils.pinVirtualThreadsToCores(Math.min(threads, Utils.CORES_CNT));
   }
 
   @TearDown(Level.Invocation)
@@ -119,38 +102,26 @@ public class JmhParConsumeCpuTokensBenchmark {
     for (int i = 0; i < threads; i++) {
       latenciesForEachThread.get(benchmarkIteration).add(new ArrayList<>());
     }
-
-    AtomicInteger customBarrier = new AtomicInteger();
-    AtomicBoolean locked = new AtomicBoolean(false);
-    cyclicBarrier = new CyclicBarrier(threads);
+    var cyclicBarrier = new CyclicBarrier(threads);
+    var threadLatencyNanosec = new ArrayList<Long>();
+    var lock = Utils.initLock(LockType.valueOf(lockType), threads);
     for (int i = 0; i < threads; i++) {
       ThreadFactory threadFactory;
       threadFactory = Thread.ofVirtual().factory();
       int finalI = i;
       var thread = threadFactory.newThread(
           () -> {
-            List<Long> threadLatencyNanosec = new ArrayList<>();
-            customBarrier.incrementAndGet();
-            int cores = Math.min(threads, Utils.CORES_CNT);
-            while (customBarrier.get() < cores) {
-              // do nothing
-            }
-            while (!locked.compareAndSet(false, true)) {
-              // do nothing
-            }
-            Thread currentCarrier = Utils.getCurrentCarrierThread();
-            if (!carrierThreads.contains(currentCarrier)) {
-              Affinity.affinityLib.pinToCore(carrierThreads.size());
-              carrierThreads.add(currentCarrier);
-            }
-            locked.compareAndSet(true, false);
             try {
               cyclicBarrier.await();
             } catch (InterruptedException | BrokenBarrierException e) {
               throw new BenchmarkException("Fail waiting barrier", e);
             }
             Object nodeForLock = null;
-            for (int i1 = 0; i1 < actionsCount / threads; i1++) {
+            var work = actionsCount / threads;
+            if (finalI == threads - 1) {
+              work += actionsCount % threads;
+            }
+            for (int i1 = 0; i1 < work; i1++) {
               for (int i2 = 0; i2 < Math.max(yieldsBefore, 1); i2++) {
                 Blackhole.consumeCPU(beforeCpuTokens / yieldsBefore);
                 Thread.yield();
@@ -183,13 +154,10 @@ public class JmhParConsumeCpuTokensBenchmark {
       thread.setName("virtual-" + i);
       threadList.add(thread);
     }
-    System.out.println("I pinned " + carrierThreads.size() + " carrier threads");
+//    System.out.println("I pinned " + carrierThreads.size() + " carrier threads");
   }
 
   @Benchmark
-  @Fork(1)
-  @Warmup(iterations = 20)
-  @Measurement(iterations = 20)
   @BenchmarkMode({Mode.SingleShotTime})
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
   public void bench() {
