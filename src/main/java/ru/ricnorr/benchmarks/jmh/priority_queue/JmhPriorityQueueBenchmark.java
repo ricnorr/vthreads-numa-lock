@@ -15,24 +15,18 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
-import org.openjdk.jmh.annotations.Warmup;
 import ru.ricnorr.benchmarks.BenchmarkException;
 import ru.ricnorr.benchmarks.LockType;
-import ru.ricnorr.numa.locks.Affinity;
 import ru.ricnorr.numa.locks.NumaLock;
 import ru.ricnorr.numa.locks.Utils;
 
@@ -107,9 +101,7 @@ public class JmhPriorityQueueBenchmark {
     for (int i = 0; i < threads; i++) {
       latenciesForEachThread.get(benchmarkIteration).add(new ArrayList<>());
     }
-
-    AtomicInteger customBarrier = new AtomicInteger();
-    AtomicBoolean locked = new AtomicBoolean(false);
+    Utils.pinVirtualThreadsToCores(Math.min(Utils.CORES_CNT, threads));
     cyclicBarrier = new CyclicBarrier(threads);
     for (int i = 0; i < threads; i++) {
       ThreadFactory threadFactory;
@@ -118,20 +110,6 @@ public class JmhPriorityQueueBenchmark {
       var thread = threadFactory.newThread(
           () -> {
             List<Long> threadLatencyNanosec = new ArrayList<>();
-            customBarrier.incrementAndGet();
-            int cores = Math.min(threads, Utils.CORES_CNT);
-            while (customBarrier.get() < cores) {
-              // do nothing
-            }
-            while (!locked.compareAndSet(false, true)) {
-              // do nothing
-            }
-            Thread currentCarrier = Utils.getCurrentCarrierThread();
-            if (!carrierThreads.contains(currentCarrier)) {
-              Affinity.affinityLib.pinToCore(carrierThreads.size());
-              carrierThreads.add(currentCarrier);
-            }
-            locked.compareAndSet(true, false);
             try {
               cyclicBarrier.await();
             } catch (InterruptedException | BrokenBarrierException e) {
@@ -162,9 +140,6 @@ public class JmhPriorityQueueBenchmark {
   }
 
   @org.openjdk.jmh.annotations.Benchmark
-  @Fork(1)
-  @Warmup(iterations = 20)
-  @Measurement(iterations = 20)
   @BenchmarkMode({Mode.SingleShotTime})
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
   public void bench() {

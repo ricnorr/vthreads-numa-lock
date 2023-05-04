@@ -29,9 +29,9 @@ public class Main {
 
   private static final List<String> RESULTS_HEADERS =
       List.of("name", "lock", "threads", "Maximum_overhead_(millisec)", "Minimum_overhead_(millisec)",
-          "Median_overhead_(millisec)", "Maximum_throughout_(ops_millisec)", "Minimum_throughput_(ops_millisec)",
+          "Median of execution time (ms)", "Maximum_throughout_(ops_millisec)", "Minimum_throughput_(ops_millisec)",
           "Throughput (op|ms)", "Медиана максимальных latency (millisec)",
-          "Среднее максимальных latency (millisec)");
+          "Среднее максимальных latency (millisec)", "Deviation (ms)");
 
   public static List<Integer> getProcessorsNumbersInNumaNodeOrder() {
     SystemInfo si = new SystemInfo();
@@ -44,10 +44,12 @@ public class Main {
   private static void print(CSVPrinter printer, BenchmarkResultsCsv resultsCsv) throws IOException {
     printer.printRecord(resultsCsv.name(), resultsCsv.lock(), resultsCsv.threads(),
         resultsCsv.overheadNanosMax() / 1000 / 1000,
-        resultsCsv.overheadNanosMin() / 1000 / 1000, resultsCsv.overheadNanosMedian() / 1000 / 1000,
+        resultsCsv.overheadNanosMin() / 1000 / 1000,
+        resultsCsv.executionTimeMedian() / 1000 / 1000,
         resultsCsv.throughputNanosMax() * 1000 * 1000, resultsCsv.throughputNanosMin() * 1000 * 1000,
         resultsCsv.throughputNanosMedian() * 1000 * 1000, resultsCsv.latencyNanosMedian() / 1000 / 1000,
-        resultsCsv.latencyNanosAverage() / 1000 / 1000);
+        resultsCsv.latencyNanosAverage() / 1000 / 1000,
+        resultsCsv.deviation() / 1000 / 1000);
   }
 
   private static void writeResultsToCSVfile(String filename, List<BenchmarkResultsCsv> results) {
@@ -75,6 +77,12 @@ public class Main {
 
   public static List<Integer> autoThreadsInit() {
     int cores = Runtime.getRuntime().availableProcessors();
+    if (cores == 128) {
+      return List.of(4, 16, 32, 64, 96, 128, 128 * 2, 128 * 5);
+    }
+    if (cores == 48) {
+      return List.of(4, 16, 24, 36, 48, 48 * 2, 48 * 5);
+    }
     List<Integer> threadsList =
         new ArrayList<>(List.of(4, 8, 16, 24, 32, 48, 64, 80, 96, 128)).stream().filter(it -> it < cores)
             .collect(Collectors.toList());
@@ -151,7 +159,7 @@ public class Main {
     System.out.println("Possible cpu ids: " +
         cpuIds.stream().sorted().distinct().map(Object::toString).collect(Collectors.joining(",")));
   }
-  
+
   public static void main(String[] args) throws InterruptedException {
     if (args.length != 0 && args[0].equals("print-clusters")) {
       printClusters();

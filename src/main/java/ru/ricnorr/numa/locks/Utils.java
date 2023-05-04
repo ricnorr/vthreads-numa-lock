@@ -9,7 +9,12 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.Phaser;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import com.sun.jna.Platform;
@@ -144,6 +149,18 @@ public class Utils {
     } else {
       return numbersList.get(middle);
     }
+  }
+
+  public static double deviation(Collection<Double> numbers) {
+    if (numbers.isEmpty()) {
+      throw new IllegalArgumentException("Cannot compute deviation on empty collection of numbers");
+    }
+    double mean = numbers.stream().mapToDouble(it -> it).sum();
+    double deviation = 0;
+    for (Double number : numbers) {
+      deviation += Math.pow(number - mean, 2);
+    }
+    return Math.sqrt(deviation);
   }
 
   public static Thread getCurrentCarrierThread() {
@@ -412,4 +429,36 @@ public class Utils {
       default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
     }
   }
+
+  public static void pinVirtualThreadsToCores(int cores) {
+    System.out.println("Pin virtual threads to cores");
+    ThreadFactory threadFactory = Thread.ofVirtual().factory();
+    AtomicInteger customBarrier = new AtomicInteger();
+    AtomicBoolean locked = new AtomicBoolean(false);
+    var carrierThreads = new HashSet<>();
+    Phaser phaser = new Phaser(cores + 1);
+    for (int i = 0; i < cores; i++) {
+      threadFactory.newThread(
+          () -> {
+            customBarrier.incrementAndGet();
+            while (customBarrier.get() < cores) {
+              // do nothing
+            }
+            while (!locked.compareAndSet(false, true)) {
+              // do nothing
+            }
+            Thread currentCarrier = Utils.getCurrentCarrierThread();
+            if (!carrierThreads.contains(currentCarrier)) {
+              Affinity.affinityLib.pinToCore(carrierThreads.size());
+              carrierThreads.add(currentCarrier);
+            }
+            locked.compareAndSet(true, false);
+            phaser.arrive();
+          }
+      ).start();
+    }
+    phaser.arriveAndAwaitAdvance();
+    System.out.println("Pinned virtual threads to cores");
+  }
 }
+

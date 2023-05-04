@@ -12,6 +12,7 @@ import org.openjdk.jmh.runner.options.Options;
 import ru.ricnorr.benchmarks.BenchmarkResultsCsv;
 import ru.ricnorr.benchmarks.params.ConsumeCpuBenchmarkParameters;
 import ru.ricnorr.benchmarks.params.PriorityQueueBenchmarkParameters;
+import ru.ricnorr.benchmarks.params.TextStatBenchmarkParameter;
 import ru.ricnorr.numa.locks.Utils;
 
 import static ru.ricnorr.benchmarks.Main.autoThreadsInit;
@@ -47,10 +48,28 @@ public class JmhBenchmarkRunner {
         } catch (Exception e) {
           throw new RuntimeException("Failed to parse payload of benchmark, err=" + e.getMessage());
         }
+        if (priorityQueueBenchmarkParameters.skip) {
+          continue;
+        }
         if (priorityQueueBenchmarkParameters.threads == null) {
           priorityQueueBenchmarkParameters.threads = autoThreadsInit();
         }
         paramList.addAll(priorityQueueBenchmarkParameters.getOptions());
+      } else if (name.equals("text")) {
+        TextStatBenchmarkParameter textStatBenchmarkParameter;
+        try {
+          textStatBenchmarkParameter =
+              new ObjectMapper().readValue(payload.toJSONString(), TextStatBenchmarkParameter.class);
+        } catch (Exception e) {
+          throw new RuntimeException("Failed to parse payload of benchmark, err=" + e.getMessage());
+        }
+        if (textStatBenchmarkParameter.skip) {
+          continue;
+        }
+        if (textStatBenchmarkParameter.threads == null) {
+          textStatBenchmarkParameter.threads = autoThreadsInit();
+        }
+        paramList.addAll(textStatBenchmarkParameter.getOptions());
       } else {
         throw new IllegalStateException("Benchmark name not found");
       }
@@ -82,7 +101,11 @@ public class JmhBenchmarkRunner {
       throw new RuntimeException("No result found in benchmark");
     }
     int threads = Integer.parseInt(options.getParameter("threads").get().stream().findFirst().get());
-    int actionsCount = Integer.parseInt(options.getParameter("actionsCount").get().stream().findFirst().get());
+    var actionsCountParams = options.getParameter("actionsCount");
+    int actionsCount = 0;
+    if (actionsCountParams.hasValue()) {
+      actionsCount = Integer.parseInt(actionsCountParams.get().stream().findFirst().get());
+    }
     int warmupIterations = options.getWarmupIterations().get();
     int measurementIterations = options.getMeasurementIterations().get();
 
@@ -102,19 +125,18 @@ public class JmhBenchmarkRunner {
     double withoutLocksNanos = 0;
     double overheadNanosMin = withLockNanosMin - withoutLocksNanos;
     double overheadNanosMax = withLockNanosMax - withoutLocksNanos;
-    double overheadNanosAverage = withLockNanosMedian - withoutLocksNanos;
     double throughputNanosMin = actionsCount / withLockNanosMax;
     double throughputNanosMax = actionsCount / withLockNanosMin;
     double throughputNanosMedian = actionsCount / withLockNanosMedian;
     System.out.printf(
         "Consume cpu bench: i got max_over=%f, min_over=%f, avg_over=%f, max_thrpt=%f, min_thrpt=%f, avg_thrpt=%f%n",
-        overheadNanosMax, overheadNanosMin, overheadNanosAverage, throughputNanosMax, throughputNanosMin,
+        overheadNanosMax, overheadNanosMin, withLockNanosMedian, throughputNanosMax, throughputNanosMin,
         throughputNanosMedian);
     return new BenchmarkResultsCsv(
         title,
         lockType,
         threads,
-        overheadNanosMax, overheadNanosMin, overheadNanosAverage, throughputNanosMax, throughputNanosMin,
-        throughputNanosMedian, medianLatenciesNanos, averageLatenciesNanos);
+        overheadNanosMax, overheadNanosMin, withLockNanosMedian, throughputNanosMax, throughputNanosMin,
+        throughputNanosMedian, medianLatenciesNanos, averageLatenciesNanos, Utils.deviation(withLocksNanos));
   }
 }
