@@ -20,6 +20,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import ru.ricnorr.benchmarks.BenchmarkException;
 import ru.ricnorr.benchmarks.LockType;
+import ru.ricnorr.numa.locks.NumaLock;
 import ru.ricnorr.numa.locks.Utils;
 
 import static org.openjdk.jmh.annotations.Scope.Benchmark;
@@ -47,8 +48,6 @@ public class TextStatBenchmark {
   public void prepare() {
     threadList = new ArrayList<>();
     onFinish = new Phaser(threads + 1);
-    var lock = Utils.initLock(LockType.valueOf(lockType));
-    var map = new HashMap<String, Integer>();
     var cyclicBarrier = new CyclicBarrier(threads);
     ThreadFactory threadFactory = Thread.ofVirtual().factory();
     byte[] array = new byte[256];
@@ -56,7 +55,17 @@ public class TextStatBenchmark {
     var words = new String[wordsCnt];
     for (int i = 0; i < wordsCnt; i++) {
       new Random().nextBytes(array);
+      for (int j = 0; j < array.length - 20; j += 10) {
+        array[j] = ' ';
+      }
       words[i] = new String(array, StandardCharsets.UTF_8);
+    }
+    List<NumaLock> locks = new ArrayList<>();
+    List<HashMap<String, Integer>> maps = new ArrayList<>();
+    int cores = Math.min(Utils.CORES_CNT, threads);
+    for (int i = 0; i < cores; i++) {
+      locks.add(Utils.initLock(LockType.valueOf(lockType)));
+      maps.add(new HashMap<>());
     }
     for (int i = 0; i < threads; i++) {
       int finalI = i;
@@ -68,11 +77,16 @@ public class TextStatBenchmark {
               throw new BenchmarkException("Fail waiting barrier", e);
             }
             int wordsPerThread = wordsCnt / threads;
-            for (int j = 0; j < wordsPerThread; j++) {
+            int additionWork = 0;
+            if (finalI == threads - 1) {
+              additionWork += wordsCnt % threads;
+            }
+            for (int j = 0; j < wordsPerThread + additionWork; j++) {
               for (String x : words[finalI * wordsPerThread + j].split(" ")) {
-                var obj = lock.lock(null);
-                map.put(x, map.getOrDefault(x, 0) + 1);
-                lock.unlock(obj);
+                var hashCode = Math.abs(x.hashCode()) % cores;
+                var obj = locks.get(hashCode).lock(null);
+                maps.get(hashCode).put(x, maps.get(hashCode).getOrDefault(x, 0) + 1);
+                locks.get(hashCode).unlock(obj);
               }
               Thread.yield();
             }

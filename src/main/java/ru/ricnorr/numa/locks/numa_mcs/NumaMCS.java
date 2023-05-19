@@ -1,8 +1,9 @@
 package ru.ricnorr.numa.locks.numa_mcs;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.LockSupport;
 
@@ -10,8 +11,8 @@ import jdk.internal.vm.annotation.Contended;
 import ru.ricnorr.numa.locks.NumaLock;
 import ru.ricnorr.numa.locks.Utils;
 
+@Contended
 public class NumaMCS implements NumaLock {
-
   final List<AtomicReference<Node>> localQueues;
   public boolean runOnThisCarrierFeatureEnabled = false; // работает плохо на 4 потоках
   public boolean yieldIfDoesntChangedNuma = false; // работает плохо на 96 потоках
@@ -19,14 +20,29 @@ public class NumaMCS implements NumaLock {
   ThreadLocal<Integer> numaNodeThreadLocal = ThreadLocal.withInitial(Utils::getNumaNodeId);
   ThreadLocal<Integer> lockAcquiresThreadLocal = ThreadLocal.withInitial(() -> 0);
 
-  AtomicBoolean globalLock = new AtomicBoolean();
-  // см NUMA_MCS_YIELD_WHEN_SPIN_ON_GLOBAL, сильно буста не дает, но это микробенчи
+  volatile boolean globalLock = false;
+
+  private static final VarHandle VALUE;
+
+  static {
+    try {
+      MethodHandles.Lookup l = MethodHandles.lookup();
+      VALUE = l.findVarHandle(NumaMCS.class, "globalLock", Boolean.TYPE);
+    } catch (ReflectiveOperationException var1) {
+      throw new ExceptionInInitializerError(var1);
+    }
+  }
 
   public NumaMCS() {
     this.localQueues = new ArrayList<>();
     for (int i = 0; i < Utils.NUMA_NODES_CNT; i++) {
       localQueues.add(new AtomicReference<>());
     }
+  }
+
+
+  private boolean casGlobalLock(boolean expected, boolean newValue) {
+    return VALUE.compareAndSet(this, expected, newValue);
   }
 
   @Override
@@ -41,13 +57,13 @@ public class NumaMCS implements NumaLock {
     }
     Utils.setByThreadToThreadLocal(lockAcquiresThreadLocal, Utils.getCurrentCarrierThread(), lockAcquires);
 
-    if (globalLock.compareAndSet(false, true)) {
+    if (casGlobalLock(false, true)) {
       return new NumaMCSRes(true, numaId, node);
     }
     var localQueue = localQueues.get(numaId);
     var pred = localQueue.getAndSet(node);
     if (pred == null) {
-      while (!globalLock.compareAndSet(false, true)) {
+      while (!casGlobalLock(false, true)) {
         Thread.onSpinWait();
       }
       return new NumaMCSRes(false, numaId, node);
@@ -62,7 +78,7 @@ public class NumaMCS implements NumaLock {
       }
     }
     iterations = 0;
-    while (!globalLock.compareAndSet(false, true)) {
+    while (!casGlobalLock(false, true)) {
       Thread.onSpinWait();
       iterations++;
       if (yieldWhenWaitGlobal && iterations > 1024) {
@@ -76,7 +92,7 @@ public class NumaMCS implements NumaLock {
   @Override
   public void unlock(Object obj) {
     var res = (NumaMCSRes) obj;
-    globalLock.set(false);
+    globalLock = false;
     if (res.fastPath) {
       return;
     }
@@ -97,6 +113,7 @@ public class NumaMCS implements NumaLock {
   public boolean hasNext(Object obj) {
     return false;
   }
+
 
   private record NumaMCSRes(
       boolean fastPath,
