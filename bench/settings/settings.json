@@ -1,0 +1,178 @@
+{
+  "benches": [
+    {
+      "name": "consumeCpu",
+      "payload": {
+        "actionsCount": 64000,
+        "beforeCpuTokens": 0,
+        "inCpuTokens": 1000,
+        "warmupIterations": 7,
+        "measurementIterations": 7,
+        "forks": 3,
+        "yieldsBefore": 1,
+        "yieldInCrit": true,
+        "title": "ConsumeCPU. High contention.",
+        "skip": false,
+        "locks": [
+          {
+            "name": "NUMA_MCS"
+          },
+          {
+            "name": "UNFAIR_REENTRANT"
+          },
+          {
+            "name": "FAIR_REENTRANT"
+          }
+        ]
+      }
+    },
+    {
+      "name": "consumeCpu",
+      "payload": {
+        "actionsCount": 64000,
+        "beforeCpuTokens": 128000,
+        "inCpuTokens": 1000,
+        "threadsFrom": 4,
+        "warmupIterations": 7,
+        "measurementIterations": 7,
+        "forks": 3,
+        "yieldsBefore": 2,
+        "title": "ConsumeCPU. Low contention.",
+        "yieldInCrit": true,
+        "skip": false,
+        "locks": [
+          {
+            "name": "NUMA_MCS"
+          },
+          {
+            "name": "UNFAIR_REENTRANT"
+          },
+          {
+            "name": "FAIR_REENTRANT"
+          }
+        ]
+      }
+    },
+    {
+      "name": "text",
+      "payload": {
+        "warmupIterations": 7,
+        "measurementIterations": 7,
+        "forks": 3,
+        "title": "Text statistics.",
+        "skip": false,
+        "locks": [
+          {
+            "name": "NUMA_MCS"
+          },
+          {
+            "name": "UNFAIR_REENTRANT"
+          },
+          {
+            "name": "FAIR_REENTRANT"
+          }
+        ]
+      }
+    },
+    {
+      "name": "matrix",
+      "payload": {
+        "beforeMatrixSize": 0,
+        "inMatrixSize": 50,
+        "actionsCount": 10000,
+        "warmupIterations": 7,
+        "measurementIterations": 7,
+        "threadsFrom": 4,
+        "forks": 3,
+        "title": "Matrix mult, 50x50 in с.s, 0x0 out of c.s",
+        "skip": false,
+        "locks": [
+          {
+            "name": "NUMA_MCS"
+          },
+          {
+            "name": "UNFAIR_REENTRANT"
+          },
+          {
+            "name": "FAIR_REENTRANT"
+          }
+        ]
+      }
+    },
+    {
+      "name": "matrix",
+      "payload": {
+        "beforeMatrixSize": 0,
+        "inMatrixSize": 100,
+        "actionsCount": 10000,
+        "warmupIterations": 7,
+        "measurementIterations": 7,
+        "threadsFrom": 4,
+        "forks": 3,
+        "title": "Matrix mult, 100x100 in с.s, 0x0 out of c.s",
+        "skip": false,
+        "locks": [
+          {
+            "name": "NUMA_MCS"
+          },
+          {
+            "name": "UNFAIR_REENTRANT"
+          },
+          {
+            "name": "FAIR_REENTRANT"
+          }
+        ]
+      }
+    },
+    {
+      "name": "matrix",
+      "payload": {
+        "beforeMatrixSize": 100,
+        "inMatrixSize": 15,
+        "actionsCount": 10000,
+        "warmupIterations": 7,
+        "measurementIterations": 7,
+        "threadsFrom": 4,
+        "forks": 3,
+        "title": "Matrix mult, 15x15 in с.s, 100x100 out of c.s",
+        "skip": false,
+        "locks": [
+          {
+            "name": "NUMA_MCS"
+          },
+          {
+            "name": "UNFAIR_REENTRANT"
+          },
+          {
+            "name": "FAIR_REENTRANT"
+          }
+        ]
+      }
+    },
+    {
+      "name": "matrix",
+      "payload": {
+        "beforeMatrixSize": 100,
+        "inMatrixSize": 100,
+        "actionsCount": 10000,
+        "warmupIterations": 7,
+        "measurementIterations": 7,
+        "threadsFrom": 4,
+        "forks": 3,
+        "title": "Matrix mult, 100x100 in с.s, 100x100 out of c.s",
+        "skip": false,
+        "locks": [
+          {
+            "name": "NUMA_MCS"
+          },
+          {
+            "name": "UNFAIR_REENTRANT"
+          },
+          {
+            "name": "FAIR_REENTRANT"
+          }
+        ]
+      }
+    }
+  ]
+}
