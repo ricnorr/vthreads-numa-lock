@@ -31,11 +31,11 @@ build/
 gradlew.bat
 lib/
 pyvenv.cfg
-fatjar/light/result.pdf
+bench/fatjar/light/result.pdf
 .DS_Store
 .ipynb_checkpoints/
-results/result.pdf
+bench/results/result.pdf
 venv/
-results/empty
+bench/results/empty
 Untitled.ipynb
-libs/libaffinity.so
+bench/libs/libaffinity.so
