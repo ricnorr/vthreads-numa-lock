@@ -30,6 +30,10 @@ import io.github.ricnorr.numa_locks.experimental.HMCSCclNuma;
 import io.github.ricnorr.numa_locks.experimental.HMCSCclNumaSupernuma;
 import io.github.ricnorr.numa_locks.experimental.HMCSNuma;
 import io.github.ricnorr.numa_locks.experimental.HMCSNumaSupernuma;
+import io.github.ricnorr.numa_locks.experimental.NumaMCSNoContended;
+import io.github.ricnorr.numa_locks.experimental.NumaMCSNoPark;
+import io.github.ricnorr.numa_locks.experimental.NumaMCSOneQueue;
+import io.github.ricnorr.numa_locks.experimental.NumaMCSSplitNodeFieldsInCachelines;
 import org.apache.commons.io.FileUtils;
 
 public class BenchUtils {
@@ -104,6 +108,18 @@ public class BenchUtils {
         var lock = new NumaMCS();
         lock.tryAcquireFlag = false;
         return lock;
+      }
+      case NUMA_MCS_NO_CONTENDED -> {
+        return new NumaMCSNoContended();
+      }
+      case NUMA_MCS_CONTENDED_ALL_FIELDS -> {
+        return new NumaMCSSplitNodeFieldsInCachelines();
+      }
+      case NUMA_MCS_NO_PARK -> {
+        return new NumaMCSNoPark();
+      }
+      case NUMA_MCS_ONE_QUEUE -> {
+        return new NumaMCSOneQueue();
       }
       default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
     }
