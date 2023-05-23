@@ -97,8 +97,13 @@ public class BenchUtils {
       case HMCS_NUMA_SUPERNUMA -> {
         return new HMCSNumaSupernuma();
       }
-      case NUMA_MCS -> {
+      case NUMA_MCS, NUMA_MCS_QSPIN -> {
         return new NumaMCS();
+      }
+      case NUMA_MCS_QUEUE -> {
+        var lock = new NumaMCS();
+        lock.tryAcquireFlag = false;
+        return lock;
       }
       default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
     }

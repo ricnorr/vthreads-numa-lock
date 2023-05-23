@@ -90,4 +90,7 @@ public enum LockType {
 
   NUMA_MCS_YIELD_WHEN_SPIN_ON_GLOBAL,
 
+  NUMA_MCS_QSPIN,
+
+  NUMA_MCS_QUEUE,
 }

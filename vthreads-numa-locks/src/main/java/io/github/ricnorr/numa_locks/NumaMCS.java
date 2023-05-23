@@ -11,7 +11,7 @@ import jdk.internal.vm.annotation.Contended;
 
 /**
  * <p>Lock for virtual threads.
- * <p>Also supports platform threads, but it was for using with virtual threads.
+ * <p>Also supports platform threads, but it was created for using with virtual threads.
  * <p>How to use:
  * <pre> {@code
  *   NumaMCS lock = new ReentrantLock();
@@ -42,6 +42,8 @@ public class NumaMCS implements VthreadNumaLock<NumaMCS.UnlockInfo> {
   ThreadLocal<Integer> lockAcquiresThreadLocal = ThreadLocal.withInitial(() -> 0);
   volatile boolean globalLock = false;
 
+  public boolean tryAcquireFlag = true;
+
   public NumaMCS() {
     this.localQueues = new ArrayList<>();
     for (int i = 0; i < LockUtils.NUMA_NODES_CNT; i++) {
@@ -68,8 +70,10 @@ public class NumaMCS implements VthreadNumaLock<NumaMCS.UnlockInfo> {
     }
     LockUtils.setByThreadToThreadLocal(lockAcquiresThreadLocal, LockUtils.getCurrentCarrierThread(), lockAcquires);
 
-    if (casGlobalLock(false, true)) {
-      return new UnlockInfo(true, numaId, node);
+    if (tryAcquireFlag) {
+      if (casGlobalLock(false, true)) {
+        return new UnlockInfo(true, numaId, node);
+      }
     }
     var localQueue = localQueues.get(numaId);
     var pred = localQueue.getAndSet(node);
@@ -79,7 +83,7 @@ public class NumaMCS implements VthreadNumaLock<NumaMCS.UnlockInfo> {
       }
       return new UnlockInfo(false, numaId, node);
     }
-    pred.next.set(node);
+    pred.next = node;
     int iterations = 0;
     while (node.spin) {
       iterations++;
@@ -101,16 +105,16 @@ public class NumaMCS implements VthreadNumaLock<NumaMCS.UnlockInfo> {
       return;
     }
     var localQueue = localQueues.get(unlockInfo.numaId);
-    if (unlockInfo.node.next.get() == null) {
+    if (unlockInfo.node.next == null) {
       if (localQueue.compareAndSet(unlockInfo.node, null)) {
         return;
       }
-      while (unlockInfo.node.next.get() == null) {
+      while (unlockInfo.node.next == null) {
 
       }
     }
-    unlockInfo.node.next.get().spin = false;
-    LockSupport.unpark(unlockInfo.node.next.get().thread);
+    unlockInfo.node.next.spin = false;
+    LockSupport.unpark(unlockInfo.node.next.thread);
   }
 
   public record UnlockInfo(
@@ -128,7 +132,7 @@ public class NumaMCS implements VthreadNumaLock<NumaMCS.UnlockInfo> {
 
     volatile boolean spin = true;
 
-    AtomicReference<Node> next = new AtomicReference<>();
+    volatile Node next = new Node();
 
   }
 }
