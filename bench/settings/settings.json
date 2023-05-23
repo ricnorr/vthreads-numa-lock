@@ -85,16 +85,16 @@
         "threadsFrom": 4,
         "forks": 3,
         "title": "Matrix mult, 50x50 in с.s, 0x0 out of c.s",
-        "skip": true,
+        "skip": false,
         "locks": [
           {
-            "name": "NUMA_MCS"
+            "name": "MCS_NUMA"
           },
           {
-            "name": "UNFAIR_REENTRANT"
+            "name": "NUMA_MCS_NO_CONTENDED"
           },
           {
-            "name": "FAIR_REENTRANT"
+            "name": "NUMA_MCS_CONTENDED_ALL_FIELDS"
           }
         ]
       }
@@ -110,16 +110,16 @@
         "threadsFrom": 4,
         "forks": 3,
         "title": "Matrix mult, 100x100 in с.s, 0x0 out of c.s",
-        "skip": true,
+        "skip": false,
         "locks": [
           {
-            "name": "NUMA_MCS"
+            "name": "MCS_NUMA"
           },
           {
-            "name": "UNFAIR_REENTRANT"
+            "name": "NUMA_MCS_NO_CONTENDED"
           },
           {
-            "name": "FAIR_REENTRANT"
+            "name": "NUMA_MCS_CONTENDED_ALL_FIELDS"
           }
         ]
       }
@@ -135,16 +135,16 @@
         "threadsFrom": 4,
         "forks": 3,
         "title": "Matrix mult, 15x15 in с.s, 100x100 out of c.s",
-        "skip": true,
+        "skip": false,
         "locks": [
           {
-            "name": "NUMA_MCS"
+            "name": "MCS_NUMA"
           },
           {
-            "name": "UNFAIR_REENTRANT"
+            "name": "NUMA_MCS_NO_CONTENDED"
           },
           {
-            "name": "FAIR_REENTRANT"
+            "name": "NUMA_MCS_CONTENDED_ALL_FIELDS"
           }
         ]
       }
@@ -160,16 +160,16 @@
         "threadsFrom": 4,
         "forks": 3,
         "title": "Matrix mult, 100x100 in с.s, 100x100 out of c.s",
-        "skip": true,
+        "skip": false,
         "locks": [
           {
-            "name": "NUMA_MCS"
+            "name": "MCS_NUMA"
           },
           {
-            "name": "UNFAIR_REENTRANT"
+            "name": "NUMA_MCS_NO_CONTENDED"
           },
           {
-            "name": "FAIR_REENTRANT"
+            "name": "NUMA_MCS_CONTENDED_ALL_FIELDS"
           }
         ]
       }
