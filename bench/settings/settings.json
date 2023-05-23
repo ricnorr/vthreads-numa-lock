@@ -15,6 +15,9 @@
         "skip": false,
         "locks": [
           {
+            "name": "MCS_NUMA"
+          },
+          {
             "name": "NUMA_MCS_NO_CONTENDED"
           },
           {
@@ -39,6 +42,9 @@
         "skip": false,
         "locks": [
           {
+            "name": "MCS_NUMA"
+          },
+          {
             "name": "NUMA_MCS_NO_CONTENDED"
           },
           {
@@ -56,6 +62,9 @@
         "title": "Text statistics.",
         "skip": false,
         "locks": [
+          {
+            "name": "MCS_NUMA"
+          },
           {
             "name": "NUMA_MCS_NO_CONTENDED"
           },
