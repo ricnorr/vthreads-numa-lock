@@ -18,9 +18,6 @@
             "name": "MCS_NUMA"
           },
           {
-            "name": "NUMA_MCS_NO_CONTENDED"
-          },
-          {
             "name": "NUMA_MCS_CONTENDED_ALL_FIELDS"
           }
         ]
@@ -45,9 +42,6 @@
             "name": "MCS_NUMA"
           },
           {
-            "name": "NUMA_MCS_NO_CONTENDED"
-          },
-          {
             "name": "NUMA_MCS_CONTENDED_ALL_FIELDS"
           }
         ]
@@ -64,9 +58,6 @@
         "locks": [
           {
             "name": "MCS_NUMA"
-          },
-          {
-            "name": "NUMA_MCS_NO_CONTENDED"
           },
           {
             "name": "NUMA_MCS_CONTENDED_ALL_FIELDS"
@@ -91,9 +82,6 @@
             "name": "MCS_NUMA"
           },
           {
-            "name": "NUMA_MCS_NO_CONTENDED"
-          },
-          {
             "name": "NUMA_MCS_CONTENDED_ALL_FIELDS"
           }
         ]
@@ -114,9 +102,6 @@
         "locks": [
           {
             "name": "MCS_NUMA"
-          },
-          {
-            "name": "NUMA_MCS_NO_CONTENDED"
           },
           {
             "name": "NUMA_MCS_CONTENDED_ALL_FIELDS"
@@ -141,9 +126,6 @@
             "name": "MCS_NUMA"
           },
           {
-            "name": "NUMA_MCS_NO_CONTENDED"
-          },
-          {
             "name": "NUMA_MCS_CONTENDED_ALL_FIELDS"
           }
         ]
@@ -164,9 +146,6 @@
         "locks": [
           {
             "name": "MCS_NUMA"
-          },
-          {
-            "name": "NUMA_MCS_NO_CONTENDED"
           },
           {
             "name": "NUMA_MCS_CONTENDED_ALL_FIELDS"
