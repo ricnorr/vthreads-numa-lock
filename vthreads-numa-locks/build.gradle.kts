@@ -1,16 +1,74 @@
 plugins {
     `java-library`
+    `maven-publish`
+    signing
 }
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-}
+// buildscript {
+//    repositories {
+//        mavenCentral()
+//    }
+// }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_19
     targetCompatibility = JavaVersion.VERSION_19
+    withJavadocJar()
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        
+        create<MavenPublication>("mavenJava") {
+            artifactId = "vthreads-numa-lock"
+            groupId = "io.github.ricnorr"
+            version = "0.0.1"
+            from(components["java"])
+            pom {
+                packaging = "jar"
+                name.set("Effective locks library for virtual threads on NUMA")
+                url.set("https://github.com/ricnorr/")
+                description.set("Effective locks library for virtual threads on NUMA")
+
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+
+                scm {
+                    connection.set("scm:https://github.com/ricnorr/vthreads-numa-lock.git")
+                    developerConnection.set("scm:git@github.com:ricnorr/vthreads-numa-lock.git")
+                    url.set("https://github.com/ricnorr/vthreads-numa-lock")
+                }
+
+                developers {
+                    developer {
+                        id.set("ricnorr")
+                        name.set("Nikolai Korobeinikov")
+                        email.set("kolyan125125@yandex.ru")
+                    }
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            val releasesUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            val snapshotsUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            url = if (version.toString().endsWith("SNAPSHOT")) snapshotsUrl else releasesUrl
+            credentials {
+                username = project.properties["ossrhUsername"].toString()
+                password = project.properties["ossrhPassword"].toString()
+            }
+        }
+    }
+}
+
+signing {
+    sign(publishing.publications["mavenJava"])
 }
 
 tasks.withType<JavaCompile>().configureEach {
