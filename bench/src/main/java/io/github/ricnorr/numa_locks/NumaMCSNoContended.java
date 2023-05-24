@@ -1,4 +1,4 @@
-package io.github.ricnorr.numa_locks.experimental;
+package io.github.ricnorr.numa_locks;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.LockSupport;
-
-import io.github.ricnorr.numa_locks.LockUtils;
-import io.github.ricnorr.numa_locks.VthreadNumaLock;
 
 /**
  * Not contended version of NumaMCS
@@ -112,7 +109,7 @@ public class NumaMCSNoContended implements VthreadNumaLock<NumaMCSNoContended.Un
       Node node
   ) {
   }
-  
+
   private static class Node {
 
     Thread thread = Thread.currentThread();

@@ -1,4 +1,4 @@
-package io.github.ricnorr.numa_locks.experimental;
+package io.github.ricnorr.numa_locks;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.github.ricnorr.numa_locks.LockUtils;
-import io.github.ricnorr.numa_locks.VthreadNumaLock;
 import jdk.internal.vm.annotation.Contended;
 
 @Contended

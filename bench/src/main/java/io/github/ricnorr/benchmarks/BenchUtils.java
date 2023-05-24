@@ -18,6 +18,10 @@ import io.github.ricnorr.numa_locks.CLH;
 import io.github.ricnorr.numa_locks.LockUtils;
 import io.github.ricnorr.numa_locks.MCS;
 import io.github.ricnorr.numa_locks.NumaMCS;
+import io.github.ricnorr.numa_locks.NumaMCSNoContended;
+import io.github.ricnorr.numa_locks.NumaMCSNoPark;
+import io.github.ricnorr.numa_locks.NumaMCSOneQueue;
+import io.github.ricnorr.numa_locks.NumaMCSSplitNodeFieldsInCachelines;
 import io.github.ricnorr.numa_locks.NumaReentrantLock;
 import io.github.ricnorr.numa_locks.TAS;
 import io.github.ricnorr.numa_locks.TTAS;
@@ -30,10 +34,6 @@ import io.github.ricnorr.numa_locks.experimental.HMCSCclNuma;
 import io.github.ricnorr.numa_locks.experimental.HMCSCclNumaSupernuma;
 import io.github.ricnorr.numa_locks.experimental.HMCSNuma;
 import io.github.ricnorr.numa_locks.experimental.HMCSNumaSupernuma;
-import io.github.ricnorr.numa_locks.experimental.NumaMCSNoContended;
-import io.github.ricnorr.numa_locks.experimental.NumaMCSNoPark;
-import io.github.ricnorr.numa_locks.experimental.NumaMCSOneQueue;
-import io.github.ricnorr.numa_locks.experimental.NumaMCSSplitNodeFieldsInCachelines;
 import org.apache.commons.io.FileUtils;
 
 public class BenchUtils {
