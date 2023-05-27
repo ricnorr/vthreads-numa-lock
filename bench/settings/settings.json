@@ -15,9 +15,6 @@
         "skip": false,
         "locks": [
           {
-            "name": "NUMA_MCS"
-          },
-          {
             "name": "NUMA_MCS_CONTENDED_ALL_FIELDS"
           }
         ]
