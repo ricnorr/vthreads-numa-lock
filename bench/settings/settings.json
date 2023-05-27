@@ -12,7 +12,7 @@
         "yieldsBefore": 1,
         "yieldInCrit": true,
         "title": "ConsumeCPU. High contention.",
-        "skip": false,
+        "skip": true,
         "locks": [
           {
             "name": "NUMA_MCS_CONTENDED_ALL_FIELDS"
@@ -33,7 +33,7 @@
         "yieldsBefore": 2,
         "title": "ConsumeCPU. Low contention.",
         "yieldInCrit": true,
-        "skip": false,
+        "skip": true,
         "locks": [
           {
             "name": "NUMA_MCS"
@@ -51,7 +51,7 @@
         "measurementIterations": 7,
         "forks": 3,
         "title": "Text statistics.",
-        "skip": false,
+        "skip": true,
         "locks": [
           {
             "name": "NUMA_MCS"
@@ -73,7 +73,7 @@
         "threadsFrom": 4,
         "forks": 3,
         "title": "Matrix mult, 50x50 in с.s, 0x0 out of c.s",
-        "skip": false,
+        "skip": true,
         "locks": [
           {
             "name": "NUMA_MCS"
@@ -98,9 +98,6 @@
         "skip": false,
         "locks": [
           {
-            "name": "NUMA_MCS"
-          },
-          {
             "name": "NUMA_MCS_CONTENDED_ALL_FIELDS"
           }
         ]
@@ -120,9 +117,6 @@
         "skip": false,
         "locks": [
           {
-            "name": "NUMA_MCS"
-          },
-          {
             "name": "NUMA_MCS_CONTENDED_ALL_FIELDS"
           }
         ]
@@ -139,7 +133,7 @@
         "threadsFrom": 4,
         "forks": 3,
         "title": "Matrix mult, 100x100 in с.s, 100x100 out of c.s",
-        "skip": false,
+        "skip": true,
         "locks": [
           {
             "name": "NUMA_MCS"
