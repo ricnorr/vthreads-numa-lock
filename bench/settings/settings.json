@@ -68,18 +68,27 @@
         "beforeMatrixSize": 0,
         "inMatrixSize": 50,
         "actionsCount": 10000,
-        "warmupIterations": 7,
-        "measurementIterations": 7,
+        "warmupIterations": 1,
+        "measurementIterations": 1,
         "threadsFrom": 4,
-        "forks": 3,
+        "forks": 1,
         "title": "Matrix mult, 50x50 in с.s, 0x0 out of c.s",
-        "skip": true,
+        "skip": false,
         "locks": [
           {
-            "name": "NUMA_MCS"
+            "name": "NUMA_MCS_CONTENDED_ALL_FIELDS"
           },
           {
-            "name": "NUMA_MCS_CONTENDED_ALL_FIELDS"
+            "name": "NUMA_MCS_NO_CONTENDED"
+          },
+          {
+            "name": "NUMA_MCS_NO_PARK"
+          },
+          {
+            "name": "NUMA_MCS_ONE_QUEUE"
+          },
+          {
+            "name": "NUMA_MCS"
           }
         ]
       }
@@ -90,15 +99,27 @@
         "beforeMatrixSize": 0,
         "inMatrixSize": 100,
         "actionsCount": 10000,
-        "warmupIterations": 7,
-        "measurementIterations": 7,
+        "warmupIterations": 1,
+        "measurementIterations": 1,
         "threadsFrom": 4,
-        "forks": 3,
+        "forks": 1,
         "title": "Matrix mult, 100x100 in с.s, 0x0 out of c.s",
         "skip": false,
         "locks": [
           {
             "name": "NUMA_MCS_CONTENDED_ALL_FIELDS"
+          },
+          {
+            "name": "NUMA_MCS_NO_CONTENDED"
+          },
+          {
+            "name": "NUMA_MCS_NO_PARK"
+          },
+          {
+            "name": "NUMA_MCS_ONE_QUEUE"
+          },
+          {
+            "name": "NUMA_MCS"
           }
         ]
       }
@@ -109,15 +130,27 @@
         "beforeMatrixSize": 100,
         "inMatrixSize": 15,
         "actionsCount": 10000,
-        "warmupIterations": 7,
-        "measurementIterations": 7,
+        "warmupIterations": 1,
+        "measurementIterations": 1,
         "threadsFrom": 4,
-        "forks": 3,
+        "forks": 1,
         "title": "Matrix mult, 15x15 in с.s, 100x100 out of c.s",
         "skip": false,
         "locks": [
           {
             "name": "NUMA_MCS_CONTENDED_ALL_FIELDS"
+          },
+          {
+            "name": "NUMA_MCS_NO_CONTENDED"
+          },
+          {
+            "name": "NUMA_MCS_NO_PARK"
+          },
+          {
+            "name": "NUMA_MCS_ONE_QUEUE"
+          },
+          {
+            "name": "NUMA_MCS"
           }
         ]
       }
