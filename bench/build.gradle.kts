@@ -56,7 +56,7 @@ tasks.withType<JavaExec>().configureEach {
     )
 }
 
-group = "me.ricnorr"
+group = "io.github.ricnorr"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -70,7 +70,6 @@ dependencies {
     implementation("org.apache.commons:commons-csv:1.9.0")
     implementation("org.ejml:ejml-all:0.41")
     implementation("net.java.dev.jna:jna:5.12.1")
-    implementation(project(mapOf("path" to ":vthreads-numa-locks")))
     testImplementation("org.jetbrains.kotlinx:lincheck:2.16")
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
     implementation("com.github.oshi:oshi-dist:6.4.0")
@@ -78,8 +77,8 @@ dependencies {
     testImplementation("org.testng:testng:7.1.0")
     annotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:1.35")
     implementation("org.openjdk.jol:jol-core:0.9")
-    implementation("net.java.dev.jna:jna:4.5.0")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.8.9")
+    implementation("io.github.ricnorr:vthreads-numa-lock:0.0.2")
 }
 
 tasks.jar {

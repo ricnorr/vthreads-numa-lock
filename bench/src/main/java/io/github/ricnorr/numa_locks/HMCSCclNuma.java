@@ -1,9 +1,7 @@
-package io.github.ricnorr.numa_locks.experimental;
+package io.github.ricnorr.numa_locks;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import io.github.ricnorr.numa_locks.LockUtils;
 
 public class HMCSCclNuma extends AbstractHMCS {
 

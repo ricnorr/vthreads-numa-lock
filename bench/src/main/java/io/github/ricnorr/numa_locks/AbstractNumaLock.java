@@ -1,9 +1,6 @@
-package io.github.ricnorr.numa_locks.experimental;
+package io.github.ricnorr.numa_locks;
 
 import java.util.function.Supplier;
-
-import io.github.ricnorr.numa_locks.LockUtils;
-import io.github.ricnorr.numa_locks.VthreadNumaLock;
 
 abstract class AbstractNumaLock<T> implements VthreadNumaLock<T> {
 

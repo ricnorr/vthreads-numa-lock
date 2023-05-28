@@ -1,4 +1,4 @@
-package io.github.ricnorr.numa_locks.experimental;
+package io.github.ricnorr.numa_locks;
 
 import jdk.internal.vm.annotation.Contended;
 

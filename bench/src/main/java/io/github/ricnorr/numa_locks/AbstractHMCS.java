@@ -1,16 +1,14 @@
-package io.github.ricnorr.numa_locks.experimental;
+package io.github.ricnorr.numa_locks;
 
 import java.lang.reflect.Array;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
-import io.github.ricnorr.numa_locks.LockUtils;
-
-import static io.github.ricnorr.numa_locks.experimental.HMCSQNode.ACQUIRE_PARENT;
-import static io.github.ricnorr.numa_locks.experimental.HMCSQNode.COHORT_START;
-import static io.github.ricnorr.numa_locks.experimental.HMCSQNode.LOCKED;
-import static io.github.ricnorr.numa_locks.experimental.HMCSQNode.UNLOCKED;
-import static io.github.ricnorr.numa_locks.experimental.HMCSQNode.WAIT;
+import static io.github.ricnorr.numa_locks.HMCSQNode.ACQUIRE_PARENT;
+import static io.github.ricnorr.numa_locks.HMCSQNode.COHORT_START;
+import static io.github.ricnorr.numa_locks.HMCSQNode.LOCKED;
+import static io.github.ricnorr.numa_locks.HMCSQNode.UNLOCKED;
+import static io.github.ricnorr.numa_locks.HMCSQNode.WAIT;
 
 public abstract class AbstractHMCS extends AbstractNumaLock<AbstractHMCS.InfoToUnlockHMCS> {
 

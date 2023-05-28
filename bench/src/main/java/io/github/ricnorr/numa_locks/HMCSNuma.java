@@ -1,6 +1,4 @@
-package io.github.ricnorr.numa_locks.experimental;
-
-import io.github.ricnorr.numa_locks.LockUtils;
+package io.github.ricnorr.numa_locks;
 
 public class HMCSNuma extends AbstractHMCS {
 

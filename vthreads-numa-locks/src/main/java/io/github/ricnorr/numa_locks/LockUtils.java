@@ -15,6 +15,9 @@ import oshi.hardware.CentralProcessor;
  */
 public class LockUtils {
 
+  private LockUtils() {
+  }
+
   private static final MethodHandle GET_CARRIER_THREAD_METHOD_HANDLE;
   private static final MethodHandle GET_BY_THREAD_FROM_THREAD_LOCAL_METHOD_HANDLE;
 
@@ -67,6 +70,8 @@ public class LockUtils {
   /**
    * Returns id of NUMA node where current thread is running
    * Supports virtual and platform threads
+   *
+   * @return numa id for thread
    */
   public static int getNumaNodeId() {
     int res;
@@ -86,6 +91,8 @@ public class LockUtils {
   /**
    * Get id of CPU where current thread is running
    * Supports virtual and platform threads
+   *
+   * @return id of CPU
    */
   public static int getCpuId() {
     int res;
@@ -104,6 +111,8 @@ public class LockUtils {
 
   /**
    * Special function for Kunpeng-920
+   *
+   * @return CCL id of the thread (special for Kunpeng-920)
    */
   public static int getKunpengCCLId() {
     int cpuId = getCpuId();
@@ -112,6 +121,8 @@ public class LockUtils {
 
   /**
    * Get carrier thread for virtual thread
+   *
+   * @return carrier thread
    */
   public static Thread getCurrentCarrierThread() {
 
@@ -127,6 +138,8 @@ public class LockUtils {
    *
    * @param tl     another thread's local variable
    * @param thread another thread
+   * @param <T>    thread-local type variable
+   * @return value in thread-local
    */
   @SuppressWarnings("unchecked")
   public static <T> T getByThreadFromThreadLocal(ThreadLocal<T> tl, Thread thread) {
@@ -142,8 +155,9 @@ public class LockUtils {
    *
    * @param tl     another thread's local variable
    * @param thread another thread
+   * @param obj    value to put in thread-local
+   * @param <T>    thread-local type variable
    */
-  @SuppressWarnings("unchecked")
   public static <T> void setByThreadToThreadLocal(ThreadLocal<T> tl, Thread thread, Object obj) {
     try {
       SET_BY_THREAD_TO_THREAD_LOCAL_METHOD_HANDLE.invoke(tl, thread, obj);
