@@ -1,3 +1,4 @@
+[![Maven Central](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo1.maven.org%2Fmaven2%2Fio%2Fgithub%2Fricnorr%2Fvthreads-numa-lock%2Fmaven-metadata.xml&versionPrefix=0.0.3)](https://central.sonatype.com/artifact/io.github.ricnorr/vthreads-numa-lock/0.0.3)
 # vthreads-numa-lock.
 
 Effective lock implementation for virtual threads on NUMA architecture in Java, which is called NUMA_MCS
