@@ -13,7 +13,7 @@ This work could not be done without help
 of [@Aksenov239](https://github.com/Aksenov239), [@anton-malakhov](https://github.com/anton-malakhov), [@AndreyChurbanov](https://github.com/AndreyChurbanov).
 
 ## JDK patch (legacy, unsuccessful try to make results better)
-Locks use patched JDK https://github.com/ricnorr/jdk19/pull/3
+https://github.com/ricnorr/jdk19/pull/3
 
 ## How to run benchmarks
 
