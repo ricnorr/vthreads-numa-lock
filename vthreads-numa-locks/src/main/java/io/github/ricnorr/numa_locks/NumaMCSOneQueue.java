@@ -9,42 +9,26 @@ import java.util.concurrent.locks.LockSupport;
 
 import jdk.internal.vm.annotation.Contended;
 
-/**
- * <p>Lock for virtual threads.
- * <p>Also supports platform threads, but it was created for using with virtual threads.
- * <p>How to use:
- * <pre> {@code
- *   NumaMCS lock = new ReentrantLock();
- *   // ...
- *   lock.lock();
- *   try {
- *     // ... method body
- *   } finally {
- *     lock.unlock();
- *   }
- * }</pre>
- */
 @Contended
-public class NumaMCS implements VthreadNumaLock<NumaMCS.UnlockInfo> {
+public class NumaMCSOneQueue implements VthreadNumaLock<NumaMCSOneQueue.UnlockInfo> {
   private static final VarHandle VALUE;
 
   static {
     try {
       MethodHandles.Lookup l = MethodHandles.lookup();
-      VALUE = l.findVarHandle(NumaMCS.class, "globalLock", Boolean.TYPE);
+      VALUE = l.findVarHandle(io.github.ricnorr.numa_locks.NumaMCS.class, "globalLock", Boolean.TYPE);
     } catch (ReflectiveOperationException var1) {
       throw new ExceptionInInitializerError(var1);
     }
   }
 
   final List<AtomicReference<Node>> localQueues;
+  public boolean tryAcquireFlag = true;
   ThreadLocal<Integer> numaNodeThreadLocal = ThreadLocal.withInitial(LockUtils::getNumaNodeId);
   ThreadLocal<Integer> lockAcquiresThreadLocal = ThreadLocal.withInitial(() -> 0);
   volatile boolean globalLock = false;
 
-  public boolean tryAcquireFlag = true;
-
-  public NumaMCS() {
+  public NumaMCSOneQueue() {
     this.localQueues = new ArrayList<>();
     for (int i = 0; i < LockUtils.NUMA_NODES_CNT; i++) {
       localQueues.add(new AtomicReference<>());
@@ -59,16 +43,16 @@ public class NumaMCS implements VthreadNumaLock<NumaMCS.UnlockInfo> {
   @Override
   public UnlockInfo lock() {
     var node = new Node();
-    var numaId = LockUtils.getByThreadFromThreadLocal(numaNodeThreadLocal, LockUtils.getCurrentCarrierThread());
-    var lockAcquires =
-        LockUtils.getByThreadFromThreadLocal(lockAcquiresThreadLocal, LockUtils.getCurrentCarrierThread());
-    lockAcquires++;
-    if (lockAcquires >= 10_000) {
-      lockAcquires = 1;
-      LockUtils.setByThreadToThreadLocal(numaNodeThreadLocal, LockUtils.getCurrentCarrierThread(),
-          LockUtils.getNumaNodeId());
-    }
-    LockUtils.setByThreadToThreadLocal(lockAcquiresThreadLocal, LockUtils.getCurrentCarrierThread(), lockAcquires);
+    var numaId = 0;
+//    var lockAcquires =
+//        LockUtils.getByThreadFromThreadLocal(lockAcquiresThreadLocal, LockUtils.getCurrentCarrierThread());
+//    lockAcquires++;
+//    if (lockAcquires >= 10_000) {
+//      lockAcquires = 1;
+//      LockUtils.setByThreadToThreadLocal(numaNodeThreadLocal, LockUtils.getCurrentCarrierThread(),
+//          LockUtils.getNumaNodeId());
+//    }
+//    LockUtils.setByThreadToThreadLocal(lockAcquiresThreadLocal, LockUtils.getCurrentCarrierThread(), lockAcquires);
 
     if (tryAcquireFlag) {
       if (casGlobalLock(false, true)) {

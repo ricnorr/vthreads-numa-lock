@@ -18,6 +18,10 @@ import io.github.ricnorr.numa_locks.CLH;
 import io.github.ricnorr.numa_locks.LockUtils;
 import io.github.ricnorr.numa_locks.MCS;
 import io.github.ricnorr.numa_locks.NumaMCS;
+import io.github.ricnorr.numa_locks.NumaMCSNoContended;
+import io.github.ricnorr.numa_locks.NumaMCSNoPark;
+import io.github.ricnorr.numa_locks.NumaMCSOneQueue;
+import io.github.ricnorr.numa_locks.NumaMCSSplitNodeFieldsInCachelines;
 import io.github.ricnorr.numa_locks.NumaReentrantLock;
 import io.github.ricnorr.numa_locks.TAS;
 import io.github.ricnorr.numa_locks.TTAS;
@@ -97,8 +101,25 @@ public class BenchUtils {
       case HMCS_NUMA_SUPERNUMA -> {
         return new HMCSNumaSupernuma();
       }
-      case NUMA_MCS -> {
+      case NUMA_MCS, NUMA_MCS_QSPIN -> {
         return new NumaMCS();
+      }
+      case NUMA_MCS_QUEUE -> {
+        var lock = new NumaMCS();
+        lock.tryAcquireFlag = false;
+        return lock;
+      }
+      case NUMA_MCS_NO_CONTENDED -> {
+        return new NumaMCSNoContended();
+      }
+      case NUMA_MCS_CONTENDED_ALL_FIELDS -> {
+        return new NumaMCSSplitNodeFieldsInCachelines();
+      }
+      case NUMA_MCS_NO_PARK -> {
+        return new NumaMCSNoPark();
+      }
+      case NUMA_MCS_ONE_QUEUE -> {
+        return new NumaMCSOneQueue();
       }
       default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
     }

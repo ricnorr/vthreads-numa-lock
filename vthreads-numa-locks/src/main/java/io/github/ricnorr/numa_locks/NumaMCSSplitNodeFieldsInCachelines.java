@@ -9,42 +9,32 @@ import java.util.concurrent.locks.LockSupport;
 
 import jdk.internal.vm.annotation.Contended;
 
+
 /**
- * <p>Lock for virtual threads.
- * <p>Also supports platform threads, but it was created for using with virtual threads.
- * <p>How to use:
- * <pre> {@code
- *   NumaMCS lock = new ReentrantLock();
- *   // ...
- *   lock.lock();
- *   try {
- *     // ... method body
- *   } finally {
- *     lock.unlock();
- *   }
- * }</pre>
+ * Not contended version of NumaMCS
+ * This version doesn't solve false-sharing problem
  */
-@Contended
-public class NumaMCS implements VthreadNumaLock<NumaMCS.UnlockInfo> {
+public class NumaMCSSplitNodeFieldsInCachelines implements VthreadNumaLock<NumaMCSSplitNodeFieldsInCachelines.UnlockInfo> {
   private static final VarHandle VALUE;
 
   static {
     try {
       MethodHandles.Lookup l = MethodHandles.lookup();
-      VALUE = l.findVarHandle(NumaMCS.class, "globalLock", Boolean.TYPE);
+      VALUE = l.findVarHandle(io.github.ricnorr.numa_locks.NumaMCS.class, "globalLock", Boolean.TYPE);
     } catch (ReflectiveOperationException var1) {
       throw new ExceptionInInitializerError(var1);
     }
   }
 
   final List<AtomicReference<Node>> localQueues;
+  public boolean tryAcquireFlag = true;
   ThreadLocal<Integer> numaNodeThreadLocal = ThreadLocal.withInitial(LockUtils::getNumaNodeId);
   ThreadLocal<Integer> lockAcquiresThreadLocal = ThreadLocal.withInitial(() -> 0);
+
+  @Contended
   volatile boolean globalLock = false;
 
-  public boolean tryAcquireFlag = true;
-
-  public NumaMCS() {
+  public NumaMCSSplitNodeFieldsInCachelines() {
     this.localQueues = new ArrayList<>();
     for (int i = 0; i < LockUtils.NUMA_NODES_CNT; i++) {
       localQueues.add(new AtomicReference<>());
@@ -125,13 +115,14 @@ public class NumaMCS implements VthreadNumaLock<NumaMCS.UnlockInfo> {
   ) {
   }
 
-  @Contended
   private static class Node {
 
     Thread thread = Thread.currentThread();
 
+    @Contended
     volatile boolean spin = true;
 
+    @Contended
     volatile Node next = new Node();
 
   }
