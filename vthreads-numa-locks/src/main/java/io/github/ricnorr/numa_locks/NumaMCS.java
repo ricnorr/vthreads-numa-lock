@@ -42,6 +42,9 @@ public class NumaMCS implements VthreadNumaLock<NumaMCS.UnlockInfo> {
   ThreadLocal<Integer> lockAcquiresThreadLocal = ThreadLocal.withInitial(() -> 0);
   volatile boolean globalLock = false;
 
+  /**
+   * Creates NUMA_MCS lock.
+   */
   public NumaMCS() {
     this.localQueues = new ArrayList<>();
     for (int i = 0; i < LockUtils.NUMA_NODES_CNT; i++) {
@@ -113,7 +116,7 @@ public class NumaMCS implements VthreadNumaLock<NumaMCS.UnlockInfo> {
     LockSupport.unpark(unlockInfo.node.next.get().thread);
   }
 
-  public record UnlockInfo(
+  record UnlockInfo(
       boolean fastPath,
       int numaId,
 
