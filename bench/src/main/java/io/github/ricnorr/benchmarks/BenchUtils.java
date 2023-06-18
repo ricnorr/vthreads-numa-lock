@@ -68,11 +68,11 @@ public class BenchUtils {
         return new CLH();
       }
       // CNA
-      case CNA_NUMA -> {
-        return new CNA(LockUtils::getNumaNodeId);
+      case CNA_Q -> {
+        return new CNA(LockUtils::getNumaNodeId, false);
       }
-      case CNA_CCL -> {
-        return new CNA(LockUtils::getKunpengCCLId);
+      case CNA_QSPIN -> {
+        return new CNA(LockUtils::getNumaNodeId, true);
       }
       // HCLH
       case HCLH_CCL -> {
@@ -82,20 +82,26 @@ public class BenchUtils {
         return new HCLH(LockUtils::getNumaNodeId);
       }
       // HMCS
+      case HMCS_Q -> {
+        return new HMCSNuma(false);
+      }
+      case HMCS_QSPIN -> {
+        return new HMCSNuma(true);
+      }
       case HMCS_CCL_NUMA -> {
-        return new HMCSCclNuma();
+        return new HMCSCclNuma(false);
       }
       case HMCS_CCL_NUMA_SUPERNUMA -> {
-        return new HMCSCclNumaSupernuma();
+        return new HMCSCclNumaSupernuma(false);
       }
       case HMCS_CCL -> {
-        return new HMCSCcl();
+        return new HMCSCcl(false);
       }
       case HMCS_NUMA -> {
-        return new HMCSNuma();
+        return new HMCSNuma(false);
       }
       case HMCS_NUMA_SUPERNUMA -> {
-        return new HMCSNumaSupernuma();
+        return new HMCSNumaSupernuma(false);
       }
       case NUMA_MCS -> {
         return new NumaMCS();

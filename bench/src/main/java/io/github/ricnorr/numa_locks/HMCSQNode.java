@@ -16,6 +16,9 @@ class HMCSQNode {
   @Contended("gr1")
   private volatile int status = WAIT;
 
+  @Contended("gr2")
+  public volatile Thread thread = null;
+
   public void setNextAtomically(HMCSQNode hmcsQNode) {
     next = hmcsQNode;
   }

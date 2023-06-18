@@ -1,6 +1,8 @@
 package io.github.ricnorr.numa_locks;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.LockSupport;
 import java.util.function.Supplier;
 
 public class CNA extends AbstractNumaLock<CNA.CNANode> {
@@ -9,9 +11,14 @@ public class CNA extends AbstractNumaLock<CNA.CNANode> {
 
   CNALockCore cnaLockCore = new CNALockCore();
 
-  public CNA(Supplier<Integer> threadClusterSupplier) {
+  AtomicBoolean flag = new AtomicBoolean(false);
+
+  final boolean useFlag;
+
+  public CNA(Supplier<Integer> threadClusterSupplier, boolean useFlag) {
     super(threadClusterSupplier);
     this.clusterIdThreadLocal = ThreadLocal.withInitial(threadClusterSupplier);
+    this.useFlag = useFlag;
   }
 
   @Override
@@ -19,13 +26,28 @@ public class CNA extends AbstractNumaLock<CNA.CNANode> {
     int clusterId = getClusterId();
     CNANode node = new CNANode();
     node.socket = clusterId;
+    if (useFlag) {
+      if (flag.compareAndSet(false, true)) {
+        node.fastPath = true;
+        return node;
+      }
+    }
     cnaLockCore.lock(node);
+    if (useFlag) {
+      while (!flag.compareAndSet(false, true)) {
+      }
+    }
     return node;
   }
 
   @Override
   public void unlock(CNANode node) {
-    cnaLockCore.unlock(node);
+    if (!node.fastPath) {
+      cnaLockCore.unlock(node);
+    }
+    if (useFlag) {
+      flag.set(false);
+    }
   }
 
   public class CNALockCore {
@@ -52,7 +74,7 @@ public class CNA extends AbstractNumaLock<CNA.CNANode> {
 
       prevTail.next = me;
       while (me.spin == null) {
-        Thread.onSpinWait();
+        LockSupport.park();
       }
     }
 
@@ -66,6 +88,7 @@ public class CNA extends AbstractNumaLock<CNA.CNANode> {
           CNANode secHead = me.spin;
           if (tail.compareAndSet(me, secHead.secTail.get())) {
             secHead.spin = TRUE_VALUE;
+            LockSupport.unpark(secHead.thread);
             return;
           }
         }
@@ -76,22 +99,17 @@ public class CNA extends AbstractNumaLock<CNA.CNANode> {
         }
       }
       CNANode succ = null;
-//            if (me.getSpin() == TRUE_VALUE) {
-//                succ = me.getNext();
-//                succ.setSpinAtomically(TRUE_VALUE);
-//                return;
-//            }
       if ((succ = find_successor(me)) != null) {
         succ.spin = me.spin;
       } else if (me.spin != TRUE_VALUE) {
         succ = me.spin;
         succ.secTail.get().next = me.next;
-        succ.secTail.set(null);
         succ.spin = TRUE_VALUE;
       } else {
         succ = me.next;
         succ.spin = TRUE_VALUE;
       }
+      LockSupport.unpark(succ.thread);
     }
 
     private CNANode find_successor(CNANode me) {
@@ -115,7 +133,7 @@ public class CNA extends AbstractNumaLock<CNA.CNANode> {
             me.spin = secHead;
           }
           secTail.next = null;
-          me.spin = secTail;
+          me.spin.secTail.set(secTail);
           return cur;
         }
         secTail = cur;
@@ -127,9 +145,14 @@ public class CNA extends AbstractNumaLock<CNA.CNANode> {
 
   public static class CNANode {
     private final AtomicReference<CNANode> secTail = new AtomicReference<>(null);
-    public volatile int socket = 0;
+
+    private final Thread thread = Thread.currentThread();
+
+    public volatile int socket = -1;
     private volatile CNANode spin = null;
     private volatile CNANode next = null;
+
+    private boolean fastPath = false;
 
   }
 }

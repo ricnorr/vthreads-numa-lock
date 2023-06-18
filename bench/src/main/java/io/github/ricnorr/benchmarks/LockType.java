@@ -25,9 +25,9 @@ public enum LockType {
   /**
    * CNA
    */
-  CNA_CCL,
+  CNA_Q,
 
-  CNA_NUMA,
+  CNA_QSPIN,
 
   /**
    * CNA NO PAD
@@ -60,6 +60,10 @@ public enum LockType {
   HMCS_NUMA,
 
   HMCS_NUMA_SUPERNUMA,
+
+  HMCS_Q,
+
+  HMCS_QSPIN,
 
   /**
    * HMCS NO PAD

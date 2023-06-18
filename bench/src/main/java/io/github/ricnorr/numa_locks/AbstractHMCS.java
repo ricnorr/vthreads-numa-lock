@@ -1,7 +1,9 @@
 package io.github.ricnorr.numa_locks;
 
 import java.lang.reflect.Array;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.LockSupport;
 import java.util.function.Supplier;
 
 import static io.github.ricnorr.numa_locks.HMCSQNode.ACQUIRE_PARENT;
@@ -15,49 +17,68 @@ public abstract class AbstractHMCS extends AbstractNumaLock<AbstractHMCS.InfoToU
 
   protected final HNode[] leafs;
 
-  private final ThreadLocal<HMCSQNode> threadLocalQNode;
+  private final boolean useFlag;
+
+  private final AtomicBoolean flag = new AtomicBoolean(false);
 
   @SuppressWarnings("unchecked")
-  public AbstractHMCS(Supplier<HMCSQNode> qNodeSupplier, Supplier<Integer> clusterIdSupplier, int leafsCnt) {
+  public AbstractHMCS(Supplier<HMCSQNode> qNodeSupplier, Supplier<Integer> clusterIdSupplier, int leafsCnt,
+                      boolean useFlag) {
     super(clusterIdSupplier);
     this.leafs = (HNode[]) Array.newInstance(HNode.class, leafsCnt);
-    this.threadLocalQNode = ThreadLocal.withInitial(qNodeSupplier);
+    this.useFlag = useFlag;
   }
 
   @Override
   public InfoToUnlockHMCS lock() {
-    HMCSQNode node = LockUtils.getByThreadFromThreadLocal(threadLocalQNode, LockUtils.getCurrentCarrierThread());
+    HMCSQNode node = new HMCSQNode();
     int clusterId = getClusterId();
+    if (useFlag) {
+      if (flag.compareAndSet(false, true)) {
+        return new InfoToUnlockHMCS(node, clusterId, true);
+      }
+    }
     lockH(node, leafs[clusterId]);
-    return new InfoToUnlockHMCS(node, clusterId);
+    if (useFlag) {
+      while (!flag.compareAndSet(false, true)) {
+      }
+    }
+    return new InfoToUnlockHMCS(node, clusterId, false);
   }
 
   @Override
   public void unlock(InfoToUnlockHMCS infoToUnlock) {
-    unlockH(leafs[infoToUnlock.clusterId], infoToUnlock.node);
+    if (!infoToUnlock.fastPath) {
+      unlockH(leafs[infoToUnlock.clusterId], infoToUnlock.node);
+    }
+    if (useFlag) {
+      flag.set(false);
+    }
   }
 
   private void lockH(HMCSQNode qNode, HNode hNode) {
     if (hNode.parent == null) {
       qNode.setNextAtomically(null);
       qNode.setStatusAtomically(LOCKED);
+      qNode.thread = Thread.currentThread();
       HMCSQNode pred = hNode.tail.getAndSet(qNode);
       if (pred == null) {
         qNode.setStatusAtomically(UNLOCKED);
       } else {
         pred.setNextAtomically(qNode);
         while (qNode.getStatus() == LOCKED) {
-          Thread.onSpinWait();
+          LockSupport.park();
         } // spin
       }
     } else {
       qNode.setNextAtomically(null);
       qNode.setStatusAtomically(WAIT);
+      qNode.thread = Thread.currentThread();
       HMCSQNode pred = hNode.tail.getAndSet(qNode);
       if (pred != null) {
         pred.setNextAtomically(qNode);
         while (qNode.getStatus() == WAIT) {
-          Thread.onSpinWait();
+          LockSupport.park();
         } // spin
         if (qNode.getStatus() < ACQUIRE_PARENT) {
           return;
@@ -82,6 +103,7 @@ public abstract class AbstractHMCS extends AbstractNumaLock<AbstractHMCS.InfoToU
     HMCSQNode succ = qNode.getNext();
     if (succ != null) {
       succ.setStatusAtomically(curCount + 1);
+      LockSupport.unpark(succ.thread);
       return;
     }
     unlockH(hNode.parent, hNode.node);
@@ -101,11 +123,14 @@ public abstract class AbstractHMCS extends AbstractNumaLock<AbstractHMCS.InfoToU
       } while (succ == null);
       succ.setStatusAtomically(val);
     }
+    LockSupport.unpark(succ.thread);
   }
 
   record InfoToUnlockHMCS(
       HMCSQNode node,
-      int clusterId
+      int clusterId,
+
+      boolean fastPath
   ) {
   }
 
