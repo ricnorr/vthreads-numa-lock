@@ -9,8 +9,8 @@ import java.util.List;
  */
 public class HMCSCclNumaSupernuma extends AbstractHMCS {
 
-  public HMCSCclNumaSupernuma() {
-    super(HMCSQNode::new, LockUtils::getKunpengCCLId, LockUtils.CCL_CNT);
+  public HMCSCclNumaSupernuma(boolean useFlag) {
+    super(HMCSQNode::new, LockUtils::getKunpengCCLId, LockUtils.CCL_CNT, useFlag);
     int cclPerNuma = LockUtils.CCL_CNT / LockUtils.NUMA_NODES_CNT;
     var root = new HNode(null, new HMCSQNode());
     List<HNode> superNumaNodes = new ArrayList<>();

@@ -12,7 +12,7 @@
         "yieldsBefore": 1,
         "yieldInCrit": true,
         "title": "ConsumeCPU. High contention.",
-        "skip": false,
+        "skip": true,
         "locks": [
           {
             "name": "NUMA_MCS"
@@ -39,7 +39,7 @@
         "yieldsBefore": 2,
         "title": "ConsumeCPU. Low contention.",
         "yieldInCrit": true,
-        "skip": false,
+        "skip": true,
         "locks": [
           {
             "name": "NUMA_MCS"
@@ -60,7 +60,7 @@
         "measurementIterations": 7,
         "forks": 3,
         "title": "Text statistics.",
-        "skip": false,
+        "skip": true,
         "locks": [
           {
             "name": "NUMA_MCS"
@@ -95,31 +95,18 @@
           },
           {
             "name": "FAIR_REENTRANT"
-          }
-        ]
-      }
-    },
-    {
-      "name": "matrix",
-      "payload": {
-        "beforeMatrixSize": 0,
-        "inMatrixSize": 100,
-        "actionsCount": 10000,
-        "warmupIterations": 7,
-        "measurementIterations": 7,
-        "threadsFrom": 4,
-        "forks": 3,
-        "title": "Matrix mult, 100x100 in с.s, 0x0 out of c.s",
-        "skip": false,
-        "locks": [
-          {
-            "name": "NUMA_MCS"
           },
           {
-            "name": "UNFAIR_REENTRANT"
+            "name": "CNA_Q"
           },
           {
-            "name": "FAIR_REENTRANT"
+            "name": "CNA_QSPIN"
+          },
+          {
+            "name": "HMCS_Q"
+          },
+          {
+            "name": "HMCS_QSPIN"
           }
         ]
       }
@@ -145,6 +132,18 @@
           },
           {
             "name": "FAIR_REENTRANT"
+          },
+          {
+            "name": "CNA_Q"
+          },
+          {
+            "name": "CNA_QSPIN"
+          },
+          {
+            "name": "HMCS_Q"
+          },
+          {
+            "name": "HMCS_QSPIN"
           }
         ]
       }
@@ -160,7 +159,7 @@
         "threadsFrom": 4,
         "forks": 3,
         "title": "Matrix mult, 100x100 in с.s, 100x100 out of c.s",
-        "skip": false,
+        "skip": true,
         "locks": [
           {
             "name": "NUMA_MCS"

@@ -90,7 +90,7 @@ public class HCLH extends AbstractNumaLock<HCLH.HCLHLockCore.HCLHNode> {
 
       @Contended
       volatile int state;
-
+      
       public HCLHNode() {
         state = 0;
       }
