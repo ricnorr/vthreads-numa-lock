@@ -88,7 +88,10 @@
         "skip": false,
         "locks": [
           {
-            "name": "VNA_2_Q"
+            "name": "HSPIN_WITH_FAST"
+          },
+          {
+            "name": "HSPIN_WITHOUT_FAST"
           }
         ]
       }
@@ -107,7 +110,10 @@
         "skip": false,
         "locks": [
           {
-            "name": "VNA_2_Q"
+            "name": "HSPIN_WITH_FAST"
+          },
+          {
+            "name": "HSPIN_WITHOUT_FAST"
           }
         ]
       }
