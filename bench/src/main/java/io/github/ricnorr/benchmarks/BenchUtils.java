@@ -22,6 +22,7 @@ import io.github.ricnorr.numa_locks.HMCSCclNuma;
 import io.github.ricnorr.numa_locks.HMCSCclNumaSupernuma;
 import io.github.ricnorr.numa_locks.HMCSNuma;
 import io.github.ricnorr.numa_locks.HMCSNumaSupernuma;
+import io.github.ricnorr.numa_locks.HSPIN;
 import io.github.ricnorr.numa_locks.LockUtils;
 import io.github.ricnorr.numa_locks.MCS;
 import io.github.ricnorr.numa_locks.NumaMCS;
@@ -109,6 +110,12 @@ public class BenchUtils {
             }
             case VNA_2_Q -> {
                 return new VNA_2_Q();
+            }
+            case HSPIN_WITH_FAST -> {
+                return new HSPIN(true);
+            }
+            case HSPIN_WITHOUT_FAST -> {
+                return new HSPIN(false);
             }
             default -> throw new BenchmarkException("Can't init lockType " + lockType.name());
         }

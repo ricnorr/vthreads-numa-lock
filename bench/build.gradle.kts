@@ -78,7 +78,7 @@ dependencies {
     annotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:1.35")
     implementation("org.openjdk.jol:jol-core:0.9")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.8.9")
-    implementation("io.github.ricnorr:vthreads-numa-lock:0.0.2")
+    implementation("io.github.ricnorr:vthreads-numa-lock:0.0.3")
 }
 
 tasks.jar {
