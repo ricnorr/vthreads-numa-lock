@@ -86,7 +86,9 @@ public enum LockType {
 
   COMB_TTAS_NUMA_MCS,
 
-  NUMA_MCS,
+  VNA,
+
+  VNA_2_Q,
 
   NUMA_MCS_RUN_ON_THIS_CARRIER_FEATURE_ENABLED,
 
