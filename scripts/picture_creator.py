@@ -11,7 +11,7 @@ import matplotlib.ticker as ticker
 df = pd.read_csv('../results/benchmark_results.csv', index_col=None, header=0)
 bench_names = sorted(set(df['name']))
 locks = sorted(set(df['lock']))
-styles = ['--']
+# styles = ['--']
 paths = []
 
 
@@ -34,17 +34,17 @@ def draw_by_bench_and_mode(df, bench, mode, threads, suffix, filterLocks):
                     continue
             cur_df = df[(df['name'] == bench) & (df['lock'] == lock) & (df['threads'].isin(threads))].copy()
             cur_df['threads_cnt'] = cur_df['threads'].map(str)
-            if lock == 'UNFAIR_REENTRANT' or lock == 'FAIR_REENTRANT' or lock == 'SYNCHRONIZED':
-                marker = 'o'
-            else:
-                marker = '.'
-            cur_df.sort_values(by=['threads']).plot(ax=ax, x='threads_cnt', y=mode, label=lock, style=[styles[ind % len(styles)]], marker=marker)
+#             if lock == 'UNFAIR_REENTRANT' or lock == 'FAIR_REENTRANT' or lock == 'SYNCHRONIZED':
+#                 marker = 'o'
+#             else:
+#                 marker = '.'
+            cur_df.sort_values(by=['threads']).plot(ax=ax, x='threads_cnt', y=mode, label=lock)
             ind+=1
         l = plt.legend(loc='upper left')
         for text in l.get_texts():
             t = text.get_text()
-            if 'REENTRANT' not in t and t != 'SYNCHRONIZED':
-                text.set_color("red")
+#             if 'REENTRANT' not in t and t != 'SYNCHRONIZED':
+#                 text.set_color("red")
             if 'Throughput' in mode:
                 plt.ylabel('op/ms')
             else:
