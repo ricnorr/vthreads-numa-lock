@@ -15,7 +15,7 @@
         "skip": true,
         "locks": [
           {
-            "name": "NUMA_MCS"
+            "name": "VNA"
           },
           {
             "name": "UNFAIR_REENTRANT"
@@ -42,7 +42,7 @@
         "skip": true,
         "locks": [
           {
-            "name": "NUMA_MCS"
+            "name": "VNA"
           },
           {
             "name": "UNFAIR_REENTRANT"
@@ -63,7 +63,7 @@
         "skip": true,
         "locks": [
           {
-            "name": "NUMA_MCS"
+            "name": "VNA"
           },
           {
             "name": "UNFAIR_REENTRANT"
@@ -126,7 +126,7 @@
         "skip": true,
         "locks": [
           {
-            "name": "NUMA_MCS"
+            "name": "VNA"
           },
           {
             "name": "UNFAIR_REENTRANT"
