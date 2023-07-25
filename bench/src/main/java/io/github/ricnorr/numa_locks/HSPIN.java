@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HSPIN implements VthreadNumaLock<HSPIN.HSPINInfo> {
     private List<AtomicBoolean> numaSpinLocks = new ArrayList<>();
 
-    private AtomicBoolean globalLock = new AtomicBoolean(false);
+    private final AtomicBoolean globalLock = new AtomicBoolean(false);
     private final boolean useFastPath;
 
 
@@ -48,10 +48,21 @@ public class HSPIN implements VthreadNumaLock<HSPIN.HSPINInfo> {
                 return new HSPINInfo(numaId, true);
             }
         }
+        int i = 0;
         while (!numaSpinLocks.get(numaId).compareAndSet(false, true)) {
-
+            i++;
+            if (i == 30) {
+                i = 0;
+                Thread.yield();
+            }
         }
+        i = 0;
         while (!globalLock.compareAndSet(false, true)) {
+            i++;
+            if (i == 30) {
+                i = 0;
+                Thread.yield();
+            }
         }
         return new HSPINInfo(numaId, false);
     }
